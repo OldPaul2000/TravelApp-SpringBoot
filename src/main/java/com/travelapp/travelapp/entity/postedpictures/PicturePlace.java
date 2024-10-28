@@ -1,5 +1,6 @@
 package com.travelapp.travelapp.entity.postedpictures;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -7,11 +8,22 @@ import jakarta.persistence.Table;
 @Table(name = "picture_place")
 public class PicturePlace {
 
+    @Column(name = "file_id")
     private int fileId;
+
+    @Column(name = "country_id")
     private int countryId;
+
+    @Column(name = "city_id")
     private int cityId;
+
+    @Column(name = "commune_id")
     private int communeId;
+
+    @Column(name = "village_id")
     private int villageId;
+
+    @Column(name = "other_id")
     private int otherId;
 
     public PicturePlace() {}

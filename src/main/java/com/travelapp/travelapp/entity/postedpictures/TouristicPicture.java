@@ -1,7 +1,6 @@
 package com.travelapp.travelapp.entity.postedpictures;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
@@ -9,9 +8,18 @@ import java.time.LocalDateTime;
 @Table(name = "touristic_picture")
 public class TouristicPicture {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+
+    @Column(name = "user_id")
     private int userId;
+
+    @Column(name = "file_name")
     private String fileName;
+
+    @Column(name = "capture_date")
     private LocalDateTime captureDate;
 
     public TouristicPicture() {}

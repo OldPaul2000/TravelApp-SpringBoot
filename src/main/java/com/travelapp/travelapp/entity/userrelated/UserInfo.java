@@ -1,7 +1,6 @@
 package com.travelapp.travelapp.entity.userrelated;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
@@ -9,11 +8,24 @@ import java.time.LocalDate;
 @Table(name = "user_info")
 public class UserInfo {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+
+    @Column(name = "username")
     private String username;
+
+    @Column(name = "first_name")
     private String firstName;
+
+    @Column(name = "last_name")
     private String lastName;
+
+    @Column(name = "email")
     private String email;
+
+    @Column(name = "birth_date")
     private LocalDate birthDate;
 
     public UserInfo() {}

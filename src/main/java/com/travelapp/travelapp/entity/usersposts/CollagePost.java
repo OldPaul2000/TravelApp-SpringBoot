@@ -1,7 +1,6 @@
 package com.travelapp.travelapp.entity.usersposts;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
@@ -9,9 +8,18 @@ import java.time.LocalDateTime;
 @Table(name = "collage_post")
 public class CollagePost {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+
+    @Column(name = "user_id")
     private int userId;
+
+    @Column(name = "date_time")
     private LocalDateTime dateTime;
+
+    @Column(name = "description")
     private String description;
 
     public CollagePost() {}

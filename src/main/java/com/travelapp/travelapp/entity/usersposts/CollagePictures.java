@@ -1,5 +1,6 @@
 package com.travelapp.travelapp.entity.usersposts;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -7,7 +8,10 @@ import jakarta.persistence.Table;
 @Table(name = "collage_pictures")
 public class CollagePictures {
 
+    @Column(name = "collage_id")
     private int collageId;
+
+    @Column(name = "picture_id")
     private int pictureId;
 
     public CollagePictures() {}

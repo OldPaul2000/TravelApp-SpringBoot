@@ -1,5 +1,6 @@
 package com.travelapp.travelapp.entity.postedpictures;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -7,7 +8,10 @@ import jakarta.persistence.Table;
 @Table(name = "picture_like")
 public class PictureLike {
 
+    @Column(name = "file_id")
     private int fileId;
+
+    @Column(name = "user_id")
     private int userId;
 
     public PictureLike() {}

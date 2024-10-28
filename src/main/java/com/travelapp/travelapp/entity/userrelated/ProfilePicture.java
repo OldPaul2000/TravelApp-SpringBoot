@@ -1,5 +1,6 @@
 package com.travelapp.travelapp.entity.userrelated;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -7,7 +8,10 @@ import jakarta.persistence.Table;
 @Table(name = "profile_picture")
 public class ProfilePicture {
 
+    @Column(name = "user_info_id")
     private int userInfoId;
+
+    @Column(name = "file_name")
     private String fileName;
 
     public ProfilePicture() {}

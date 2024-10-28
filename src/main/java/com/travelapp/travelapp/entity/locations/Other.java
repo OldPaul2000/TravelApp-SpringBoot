@@ -1,14 +1,21 @@
 package com.travelapp.travelapp.entity.locations;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "other")
 public class Other {
 
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private int id;
+
+    @Column(name = "village_id")
     private int villageId;
+
+    @Column(name = "other")
     private String other;
 
     public Other() {}

@@ -1,5 +1,6 @@
 package com.travelapp.travelapp.entity.postedpictures;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -7,8 +8,13 @@ import jakarta.persistence.Table;
 @Table(name = "gps_coords")
 public class GpsCoords {
 
+    @Column(name = "file_id")
     private String fileId;
+
+    @Column(name = "latitude")
     private double latitude;
+
+    @Column(name = "longitude")
     private double longitude;
 
     public GpsCoords() {}

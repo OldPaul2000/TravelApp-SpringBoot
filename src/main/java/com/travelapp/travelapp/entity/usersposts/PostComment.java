@@ -1,5 +1,6 @@
 package com.travelapp.travelapp.entity.usersposts;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -7,7 +8,11 @@ import jakarta.persistence.Table;
 @Table(name = "post_comment")
 public class PostComment {
 
+
+    @Column(name = "post_id")
     private int postId;
+
+    @Column(name = "user_id")
     private int userId;
 
     public PostComment() {}
