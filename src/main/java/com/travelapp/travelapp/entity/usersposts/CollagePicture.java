@@ -6,7 +6,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "collage_pictures")
-public class CollagePictures {
+public class CollagePicture {
 
     @Column(name = "collage_id")
     private int collageId;
@@ -14,8 +14,8 @@ public class CollagePictures {
     @Column(name = "picture_id")
     private int pictureId;
 
-    public CollagePictures() {}
-    public CollagePictures(int collageId, int pictureId) {
+    public CollagePicture() {}
+    public CollagePicture(int collageId, int pictureId) {
         this.collageId = collageId;
         this.pictureId = pictureId;
     }
@@ -38,7 +38,7 @@ public class CollagePictures {
 
     @Override
     public String toString() {
-        return "CollagePictures{" +
+        return "CollagePicture{" +
                 "collageId=" + collageId +
                 ", pictureId=" + pictureId +
                 '}';
