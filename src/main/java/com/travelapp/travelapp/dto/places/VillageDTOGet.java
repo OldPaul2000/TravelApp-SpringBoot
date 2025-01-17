@@ -1,2 +1,7 @@
-package com.travelapp.travelapp.dto.places;public class VillageDTOGet {
+package com.travelapp.travelapp.dto.places;
+
+public record VillageDTOGet(
+        Long id,
+        String village
+) {
 }

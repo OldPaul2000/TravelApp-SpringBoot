@@ -1,5 +1,6 @@
 package com.travelapp.travelapp.model.postedpictures;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.travelapp.travelapp.model.userrelated.User;
 import jakarta.persistence.*;
 
@@ -27,6 +28,7 @@ public class PictureComment {
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "file_id")
+    @JsonBackReference("touristicPicture-pictureComment")
     private TouristicPicture touristicPicture;
 
 

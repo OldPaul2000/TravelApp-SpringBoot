@@ -1,8 +1,6 @@
 package com.travelapp.travelapp.service;
 
-import com.travelapp.travelapp.dto.userrelated.ProfilePictureDTOPost;
-import com.travelapp.travelapp.dto.userrelated.UserDTORegister;
-import com.travelapp.travelapp.dto.userrelated.UserInfoDTOUpdate;
+import com.travelapp.travelapp.dto.userrelated.*;
 import com.travelapp.travelapp.model.userrelated.ProfilePicture;
 import com.travelapp.travelapp.model.userrelated.Role;
 import com.travelapp.travelapp.model.userrelated.User;
@@ -29,15 +27,41 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User getUserByIdWithInfo(int id){
+    /* Works */
+    public UserAndInfoDTOGet getUserByIdWithInfo(int id){
         try{
-            return userRepository.findUserByIdWithInfoAndRoles(id);
+            User user = userRepository.findUserByIdWithInfoAndRoles(id);
+            UserInfo info = user.getUserInfo();
+            ProfilePicture picture = info.getProfilePicture();
+
+            ProfilePictureDTOGet profilePictureDTO = new ProfilePictureDTOGet(
+                    picture.getId(),
+                    picture.getFileName()
+            );
+
+            UserInfoDTOGet userInfoDTO = new UserInfoDTOGet(
+                    info.getFirstName(),
+                    info.getLastName(),
+                    info.getEmail(),
+                    info.getBirthDate(),
+                    info.getRegistrationDate(),
+                    profilePictureDTO
+            );
+
+            UserAndInfoDTOGet userDTO = new UserAndInfoDTOGet(
+                    user.getId(),
+                    user.getRoles(),
+                    userInfoDTO
+            );
+
+            return userDTO;
         }
         catch (EmptyResultDataAccessException e){
             throw new UserNotFoundException(USER_NOT_FOUND.message());
         }
     }
 
+    /* Works */
     public void updateUserProfilePicture(int userId, ProfilePictureDTOPost profilePicture){
         try{
             User user = userRepository.findUserByIdWithInfoAndRoles(userId);
@@ -51,6 +75,7 @@ public class UserService {
         }
     }
 
+    /* Works */
     public void updateUserInfo(int userId, UserInfoDTOUpdate userInfoDTOUpdate){
         try{
             User userToUpdate = userRepository.findUserById(userId);
@@ -68,6 +93,7 @@ public class UserService {
         }
     }
 
+    /* Works */
     public void registerUser(UserDTORegister userDTORegister){
         User user = new User();
         user.setUsername(userDTORegister.username());

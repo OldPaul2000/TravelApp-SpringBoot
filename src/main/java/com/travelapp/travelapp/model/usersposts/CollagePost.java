@@ -5,6 +5,7 @@ import com.travelapp.travelapp.model.userrelated.User;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,10 +27,10 @@ public class CollagePost {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "collagePost", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "collagePost", cascade = CascadeType.ALL)
     private List<PostLike> postLikes;
 
-    @OneToMany(mappedBy = "collagePost", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "collagePost", cascade = CascadeType.ALL)
     private List<PostComment> postComments;
 
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
@@ -85,6 +86,14 @@ public class CollagePost {
         this.postLikes = postLikes;
     }
 
+    public void addPostLike(PostLike postLike){
+        if(postLikes == null){
+            postLikes = new ArrayList<>();
+        }
+
+        postLikes.add(postLike);
+    }
+
     public List<PostComment> getPostComments() {
         return postComments;
     }
@@ -93,12 +102,28 @@ public class CollagePost {
         this.postComments = postComments;
     }
 
+    public void addPostComment(PostComment postComment){
+        if(postComments == null){
+            postComments = new ArrayList<>();
+        }
+
+        postComments.add(postComment);
+    }
+
     public List<TouristicPicture> getTouristicPictures() {
         return touristicPictures;
     }
 
     public void setTouristicPictures(List<TouristicPicture> touristicPictures) {
         this.touristicPictures = touristicPictures;
+    }
+
+    public void addTouristicPicture(TouristicPicture touristicPicture){
+        if(touristicPictures == null){
+            touristicPictures = new ArrayList<>();
+        }
+
+        touristicPictures.add(touristicPicture);
     }
 
     @Override

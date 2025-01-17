@@ -1,9 +1,7 @@
 package com.travelapp.travelapp.model.locations;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.travelapp.travelapp.model.postedpictures.PicturePlace;
-import com.travelapp.travelapp.repository.LazyFieldsFilter;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -28,8 +26,6 @@ public class Commune {
     private City city;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "commune", cascade = CascadeType.ALL)
-//    @JsonBackReference(value = "villages-commune")
-    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
     private List<Village> villages;
 
     @OneToMany(mappedBy = "commune",cascade = CascadeType.ALL)

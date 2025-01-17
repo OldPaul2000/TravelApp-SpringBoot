@@ -1,8 +1,9 @@
 package com.travelapp.travelapp.dto.postedpictures;
 
-// The user DTO model which will appear on user's posted picture(first name and last name, profile picture,
-// and the user's id to be able to access the user's profile)
-public record PictureUserDTOGet(
+// The user DTO model which will appear on user's posts like
+// touristic pictures, likes, comments, collage posts.
+// The user id is for other users to be able to access other users' profile
+public record PostingUserDTOGet(
         Long id,
         String firstName,
         String lastName,

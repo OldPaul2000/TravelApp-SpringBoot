@@ -1,8 +1,8 @@
 package com.travelapp.travelapp.restcontroller;
 
-import com.travelapp.travelapp.model.locations.City;
+import com.travelapp.travelapp.dto.places.CityDTOGet;
+import com.travelapp.travelapp.dto.places.CountryDTOGet;
 import com.travelapp.travelapp.model.locations.Commune;
-import com.travelapp.travelapp.model.locations.Country;
 import com.travelapp.travelapp.model.locations.Village;
 import com.travelapp.travelapp.service.PlaceService;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +19,14 @@ public class PlaceController {
     }
 
     @GetMapping("/country/{country}")
-    public ResponseEntity<Country> getCountryAndCities(@PathVariable("country") String countryName) {
-        Country country = placeService.getCountryWithCities(countryName);
+    public ResponseEntity<CountryDTOGet> getCountryAndCities(@PathVariable("country") String countryName) {
+        CountryDTOGet country = placeService.getCountryWithCities(countryName);
         return ResponseEntity.ok(country);
     }
 
     @GetMapping("/city/{city}")
-    public ResponseEntity<City> getCityAndCommunes(@PathVariable("city") String cityName){
-        City city = placeService.getCityWithCommunes(cityName);
+    public ResponseEntity<CityDTOGet> getCityAndCommunes(@PathVariable("city") String cityName){
+        CityDTOGet city = placeService.getCityWithCommunes(cityName);
         return ResponseEntity.ok(city);
     }
 
@@ -64,5 +64,7 @@ public class PlaceController {
         placeService.addNewVillageForCommune(communeId, village);
         return ResponseEntity.ok(null);
     }
+
+
 
 }

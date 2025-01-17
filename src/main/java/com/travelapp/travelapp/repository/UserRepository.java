@@ -5,11 +5,11 @@ import com.travelapp.travelapp.model.userrelated.User;
 public interface UserRepository {
 
 
-    User findUserByIdWithTouristicPictures(int id);
+    User findUserByIdWithTouristicPictures(long id);
 
-    User findUserByIdWithInfoAndRoles(int id);
+    User findUserByIdWithInfoAndRoles(long id);
 
-    User findUserById(int id);
+    User findUserById(long id);
 
     void addNewUser(User user);
 

@@ -1,15 +1,15 @@
 package com.travelapp.travelapp.restcontroller;
 
 import com.travelapp.travelapp.dto.userrelated.ProfilePictureDTOPost;
+import com.travelapp.travelapp.dto.userrelated.UserAndInfoDTOGet;
 import com.travelapp.travelapp.dto.userrelated.UserDTORegister;
 import com.travelapp.travelapp.dto.userrelated.UserInfoDTOUpdate;
-import com.travelapp.travelapp.model.userrelated.User;
 import com.travelapp.travelapp.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController()
+@RestController
 @RequestMapping("/api/v1/user")
 public class UserController {
 
@@ -20,8 +20,10 @@ public class UserController {
     }
 
     @GetMapping("/userById/{id}")
-    public ResponseEntity<User> userById(@PathVariable int id){
-        User user = userService.getUserByIdWithInfo(id);
+    public ResponseEntity<UserAndInfoDTOGet> userById(@PathVariable int id){
+        System.out.println("\u001b[31m" + "========================================================================" + "\u001B[0m");
+        UserAndInfoDTOGet user = userService.getUserByIdWithInfo(id);
+        System.out.println("\u001b[31m" + "========================================================================" + "\u001B[0m");
 
         return ResponseEntity.ok(user);
     }
@@ -44,7 +46,7 @@ public class UserController {
     public ResponseEntity<String> registerUser(@RequestBody UserDTORegister user){
         userService.registerUser(user);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
 

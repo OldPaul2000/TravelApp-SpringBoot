@@ -35,7 +35,7 @@ public class TouristicPicture {
     @OneToOne(mappedBy = "touristicPicture", cascade = CascadeType.ALL)
     private PicturePlace picturePlace;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "touristicPicture", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "touristicPicture", cascade = CascadeType.ALL)
     private List<PictureLike> likes;
 
     @OneToOne(mappedBy = "touristicPicture", cascade = CascadeType.ALL)
@@ -154,18 +154,26 @@ public class TouristicPicture {
         this.collagePosts = collagePosts;
     }
 
+    public void addCollagePost(CollagePost collagePost){
+        if(collagePosts == null){
+            collagePosts = new ArrayList<>();
+        }
+
+        collagePosts.add(collagePost);
+    }
+
     @Override
     public String toString() {
-        return "TouristicPicture{" +
-                "id=" + id +
+        return "TouristicPicture{\n" +
+                "id=" + id + "\n" +
 //                ", user=" + user +
-                ", fileName='" + fileName + '\'' +
-                ", captureDateTime=" + captureDateTime +
-                ", description='" + description + '\'' +
-                ", picturePlace=" + picturePlace +
-                ", likes=" + likes +
-                ", coordinates=" + coordinates +
-//                ", pictureComments=" + pictureComments +
+                ", fileName='" + fileName + '\'' + "\n" +
+                ", captureDateTime=" + captureDateTime + "\n" +
+                ", description='" + description + '\'' + "\n" +
+                ", picturePlace=" + picturePlace + "\n" +
+//                ", likes=" + likes + "\n" +
+                ", coordinates=" + coordinates + "\n" +
+//                ", pictureComments=" + pictureComments + "\n" +
                 '}';
     }
 }

@@ -1,13 +1,11 @@
 package com.travelapp.travelapp.model.userrelated;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.travelapp.travelapp.model.postedpictures.PictureComment;
 import com.travelapp.travelapp.model.postedpictures.PictureLike;
 import com.travelapp.travelapp.model.postedpictures.TouristicPicture;
 import com.travelapp.travelapp.model.usersposts.CollagePost;
 import com.travelapp.travelapp.model.usersposts.PostComment;
 import com.travelapp.travelapp.model.usersposts.PostLike;
-import com.travelapp.travelapp.repository.LazyFieldsFilter;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -32,34 +30,27 @@ public class User{
     private byte enabled;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
     private List<Role> roles;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserInfo userInfo;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
     private List<PictureLike> pictureLikes;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
     private List<PictureComment> pictureComments;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<TouristicPicture> touristicPictures;
 
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<CollagePost> collagePosts;
 
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<PostLike> postLikes;
 
-    @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JsonInclude(value = JsonInclude.Include.CUSTOM, valueFilter = LazyFieldsFilter.class)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<PostComment> postComments;
 
     public User() {}
@@ -132,6 +123,14 @@ public class User{
 
     public void setPictureLikes(List<PictureLike> likes) {
         this.pictureLikes = likes;
+    }
+
+    public void addPictureLike(PictureLike like){
+        if(pictureLikes == null){
+            pictureLikes = new ArrayList<>();
+        }
+
+        pictureLikes.add(like);
     }
 
     public List<PictureComment> getPictureComments() {

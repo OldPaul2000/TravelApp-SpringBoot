@@ -1,2 +1,9 @@
-package com.travelapp.travelapp.dto.postedpictures;public class TouristicPictureLikeDTOGet {
+package com.travelapp.travelapp.dto.postedpictures;
+
+public record PictureLikeDTOGet(
+        Long id,
+        PostingUserDTOGet user
+) {
+
+
 }

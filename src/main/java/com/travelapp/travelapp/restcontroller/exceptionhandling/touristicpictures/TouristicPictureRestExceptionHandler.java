@@ -20,4 +20,16 @@ public class TouristicPictureRestExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler
+    public ResponseEntity<TouristicPictureErrorResponse> handlerPictureNotFound(PictureAlreadyLikedException exc){
+
+        TouristicPictureErrorResponse errorResponse = new TouristicPictureErrorResponse();
+
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setMessage(exc.getMessage());
+        errorResponse.setTimestamp(System.currentTimeMillis());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
 }

@@ -1,5 +1,8 @@
 package com.travelapp.travelapp.service;
 
+import com.travelapp.travelapp.dto.places.CityDTOGet;
+import com.travelapp.travelapp.dto.places.CommuneDTOGet;
+import com.travelapp.travelapp.dto.places.CountryDTOGet;
 import com.travelapp.travelapp.model.locations.City;
 import com.travelapp.travelapp.model.locations.Commune;
 import com.travelapp.travelapp.model.locations.Country;
@@ -14,6 +17,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.PlaceErrorMessages.*;
 
 @Service
@@ -24,24 +29,57 @@ public class PlaceService {
         this.placeRepository = placeRepository;
     }
 
-    public Country getCountryWithCities(String countryName){
+    /* Works */
+    public CountryDTOGet getCountryWithCities(String countryName){
         try{
-            return placeRepository.getCountryWithCities(countryName);
+            Country country = placeRepository.getCountryWithCities(countryName);
+            List<CityDTOGet> cities = country.getCities()
+                    .stream()
+                    .map(city -> {
+                        return new CityDTOGet(
+                                city.getId(),
+                                city.getCity(),
+                                null
+                        );
+                    }).toList();
+
+            return new CountryDTOGet(
+                    country.getId(),
+                    country.getCountry(),
+                    cities
+            );
         }
         catch (EmptyResultDataAccessException e){
             throw new CountryNotFoundException(COUNTRY_NOT_FOUND.message());
         }
     }
 
-    public City getCityWithCommunes(String cityName){
+    /* Works */
+    public CityDTOGet getCityWithCommunes(String cityName){
         try{
-            return placeRepository.getCityWithCommunes(cityName);
+            City city = placeRepository.getCityWithCommunes(cityName);
+            List<CommuneDTOGet> communes = city.getCommunes()
+                    .stream()
+                    .map(commune -> {
+                        return new CommuneDTOGet(
+                                commune.getId(),
+                                commune.getCommune(),
+                                null
+                        );
+                    }).toList();
+
+            return new CityDTOGet(
+                    city.getId(),
+                    city.getCity(),
+                    communes
+            );
         }
         catch (EmptyResultDataAccessException e){
             throw new CountryNotFoundException(CITY_NOT_FOUND.message());
         }
     }
 
+    /* Works */
     public Commune getCommuneWithVillages(String communeName){
         try{
             return placeRepository.getCommuneWithVillages(communeName);
@@ -51,6 +89,7 @@ public class PlaceService {
         }
     }
 
+    /* Works */
     public Village getVillage(String villageName){
         try{
             return placeRepository.getVillage(villageName);
@@ -60,6 +99,7 @@ public class PlaceService {
         }
     }
 
+    /* Works */
     public void addNewCountry(String countryName){
         try{
             Country country = new Country(countryName);
@@ -70,6 +110,7 @@ public class PlaceService {
         }
     }
 
+    /* Works */
     public void addNewCityForCountry(int countryId, String cityName){
         Country country = placeRepository.getCountryByIdWithCities(countryId);
         try{
@@ -83,6 +124,7 @@ public class PlaceService {
         }
     }
 
+    /* Works */
     public void addNewCommuneForCity(int cityId, String communeName){
         City city = placeRepository.getCityByIdWithCommunes(cityId);
         try{
@@ -96,6 +138,7 @@ public class PlaceService {
         }
     }
 
+    /* Works */
     public void addNewVillageForCommune(int communeId, String villageName){
         Commune commune = placeRepository.getCommuneByIdWithVillages(communeId);
         try{

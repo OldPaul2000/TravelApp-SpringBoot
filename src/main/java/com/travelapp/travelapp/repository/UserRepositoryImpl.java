@@ -16,7 +16,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     // Just for testing
     @Override
-    public User findUserByIdWithTouristicPictures(int id){
+    public User findUserByIdWithTouristicPictures(long id){
         TypedQuery<User> userQuery = entityManager.createQuery("SELECT u FROM User u " +
                                                                "LEFT JOIN FETCH u.touristicPictures " +
                                                                "WHERE u.id = :data", User.class);
@@ -26,7 +26,7 @@ public class UserRepositoryImpl implements UserRepository {
 
 
     @Override
-    public User findUserByIdWithInfoAndRoles(int id){
+    public User findUserByIdWithInfoAndRoles(long id){
         TypedQuery<User> userQuery = entityManager.createQuery("SELECT u FROM User u " +
                                                                "JOIN FETCH u.roles " +
                                                                "JOIN FETCH u.userInfo " +
@@ -36,7 +36,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User findUserById(int id){
+    public User findUserById(long id){
         return entityManager.find(User.class, id);
     }
 
