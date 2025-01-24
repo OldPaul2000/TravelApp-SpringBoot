@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "post_comment")
-public class PostComment {
+public class CollageComment {
 
 
     @Id
@@ -29,8 +29,8 @@ public class PostComment {
     @Column(name = "comment")
     private String comment;
 
-    public PostComment() {}
-    public PostComment(String comment) {
+    public CollageComment() {}
+    public CollageComment(String comment) {
         this.comment = comment;
     }
 
@@ -76,7 +76,7 @@ public class PostComment {
 
     @Override
     public String toString() {
-        return "PostComment{" +
+        return "CollageComment{" +
                 "id=" + id +
                 ", comment='" + comment + '\'' +
                 ", dateTime=" + dateTime +

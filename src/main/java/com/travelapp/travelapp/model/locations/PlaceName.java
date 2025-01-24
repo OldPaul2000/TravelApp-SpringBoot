@@ -16,7 +16,7 @@ public class PlaceName {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(mappedBy = "placeName", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToOne(mappedBy = "placeName", cascade = CascadeType.ALL)
     @JsonBackReference(value = "picturePlace-placeName")
     private PicturePlace picturePlace;
 

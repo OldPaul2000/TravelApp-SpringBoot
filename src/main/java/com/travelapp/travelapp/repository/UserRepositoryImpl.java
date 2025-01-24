@@ -14,25 +14,30 @@ public class UserRepositoryImpl implements UserRepository {
         this.entityManager = entityManager;
     }
 
-    // Just for testing
+    // JUST FOR TESTING
     @Override
     public User findUserByIdWithTouristicPictures(long id){
-        TypedQuery<User> userQuery = entityManager.createQuery("SELECT u FROM User u " +
-                                                               "LEFT JOIN FETCH u.touristicPictures " +
-                                                               "WHERE u.id = :data", User.class);
-        userQuery.setParameter("data", id);
-        return userQuery.getSingleResult();
+        TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u " +
+                                                           "LEFT JOIN FETCH u.touristicPictures " +
+                                                           "WHERE u.id = :id", User.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 
+    @Override
+    @Transactional
+    public void persistNewUser(User user) {
+        entityManager.persist(user);
+    }
 
     @Override
     public User findUserByIdWithInfoAndRoles(long id){
-        TypedQuery<User> userQuery = entityManager.createQuery("SELECT u FROM User u " +
-                                                               "JOIN FETCH u.roles " +
-                                                               "JOIN FETCH u.userInfo " +
-                                                               "WHERE u.id = :data", User.class);
-        userQuery.setParameter("data", id);
-        return userQuery.getSingleResult();
+        TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u " +
+                "JOIN FETCH u.roles " +
+                "JOIN FETCH u.userInfo " +
+                "WHERE u.id = :id", User.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 
     @Override
@@ -42,19 +47,13 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     @Transactional
-    public void addNewUser(User user) {
-        entityManager.persist(user);
-    }
-
-    @Override
-    @Transactional
-    public void deleteUser(User user) {
+    public void removeUser(User user) {
         entityManager.remove(user);
     }
 
     @Override
     @Transactional
-    public void updateUser(User user) {
+    public void mergeUser(User user) {
         entityManager.merge(user);
     }
 }

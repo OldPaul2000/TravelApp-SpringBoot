@@ -18,7 +18,7 @@ public class CollagePost {
     private Long id;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(name = "post_date")
@@ -28,10 +28,10 @@ public class CollagePost {
     private String description;
 
     @OneToMany(mappedBy = "collagePost", cascade = CascadeType.ALL)
-    private List<PostLike> postLikes;
+    private List<CollageLike> collageLikes;
 
     @OneToMany(mappedBy = "collagePost", cascade = CascadeType.ALL)
-    private List<PostComment> postComments;
+    private List<CollageComment> collageComments;
 
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "collage_picture",
@@ -78,36 +78,36 @@ public class CollagePost {
         this.description = description;
     }
 
-    public List<PostLike> getPostLikes() {
-        return postLikes;
+    public List<CollageLike> getPostLikes() {
+        return collageLikes;
     }
 
-    public void setPostLikes(List<PostLike> postLikes) {
-        this.postLikes = postLikes;
+    public void setPostLikes(List<CollageLike> collageLikes) {
+        this.collageLikes = collageLikes;
     }
 
-    public void addPostLike(PostLike postLike){
-        if(postLikes == null){
-            postLikes = new ArrayList<>();
+    public void addPostLike(CollageLike collageLike){
+        if(collageLikes == null){
+            collageLikes = new ArrayList<>();
         }
 
-        postLikes.add(postLike);
+        collageLikes.add(collageLike);
     }
 
-    public List<PostComment> getPostComments() {
-        return postComments;
+    public List<CollageComment> getPostComments() {
+        return collageComments;
     }
 
-    public void setPostComments(List<PostComment> postComments) {
-        this.postComments = postComments;
+    public void setPostComments(List<CollageComment> collageComments) {
+        this.collageComments = collageComments;
     }
 
-    public void addPostComment(PostComment postComment){
-        if(postComments == null){
-            postComments = new ArrayList<>();
+    public void addPostComment(CollageComment collageComment){
+        if(collageComments == null){
+            collageComments = new ArrayList<>();
         }
 
-        postComments.add(postComment);
+        collageComments.add(collageComment);
     }
 
     public List<TouristicPicture> getTouristicPictures() {

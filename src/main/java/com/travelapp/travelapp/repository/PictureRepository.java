@@ -6,48 +6,40 @@ import java.util.List;
 
 public interface PictureRepository {
 
-    List<TouristicPicture> getTouristicPicturesByUser(int id);
+    List<TouristicPicture> findTouristicPicturesByUser(int id);
 
-    List<TouristicPicture> getTouristicPicturesByCity(String city);
+    List<TouristicPicture> findTouristicPicturesByCity(String name);
 
-    List<TouristicPicture> getTouristicPicturesByCommune(String commune);
+    List<TouristicPicture> findTouristicPicturesByCommune(String name);
 
-    List<TouristicPicture> getTouristicPicturesByVillage(String village);
+    List<TouristicPicture> findTouristicPicturesByVillage(String name);
 
-    List<TouristicPicture> getTouristicPicturesByPlaceName(String placeName);
+    List<TouristicPicture> findTouristicPicturesByPlaceName(String name);
 
-    TouristicPicture getTouristicPictureById(int id);
+    void persistNewPicture(TouristicPicture touristicPicture);
 
+    void removePicture(TouristicPicture touristicPicture);
     TouristicPicture findPictureByIdAndUserId(long userId, long pictureId);
+    void removePicturePlace(PicturePlace picturePlace);
 
-    void deletePicturePlace(PicturePlace picturePlace);
+    void persistNewPictureComment(PictureComment pictureComment);
 
-    void deletePictureCoordinates(GpsCoords coords);
+    TouristicPicture findTouristicPictureById(int id);
 
-    void addPictureComment(PictureComment pictureComment);
+    List<PictureComment> findPictureComments(int id);
 
-    List<PictureComment> getPictureComments(int id);
+    Long findPictureCommentsCount(int pictureId);
 
-    PictureComment getPictureComment(int userId, int pictureId);
+    void removePictureComment(PictureComment pictureComment);
+    PictureComment findPictureComment(int userId, int pictureId);
 
-    Long getPictureCommentsCount(int pictureId);
+    void persistNewPictureLike(PictureLike pictureLike);
 
-    void deletePictureComment(PictureComment pictureComment);
+    List<PictureLike> findPictureLikes(int pictureId);
 
-    void postNewPicture(TouristicPicture touristicPicture);
-
-    void updatePicture(TouristicPicture touristicPicture);
-
-    // Need to implement after implementing the collage posts database logic
-    void deletePicture(TouristicPicture touristicPicture);
-
-    void addPictureLike(PictureLike pictureLike);
+    Long findPictureLikesCount(int pictureId);
 
     void removePictureLike(PictureLike pictureLike);
+    PictureLike findPictureLike(int userId, int pictureId);
 
-    PictureLike getPictureLike(int userId, int pictureId);
-
-    List<PictureLike> getPictureLikes(int pictureId);
-
-    Long getPictureLikesCount(int pictureId);
 }

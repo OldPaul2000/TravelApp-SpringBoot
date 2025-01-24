@@ -13,8 +13,10 @@ import com.travelapp.travelapp.security.Roles;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.UserErrorMessages.*;
 
@@ -22,13 +24,16 @@ import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerr
 public class UserService {
 
     private UserRepository userRepository;
+    private PictureService pictureService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                       PictureService pictureService) {
         this.userRepository = userRepository;
+        this.pictureService = pictureService;
     }
 
     /* Works */
-    public UserAndInfoDTOGet getUserByIdWithInfo(int id){
+    public UserAndInfoDTOGet getUserByIdWithInfoAndRoles(int id){
         try{
             User user = userRepository.findUserByIdWithInfoAndRoles(id);
             UserInfo info = user.getUserInfo();
@@ -62,38 +67,6 @@ public class UserService {
     }
 
     /* Works */
-    public void updateUserProfilePicture(int userId, ProfilePictureDTOPost profilePicture){
-        try{
-            User user = userRepository.findUserByIdWithInfoAndRoles(userId);
-            user.getUserInfo()
-                    .getProfilePicture()
-                    .setFileName(profilePicture.fileName());
-            userRepository.updateUser(user);
-        }
-        catch (EmptyResultDataAccessException e){
-            throw new UserNotFoundException(USER_NOT_FOUND.message());
-        }
-    }
-
-    /* Works */
-    public void updateUserInfo(int userId, UserInfoDTOUpdate userInfoDTOUpdate){
-        try{
-            User userToUpdate = userRepository.findUserById(userId);
-
-            UserInfo userInfo = userToUpdate.getUserInfo();
-            userInfo.setFirstName(userInfoDTOUpdate.firstName());
-            userInfo.setLastName(userInfoDTOUpdate.lastName());
-            userInfo.setEmail(userInfoDTOUpdate.email());
-            userInfo.setBirthDate(userInfoDTOUpdate.birthDate());
-
-            userRepository.updateUser(userToUpdate);
-        }
-        catch (Exception e){
-            throw new UserGeneralException(USER_UPDATE_ERROR.message());
-        }
-    }
-
-    /* Works */
     public void registerUser(UserDTORegister userDTORegister){
         User user = new User();
         user.setUsername(userDTORegister.username());
@@ -121,12 +94,75 @@ public class UserService {
         userInfo.setProfilePicture(profilePicture);
 
         try{
-            userRepository.addNewUser(user);
+            userRepository.persistNewUser(user);
         }
         catch (DataIntegrityViolationException e){
             System.out.println(e);
             throw new UserRegistrationException(ALREADY_EXISTING_USER.message());
         }
+    }
+
+    /* Works */
+    public void updateProfilePicture(int userId, ProfilePictureDTOPost profilePicture){
+        try{
+            User user = userRepository.findUserByIdWithInfoAndRoles(userId);
+            user.getUserInfo()
+                    .getProfilePicture()
+                    .setFileName(profilePicture.fileName());
+            userRepository.mergeUser(user);
+        }
+        catch (EmptyResultDataAccessException e){
+            throw new UserNotFoundException(USER_NOT_FOUND.message());
+        }
+    }
+
+    /* Works */
+    public void updateUserInfo(int userId, UserInfoDTOUpdate userInfoDTOUpdate){
+        try{
+            User userToUpdate = userRepository.findUserById(userId);
+
+            UserInfo userInfo = userToUpdate.getUserInfo();
+            userInfo.setFirstName(userInfoDTOUpdate.firstName());
+            userInfo.setLastName(userInfoDTOUpdate.lastName());
+            userInfo.setEmail(userInfoDTOUpdate.email());
+            userInfo.setBirthDate(userInfoDTOUpdate.birthDate());
+
+            userRepository.mergeUser(userToUpdate);
+        }
+        catch (Exception e){
+            throw new UserGeneralException(USER_UPDATE_ERROR.message());
+        }
+    }
+
+
+    // Not finished
+    @Transactional
+    public void deleteUserAccount(long userId, boolean userPicturesDelete){
+        User user = userRepository.findUserById(userId);
+
+
+        UserInfo userInfo = user.getUserInfo();
+        userInfo.setProfilePicture(null);
+        List<Role> roles = user.getRoles();
+        roles.forEach(role -> role.setUser(null));
+        user.setRoles(null);
+        user.setUserInfo(null);
+        userInfo.setUser(null);
+
+        user.getPictureLikes().forEach(pictureLike -> pictureLike.setUser(null));
+        user.setPictureLikes(null);
+        user.getPictureComments().forEach(pictureComment -> pictureComment.setUser(null));
+        user.setPictureComments(null);
+        user.getCollagePosts().forEach(collagePost -> collagePost.setUser(null));
+        user.setCollagePosts(null);
+        user.getCollageLikes().forEach(collageLike -> collageLike.setUser(null));
+        user.setCollageLikes(null);
+        user.getCollageComments().forEach(collageComment -> collageComment.setUser(null));
+        user.setCollageComments(null);
+
+
+
+        userRepository.removeUser(user);
     }
 
 

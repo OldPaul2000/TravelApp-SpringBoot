@@ -19,7 +19,7 @@ public class TouristicPicture {
     private Long id;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference(value = "user-touristicPictures")
     private User user;
 
@@ -32,17 +32,17 @@ public class TouristicPicture {
     @Column(name = "description")
     private String description;
 
-    @OneToOne(mappedBy = "touristicPicture", cascade = CascadeType.ALL)
-    private PicturePlace picturePlace;
-
     @OneToMany(mappedBy = "touristicPicture", cascade = CascadeType.ALL)
     private List<PictureLike> likes;
+
+    @OneToMany(mappedBy = "touristicPicture", cascade = CascadeType.ALL)
+    private List<PictureComment> pictureComments;
 
     @OneToOne(mappedBy = "touristicPicture", cascade = CascadeType.ALL)
     private GpsCoords coordinates;
 
-    @OneToMany(mappedBy = "touristicPicture", cascade = CascadeType.ALL)
-    private List<PictureComment> pictureComments;
+    @OneToOne(mappedBy = "touristicPicture", cascade = CascadeType.ALL)
+    private PicturePlace picturePlace;
 
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(name = "collage_picture",
@@ -98,14 +98,6 @@ public class TouristicPicture {
         this.description = description;
     }
 
-    public PicturePlace getPicturePlace() {
-        return picturePlace;
-    }
-
-    public void setPicturePlace(PicturePlace picturePlace) {
-        this.picturePlace = picturePlace;
-    }
-
     public List<PictureLike> getPictureLikes() {
         return likes;
     }
@@ -120,14 +112,6 @@ public class TouristicPicture {
         }
 
         likes.add(like);
-    }
-
-    public GpsCoords getCoordinates() {
-        return coordinates;
-    }
-
-    public void setCoordinates(GpsCoords coordinates) {
-        this.coordinates = coordinates;
     }
 
     public List<PictureComment> getPictureComments() {
@@ -145,6 +129,23 @@ public class TouristicPicture {
 
         pictureComments.add(pictureComment);
     }
+
+    public GpsCoords getCoordinates() {
+        return coordinates;
+    }
+
+    public void setCoordinates(GpsCoords coordinates) {
+        this.coordinates = coordinates;
+    }
+
+    public PicturePlace getPicturePlace() {
+        return picturePlace;
+    }
+
+    public void setPicturePlace(PicturePlace picturePlace) {
+        this.picturePlace = picturePlace;
+    }
+
 
     public List<CollagePost> getCollagePosts() {
         return collagePosts;

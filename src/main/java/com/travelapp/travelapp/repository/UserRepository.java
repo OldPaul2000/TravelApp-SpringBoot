@@ -5,16 +5,17 @@ import com.travelapp.travelapp.model.userrelated.User;
 public interface UserRepository {
 
 
+    // JUST FOR TESTING
     User findUserByIdWithTouristicPictures(long id);
 
     User findUserByIdWithInfoAndRoles(long id);
 
+    void persistNewUser(User user);
+
     User findUserById(long id);
 
-    void addNewUser(User user);
+    void removeUser(User user);
 
-    void deleteUser(User user);
-
-    void updateUser(User user);
+    void mergeUser(User user);
 
 }

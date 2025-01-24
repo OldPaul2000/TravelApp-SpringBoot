@@ -21,16 +21,21 @@ public class UserController {
 
     @GetMapping("/userById/{id}")
     public ResponseEntity<UserAndInfoDTOGet> userById(@PathVariable int id){
-        System.out.println("\u001b[31m" + "========================================================================" + "\u001B[0m");
-        UserAndInfoDTOGet user = userService.getUserByIdWithInfo(id);
-        System.out.println("\u001b[31m" + "========================================================================" + "\u001B[0m");
+        UserAndInfoDTOGet user = userService.getUserByIdWithInfoAndRoles(id);
 
         return ResponseEntity.ok(user);
     }
 
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestBody UserDTORegister user){
+        userService.registerUser(user);
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
     @PutMapping("/updateProfilePicture/{userId}")
     public ResponseEntity<String> updateProfilePicture(@PathVariable int userId, @RequestBody ProfilePictureDTOPost profilePicture){
-            userService.updateUserProfilePicture(userId, profilePicture);
+            userService.updateProfilePicture(userId, profilePicture);
 
             return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -42,12 +47,14 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserDTORegister user){
-        userService.registerUser(user);
+    @DeleteMapping("/delete/{userId}/{userPicturesDelete}")
+    public ResponseEntity<String> deleteUser(@PathVariable long userId,
+                                             @PathVariable boolean userPicturesDelete){
+        userService.deleteUserAccount(userId, userPicturesDelete);
+        System.out.println("userId: " + userId);
+        System.out.println("userPicturesDelete: " + userPicturesDelete);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
 }

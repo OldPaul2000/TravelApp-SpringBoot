@@ -32,7 +32,7 @@ public class PlaceService {
     /* Works */
     public CountryDTOGet getCountryWithCities(String countryName){
         try{
-            Country country = placeRepository.getCountryWithCities(countryName);
+            Country country = placeRepository.findCountryWithCities(countryName);
             List<CityDTOGet> cities = country.getCities()
                     .stream()
                     .map(city -> {
@@ -57,7 +57,7 @@ public class PlaceService {
     /* Works */
     public CityDTOGet getCityWithCommunes(String cityName){
         try{
-            City city = placeRepository.getCityWithCommunes(cityName);
+            City city = placeRepository.findCityWithCommunes(cityName);
             List<CommuneDTOGet> communes = city.getCommunes()
                     .stream()
                     .map(commune -> {
@@ -82,7 +82,7 @@ public class PlaceService {
     /* Works */
     public Commune getCommuneWithVillages(String communeName){
         try{
-            return placeRepository.getCommuneWithVillages(communeName);
+            return placeRepository.findCommuneWithVillages(communeName);
         }
         catch (EmptyResultDataAccessException e){
             throw new CountryNotFoundException(COMMUNE_NOT_FOUND.message());
@@ -92,7 +92,7 @@ public class PlaceService {
     /* Works */
     public Village getVillage(String villageName){
         try{
-            return placeRepository.getVillage(villageName);
+            return placeRepository.findVillage(villageName);
         }
         catch (EmptyResultDataAccessException e){
             throw new VillageNotFoundException(VILLAGE_NOT_FOUND.message());
@@ -103,7 +103,7 @@ public class PlaceService {
     public void addNewCountry(String countryName){
         try{
             Country country = new Country(countryName);
-            placeRepository.addNewCountry(country);
+            placeRepository.persistNewCountry(country);
         }
         catch (DataIntegrityViolationException e){
             throw new CountryAlreadyExistsException(ALREADY_EXISTING_COUNTRY.message());
@@ -112,12 +112,12 @@ public class PlaceService {
 
     /* Works */
     public void addNewCityForCountry(int countryId, String cityName){
-        Country country = placeRepository.getCountryByIdWithCities(countryId);
+        Country country = placeRepository.findCountryByIdWithCities(countryId);
         try{
             City city = new City(cityName);
             country.addCity(city);
             city.setCountry(country);
-            placeRepository.updateCountry(country);
+            placeRepository.mergeCountry(country);
         }
         catch (DataIntegrityViolationException e){
             throw new CityAlreadyExistsException(ALREADY_EXISTING_CITY.message());
@@ -126,12 +126,12 @@ public class PlaceService {
 
     /* Works */
     public void addNewCommuneForCity(int cityId, String communeName){
-        City city = placeRepository.getCityByIdWithCommunes(cityId);
+        City city = placeRepository.findCityByIdWithCommunes(cityId);
         try{
             Commune commune = new Commune(communeName);
             city.addCommune(commune);
             commune.setCity(city);
-            placeRepository.updateCity(city);
+            placeRepository.mergeCity(city);
         }
         catch (DataIntegrityViolationException e){
             throw new CommuneAlreadyExistsException(ALREADY_EXISTING_COMMUNE.message());
@@ -140,12 +140,12 @@ public class PlaceService {
 
     /* Works */
     public void addNewVillageForCommune(int communeId, String villageName){
-        Commune commune = placeRepository.getCommuneByIdWithVillages(communeId);
+        Commune commune = placeRepository.findCommuneByIdWithVillages(communeId);
         try{
             Village village = new Village(villageName);
             commune.addVillage(village);
             village.setCommune(commune);
-            placeRepository.updateCommune(commune);
+            placeRepository.mergeCommune(commune);
         }
         catch (DataIntegrityViolationException e){
             throw new CommuneAlreadyExistsException(ALREADY_EXISTING_VILLAGE.message());

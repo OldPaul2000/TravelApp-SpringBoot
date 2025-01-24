@@ -6,10 +6,10 @@ import com.travelapp.travelapp.dto.postedpictures.PostingUserDTOGet;
 import com.travelapp.travelapp.dto.postedpictures.TouristicPictureDTOGet;
 import com.travelapp.travelapp.model.postedpictures.TouristicPicture;
 import com.travelapp.travelapp.model.userrelated.User;
+import com.travelapp.travelapp.model.usersposts.CollageComment;
+import com.travelapp.travelapp.model.usersposts.CollageLike;
 import com.travelapp.travelapp.model.usersposts.CollagePost;
-import com.travelapp.travelapp.model.usersposts.PostComment;
-import com.travelapp.travelapp.model.usersposts.PostLike;
-import com.travelapp.travelapp.repository.CollagePostRepository;
+import com.travelapp.travelapp.repository.CollageRepository;
 import com.travelapp.travelapp.repository.PictureRepository;
 import com.travelapp.travelapp.repository.UserRepository;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.collageposts.CollagePostAlreadyLikedException;
@@ -28,9 +28,9 @@ import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerr
 import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.UserErrorMessages.USER_NOT_FOUND;
 
 @Service
-public class CollagePostService {
+public class CollageService {
 
-    private CollagePostRepository collagePostRepository;
+    private CollageRepository collageRepository;
     private UserRepository userRepository;
     private PictureRepository pictureRepository;
 
@@ -41,15 +41,15 @@ public class CollagePostService {
     private CollageCommentMapper collageCommentMapper;
 
     @Autowired
-    public CollagePostService(CollagePostRepository collagePostRepository,
-                              UserRepository userRepository,
-                              PictureRepository pictureRepository,
-                              PostingUserMapper postingUserMapper,
-                              TouristicPictureMapper touristicPictureMapper,
-                              CollagePostMapper collageMapper,
-                              CollageLikeMapper collageLikeMapper,
-                              CollageCommentMapper collageCommentMapper) {
-        this.collagePostRepository = collagePostRepository;
+    public CollageService(CollageRepository collageRepository,
+                          UserRepository userRepository,
+                          PictureRepository pictureRepository,
+                          PostingUserMapper postingUserMapper,
+                          TouristicPictureMapper touristicPictureMapper,
+                          CollagePostMapper collageMapper,
+                          CollageLikeMapper collageLikeMapper,
+                          CollageCommentMapper collageCommentMapper) {
+        this.collageRepository = collageRepository;
         this.userRepository = userRepository;
         this.pictureRepository = pictureRepository;
         this.postingUserMapper = postingUserMapper;
@@ -60,8 +60,8 @@ public class CollagePostService {
     }
 
     /* Works */
-    public CollagePostDTOGet getCollageById(int id){
-        CollagePost collagePost = collagePostRepository.getCollagePostById(id);
+    public CollageDTOGet getCollageById(int id){
+        CollagePost collagePost = collageRepository.findCollageById(id);
 
         if(collagePost == null){
             throw new CollagePostNotFoundException(COLLAGE_POST_NOT_FOUND.message());
@@ -73,7 +73,7 @@ public class CollagePostService {
                 .map(picture -> touristicPictureMapper.toDTO(picture))
                 .toList();
 
-        CollagePostDTOGet collageUserDTOGet = new CollagePostDTOGet(
+        CollageDTOGet collageUserDTOGet = new CollageDTOGet(
                 collagePost.getId(),
                 collagePost.getDescription(),
                 collagePost.getDateTime(),
@@ -85,8 +85,8 @@ public class CollagePostService {
     }
 
     /* Works */
-    public List<CollagePostDTOGet> getCollagesFromUser(long userId){
-        return collagePostRepository.getCollagePostsByUserId(userId)
+    public List<CollageDTOGet> getCollagesFromUser(long userId){
+        return collageRepository.findCollagesByUserId(userId)
                 .stream()
                 .map(collage -> collageMapper.toDTO(collage))
                 .toList();
@@ -94,14 +94,14 @@ public class CollagePostService {
 
     /* Works */
     // Duplicate pictures error is not handled
-    public void postNewCollage(CollagePostDTOPost collagePost){
-        User user = userRepository.findUserById(collagePost.userId());
-        List<TouristicPicture> pictures = collagePost.pictures().stream()
-                .map(pictureId -> pictureRepository.getTouristicPictureById(pictureId))
+    public void postNewCollage(CollageDTOPost collageDTO){
+        User user = userRepository.findUserById(collageDTO.userId());
+        List<TouristicPicture> pictures = collageDTO.pictures().stream()
+                .map(pictureId -> pictureRepository.findTouristicPictureById(pictureId))
                 .toList();
 
         CollagePost collage = new CollagePost();
-        collage.setDescription(collagePost.description());
+        collage.setDescription(collageDTO.description());
         collage.setDateTime(LocalDateTime.now());
         collage.setUser(user);
 
@@ -109,19 +109,19 @@ public class CollagePostService {
             picture.addCollagePost(collage);
         });
 
-        collagePostRepository.addNewCollage(collage);
+        collageRepository.persistNewCollage(collage);
     }
 
     /* Works */
     public void deleteCollage(long userId, long collageId){
         try{
-            CollagePost collagePost = collagePostRepository.getCollageByUserId(collageId, userId);
+            CollagePost collagePost = collageRepository.findCollageByCollageAndUserId(collageId, userId);
             collagePost.getTouristicPictures().forEach(picture -> {
                 picture.getCollagePosts().remove(collagePost);
             });
             collagePost.setTouristicPictures(null);
 
-            collagePostRepository.deleteCollage(collagePost);
+            collageRepository.removeCollage(collagePost);
         }
         catch (EmptyResultDataAccessException e){
             throw new CollagePostNotFoundException(COLLAGE_POST_NOT_FOUND.message());
@@ -137,14 +137,14 @@ public class CollagePostService {
         }
 
         try{
-            CollagePost collagePost = collagePostRepository.getCollagePostById(collageId);
+            CollagePost collagePost = collageRepository.findCollageById(collageId);
 
-            PostComment comment = new PostComment(userComment.userComment());
+            CollageComment comment = new CollageComment(userComment.userComment());
             comment.setDateTime(LocalDateTime.now());
             comment.setCollagePost(collagePost);
             comment.setUser(user);
 
-            collagePostRepository.addCollageComment(comment);
+            collageRepository.persistNewCollageComment(comment);
         }
         catch (EmptyResultDataAccessException e){
             throw new CollagePostNotFoundException(COLLAGE_POST_NOT_FOUND.message());
@@ -152,19 +152,9 @@ public class CollagePostService {
     }
 
     /* Works */
-    public void deleteCollageComment(long userId, long commentId){
-        PostComment comment = collagePostRepository.getCollageComment(userId, commentId);
-
-        comment.setUser(null);
-        comment.setCollagePost(null);
-
-        collagePostRepository.deletePostComment(comment);
-    }
-
-    /* Works */
     public List<CollageCommentDTOGet> getCollageComments(long collageId){
-        List<PostComment> postComments = collagePostRepository.getCollageComments(collageId);
-        return postComments
+        List<CollageComment> collageComments = collageRepository.findCollageComments(collageId);
+        return collageComments
                 .stream()
                 .map(comment -> collageCommentMapper.toDTO(comment))
                 .toList();
@@ -172,7 +162,17 @@ public class CollagePostService {
 
     /* Works */
     public Long getCollageCommentsCount(long collageId){
-        return collagePostRepository.getCollageCommentsCount(collageId);
+        return collageRepository.findCollageCommentsCount(collageId);
+    }
+
+    /* Works */
+    public void deleteCollageComment(long userId, long commentId){
+        CollageComment comment = collageRepository.findCollageComment(userId, commentId);
+
+        comment.setUser(null);
+        comment.setCollagePost(null);
+
+        collageRepository.removeCollageComment(comment);
     }
 
     /* Works */
@@ -182,17 +182,17 @@ public class CollagePostService {
             throw new UserNotFoundException(USER_NOT_FOUND.message());
         }
 
-        CollagePost collage = collagePostRepository.getCollagePostById(collageId);
+        CollagePost collage = collageRepository.findCollageById(collageId);
         if(collage == null){
             throw new CollagePostNotFoundException(COLLAGE_POST_NOT_FOUND.message());
         }
 
-        PostLike like = new PostLike();
+        CollageLike like = new CollageLike();
         like.setCollagePost(collage);
         like.setUser(user);
 
         try{
-            collagePostRepository.addCollageLike(like);
+            collageRepository.persistNewCollageLike(like);
         }
         catch (DataIntegrityViolationException e){
             throw new CollagePostAlreadyLikedException(COLLAGE_POST_ALREADY_LIKED.message());
@@ -200,24 +200,24 @@ public class CollagePostService {
     }
 
     /* Works */
-    public void dislikeCollage(long userId, long collageId){
-        PostLike postLike = collagePostRepository.getPostLike(userId, collageId);
-        postLike.setUser(null);
-        postLike.setCollagePost(null);
-        collagePostRepository.removeCollageLike(postLike);
-    }
-
-    /* Works */
     public List<CollageLikeDTOGet> getCollageLikes(long collageId){
-        return collagePostRepository.getPostLikes(collageId)
+        return collageRepository.findCollageLikes(collageId)
                 .stream()
                 .map(like -> collageLikeMapper.toDTO(like))
                 .toList();
     }
 
     /* Works */
-    public long getCollagePostLikesCount(long collageId){
-        return collagePostRepository.getCollageLikesCount(collageId);
+    public long getCollageLikesCount(long collageId){
+        return collageRepository.findCollageLikesCount(collageId);
+    }
+
+    /* Works */
+    public void dislikeCollage(long userId, long collageId){
+        CollageLike collageLike = collageRepository.findCollageLike(userId, collageId);
+        collageLike.setUser(null);
+        collageLike.setCollagePost(null);
+        collageRepository.removeCollageLike(collageLike);
     }
 
 }

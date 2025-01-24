@@ -54,7 +54,7 @@ public class PictureService {
 
     /* Works */
     public List<TouristicPictureDTOGet> getTouristicPicturesByUser(int userId){
-        List<TouristicPictureDTOGet> pictures = pictureRepository.getTouristicPicturesByUser(userId)
+        List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByUser(userId)
                 .stream().map(picture -> pictureMapper.toDTO(picture))
                 .toList();
 
@@ -63,7 +63,7 @@ public class PictureService {
 
     /* Works */
     public List<TouristicPictureDTOGet> getTouristicPicturesByCity(String cityName){
-        List<TouristicPictureDTOGet> pictures = pictureRepository.getTouristicPicturesByCity(cityName)
+        List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByCity(cityName)
                 .stream().map(picture -> pictureMapper.toDTO(picture))
                 .toList();
 
@@ -72,7 +72,7 @@ public class PictureService {
 
     /* Works */
     public List<TouristicPictureDTOGet> getTouristicPicturesByCommune(String communeName){
-        List<TouristicPictureDTOGet> pictures = pictureRepository.getTouristicPicturesByCommune(communeName)
+        List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByCommune(communeName)
                 .stream().map(picture -> pictureMapper.toDTO(picture))
                 .toList();
 
@@ -81,7 +81,7 @@ public class PictureService {
 
     /* Works */
     public List<TouristicPictureDTOGet> getTouristicPicturesByVillage(String villageName){
-        List<TouristicPictureDTOGet> pictures = pictureRepository.getTouristicPicturesByVillage(villageName)
+        List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByVillage(villageName)
                 .stream().map(picture -> pictureMapper.toDTO(picture))
                 .toList();
 
@@ -90,7 +90,7 @@ public class PictureService {
 
     /* Works */
     public List<TouristicPictureDTOGet> getTouristicPicturesByPlaceName(String placeName){
-        List<TouristicPictureDTOGet> pictures = pictureRepository.getTouristicPicturesByPlaceName(placeName)
+        List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByPlaceName(placeName)
                 .stream().map(picture -> pictureMapper.toDTO(picture))
                 .toList();
 
@@ -109,12 +109,12 @@ public class PictureService {
             throw new UserNotFoundException(USER_NOT_FOUND.message());
         }
 
-        Country country = placeRepository.getCountryWithCities(touristicPictureDTO.country());
+        Country country = placeRepository.findCountryWithCities(touristicPictureDTO.country());
         City city = country.getCities().stream()
                     .filter(c -> c.getCity()
                             .equals(touristicPictureDTO.city()))
                     .toList().get(0);
-        Commune commune = placeRepository.getCommuneWithVillages(touristicPictureDTO.commune());
+        Commune commune = placeRepository.findCommuneWithVillages(touristicPictureDTO.commune());
         Village village = commune.getVillages().stream()
                           .filter(v -> v.getVillage()
                                   .equals(touristicPictureDTO.village()))
@@ -134,7 +134,7 @@ public class PictureService {
 
         PlaceName placeName = null;
         try{
-            placeName = placeRepository.getPlaceNameByName(touristicPictureDTO.placeName());
+            placeName = placeRepository.findPlaceNameByName(touristicPictureDTO.placeName());
         }
         catch (EmptyResultDataAccessException e){
             placeName = new PlaceName(touristicPictureDTO.placeName());
@@ -157,39 +157,46 @@ public class PictureService {
         touristicPicture.setCoordinates(gpsCoords);
         gpsCoords.setTouristicPicture(touristicPicture);
 
-        pictureRepository.postNewPicture(touristicPicture);
+        pictureRepository.persistNewPicture(touristicPicture);
     }
 
-
-    // updating picture_place error: could not execute statement [Column 'file_id' cannot be null]
-    @Transactional
+    /* Works */
     public void deletePicture(long userId, long pictureId){
         TouristicPicture touristicPicture = pictureRepository.findPictureByIdAndUserId(userId, pictureId);
-        User user = touristicPicture.getUser();
-        touristicPicture.setUser(null);
-        user.getTouristicPictures().remove(touristicPicture);
 
-        touristicPicture.getPictureLikes().forEach(pictureLike -> {
-            pictureLike.setTouristicPicture(null);
-        });
-        touristicPicture.setLikes(null);
-        touristicPicture.getPictureComments().forEach(pictureComment -> {
-            pictureComment.setTouristicPicture(null);
-        });
-        touristicPicture.setPictureComments(null);
+        touristicPicture.getUser().getTouristicPictures().remove(touristicPicture);
+        touristicPicture.setUser(null);
+
+        picturePlaceRemovalHelper(touristicPicture.getPicturePlace());
 
         touristicPicture.getCollagePosts().forEach(collagePost -> {
             collagePost.getTouristicPictures().remove(touristicPicture);
         });
         touristicPicture.setCollagePosts(null);
 
-        touristicPicture.getPicturePlace().setTouristicPicture(null);
-        touristicPicture.setPicturePlace(null);
+        pictureRepository.removePicture(touristicPicture);
+    }
+    private void picturePlaceRemovalHelper(PicturePlace picturePlace){
+        Country country = picturePlace.getCountry();
+        City city = picturePlace.getCity();
+        Commune commune = picturePlace.getCommune();
+        Village village = picturePlace.getVillage();
+        PlaceName placeName = picturePlace.getPlaceName();
 
-        touristicPicture.getCoordinates().setTouristicPicture(null);
-        touristicPicture.setCoordinates(null);
+        country.getPicturePlaces().remove(picturePlace);
+        picturePlace.setCountry(null);
+        city.getPicturePlaces().remove(picturePlace);
+        picturePlace.setCity(null);
+        commune.getPicturePlaces().remove(picturePlace);
+        picturePlace.setCommune(null);
+        village.getPicturePlaces().remove(picturePlace);
+        picturePlace.setVillage(null);
+        placeName.setPicturePlace(null);
+        picturePlace.setPlaceName(null);
+        picturePlace.getTouristicPicture().setPicturePlace(null);
+        picturePlace.setTouristicPicture(null);
 
-        pictureRepository.deletePicture(touristicPicture);
+        pictureRepository.removePicturePlace(picturePlace);
     }
 
     /* Works */
@@ -201,14 +208,14 @@ public class PictureService {
         }
 
         try{
-            TouristicPicture touristicPicture = pictureRepository.getTouristicPictureById(pictureId);
+            TouristicPicture touristicPicture = pictureRepository.findTouristicPictureById(pictureId);
 
             PictureComment comment = new PictureComment(userComment.userComment());
             comment.setDateTime(LocalDateTime.now());
             comment.setTouristicPicture(touristicPicture);
             comment.setUser(user);
 
-            pictureRepository.addPictureComment(comment);
+            pictureRepository.persistNewPictureComment(comment);
         }
         catch (EmptyResultDataAccessException e){
             throw new TouristicPictureNotFoundException(PICTURE_NOT_FOUND.message());
@@ -216,8 +223,20 @@ public class PictureService {
     }
 
     /* Works */
+    public List<PictureCommentDTOGet> getPictureComments(int pictureId){
+        List<PictureComment> pictureComments = pictureRepository.findPictureComments(pictureId);
+        return pictureComments.stream()
+                .map(comment -> pictureCommentMapper.toDTO(comment)).toList();
+    }
+
+    /* Works */
+    public Long getPictureCommentsCount(int pictureId){
+        return pictureRepository.findPictureCommentsCount(pictureId);
+    }
+
+    /* Works */
     public void deletePictureComment(int userId, int pictureId){
-        PictureComment comment = pictureRepository.getPictureComment(userId, pictureId);
+        PictureComment comment = pictureRepository.findPictureComment(userId, pictureId);
 
         comment.setUser(null);
         comment.getTouristicPicture()
@@ -225,19 +244,7 @@ public class PictureService {
                 .remove(comment);
         comment.setTouristicPicture(null);
 
-        pictureRepository.deletePictureComment(comment);
-    }
-
-    /* Works */
-    public List<PictureCommentDTOGet> getPictureComments(int pictureId){
-        List<PictureComment> pictureComments = pictureRepository.getPictureComments(pictureId);
-        return pictureComments.stream()
-                .map(comment -> pictureCommentMapper.toDTO(comment)).toList();
-    }
-
-    /* Works */
-    public Long getPictureCommentsCount(int pictureId){
-        return pictureRepository.getPictureCommentsCount(pictureId);
+        pictureRepository.removePictureComment(comment);
     }
 
     /* Works */
@@ -247,7 +254,7 @@ public class PictureService {
             throw new UserNotFoundException(USER_NOT_FOUND.message());
         }
 
-        TouristicPicture touristicPicture = pictureRepository.getTouristicPictureById(pictureId);
+        TouristicPicture touristicPicture = pictureRepository.findTouristicPictureById(pictureId);
         if(touristicPicture == null){
             throw new TouristicPictureNotFoundException(PICTURE_NOT_FOUND.message());
         }
@@ -257,7 +264,7 @@ public class PictureService {
         pictureLike.setUser(user);
 
         try{
-            pictureRepository.addPictureLike(pictureLike);
+            pictureRepository.persistNewPictureLike(pictureLike);
         }
         catch (DataIntegrityViolationException e){
             throw new PictureAlreadyLikedException(ALREADY_LIKED_PICTURE.message());
@@ -265,8 +272,21 @@ public class PictureService {
     }
 
     /* Works */
+    public List<PictureLikeDTOGet> getPictureLikes(int pictureId){
+        return pictureRepository.findPictureLikes(pictureId)
+                .stream()
+                .map(like -> pictureLikeMapper.toDTO(like))
+                .toList();
+    }
+
+    /* Works */
+    public Long getPictureLikesCount(int pictureId){
+        return pictureRepository.findPictureLikesCount(pictureId);
+    }
+
+    /* Works */
     public void dislikePicture(int userId, int pictureId){
-        PictureLike pictureLike = pictureRepository.getPictureLike(userId, pictureId);
+        PictureLike pictureLike = pictureRepository.findPictureLike(userId, pictureId);
         pictureLike.setUser(null);
         pictureLike.getTouristicPicture()
                 .getPictureLikes()
@@ -276,17 +296,5 @@ public class PictureService {
         pictureRepository.removePictureLike(pictureLike);
     }
 
-    /* Works */
-    public List<PictureLikeDTOGet> getPictureLikes(int pictureId){
-        return pictureRepository.getPictureLikes(pictureId)
-                .stream()
-                .map(like -> pictureLikeMapper.toDTO(like))
-                .toList();
-    }
-
-    /* Works */
-    public Long getPictureLikesCount(int pictureId){
-        return pictureRepository.getPictureLikesCount(pictureId);
-    }
 
 }

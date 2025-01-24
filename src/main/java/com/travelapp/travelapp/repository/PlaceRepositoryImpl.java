@@ -16,105 +16,108 @@ public class PlaceRepositoryImpl implements PlaceRepository {
     }
 
     @Override
-    public Country getCountryWithCities(String name){
-        TypedQuery<Country> countryQuery = entityManager.createQuery("SELECT c FROM Country c " +
-                                                                     "LEFT JOIN FETCH c.cities " +
-                                                                     "WHERE c.country = :data", Country.class);
-        countryQuery.setParameter("data", name);
+    public Country findCountryWithCities(String name){
+        TypedQuery<Country> query = entityManager.createQuery("SELECT c FROM Country c " +
+                                                              "LEFT JOIN FETCH c.cities " +
+                                                              "WHERE c.country = :name", Country.class);
+        query.setParameter("name", name);
 
-        return countryQuery.getSingleResult();
+        return query.getSingleResult();
     }
 
     @Override
-    public Country getCountryByIdWithCities(int id){
-        TypedQuery<Country> countryQuery = entityManager.createQuery("SELECT c FROM Country c " +
-                                                                     "LEFT JOIN FETCH c.cities " +
-                                                                     "WHERE c.id = :data", Country.class);
-        countryQuery.setParameter("data", id);
-
-        return countryQuery.getSingleResult();
+    public City findCityWithCommunes(String name){
+        TypedQuery<City> query = entityManager.createQuery("SELECT c FROM City c " +
+                "LEFT JOIN FETCH c.communes " +
+                "WHERE c.city = :name", City.class);
+        query.setParameter("name", name);
+        return query.getSingleResult();
     }
 
     @Override
-    public City getCityWithCommunes(String name){
-        TypedQuery<City> cityQuery = entityManager.createQuery("SELECT c FROM City c " +
-                                                               "LEFT JOIN FETCH c.communes " +
-                                                               "WHERE c.city = :data", City.class);
-        cityQuery.setParameter("data", name);
-        return cityQuery.getSingleResult();
+    public Commune findCommuneWithVillages(String name){
+        TypedQuery<Commune> query = entityManager.createQuery("SELECT c FROM Commune c " +
+                "LEFT JOIN FETCH c.villages " +
+                "WHERE c.commune = :name", Commune.class);
+        query.setParameter("name", name);
+        return query.getSingleResult();
     }
 
     @Override
-    public Village getVillage(String name){
-        TypedQuery<Village> villageQuery = entityManager.createQuery("SELECT v FROM Village v " +
-                                                                     "WHERE v.village = :data", Village.class);
-        villageQuery.setParameter("data", name);
-        return villageQuery.getSingleResult();
-    }
-
-    @Override
-    public City getCityByIdWithCommunes(int id){
-        TypedQuery<City> cityQuery = entityManager.createQuery("SELECT c FROM City c " +
-                                                               "LEFT JOIN FETCH c.communes " +
-                                                               "WHERE c.id = :data", City.class);
-        cityQuery.setParameter("data", id);
-        return cityQuery.getSingleResult();
-    }
-
-    @Override
-    public Commune getCommuneWithVillages(String name){
-        TypedQuery<Commune> communeQuery = entityManager.createQuery("SELECT c FROM Commune c " +
-                                                                     "LEFT JOIN FETCH c.villages " +
-                                                                     "WHERE c.commune = :data", Commune.class);
-        communeQuery.setParameter("data", name);
-        return communeQuery.getSingleResult();
-    }
-
-    @Override
-    public Commune getCommuneByIdWithVillages(int id){
-        TypedQuery<Commune> communeQuery = entityManager.createQuery("SELECT c FROM Commune c " +
-                                                                     "LEFT JOIN FETCH c.villages " +
-                                                                     "WHERE c.id = :data", Commune.class);
-        communeQuery.setParameter("data", id);
-        return communeQuery.getSingleResult();
-    }
-
-    @Override
-    public PlaceName getPlaceNameByName(String name){
-        TypedQuery<PlaceName> placeNameQuery = entityManager.createQuery("SELECT pn FROM PlaceName pn " +
-                                                                         "WHERE pn.name = :data", PlaceName.class);
-        placeNameQuery.setParameter("data", name);
-        return placeNameQuery.getSingleResult();
+    public Village findVillage(String name){
+        TypedQuery<Village> query = entityManager.createQuery("SELECT v FROM Village v " +
+                "WHERE v.village = :name", Village.class);
+        query.setParameter("name", name);
+        return query.getSingleResult();
     }
 
     @Override
     @Transactional
-    public void addNewCountry(Country country) {
+    public void persistNewCountry(Country country) {
         entityManager.persist(country);
     }
 
     @Override
-    @Transactional
-    public void addPlaceName(PlaceName placeName){
-        entityManager.persist(placeName);
+    public Country findCountryByIdWithCities(int id){
+        TypedQuery<Country> query = entityManager.createQuery("SELECT c FROM Country c " +
+                "LEFT JOIN FETCH c.cities " +
+                "WHERE c.id = :id", Country.class);
+        query.setParameter("id", id);
+
+        return query.getSingleResult();
     }
 
     @Override
     @Transactional
-    public void updateCountry(Country country) {
+    public void mergeCountry(Country country) {
         entityManager.merge(country);
     }
 
     @Override
-    @Transactional
-    public void updateCity(City city) {
-        entityManager.merge(city);
+    public City findCityByIdWithCommunes(int id){
+        TypedQuery<City> query = entityManager.createQuery("SELECT c FROM City c " +
+                "LEFT JOIN FETCH c.communes " +
+                "WHERE c.id = :id", City.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
     }
 
     @Override
     @Transactional
-    public void updateCommune(Commune commune) {
+    public void mergeCity(City city) {
+        entityManager.merge(city);
+    }
+
+    @Override
+    public Commune findCommuneByIdWithVillages(int id){
+        TypedQuery<Commune> query = entityManager.createQuery("SELECT c FROM Commune c " +
+                "LEFT JOIN FETCH c.villages " +
+                "WHERE c.id = :id", Commune.class);
+        query.setParameter("id", id);
+        return query.getSingleResult();
+    }
+
+    @Override
+    @Transactional
+    public void mergeCommune(Commune commune) {
         entityManager.merge(commune);
+    }
+
+
+
+
+    @Override
+    public PlaceName findPlaceNameByName(String name){
+        TypedQuery<PlaceName> query = entityManager.createQuery("SELECT pn FROM PlaceName pn " +
+                                                                         "WHERE pn.name = :name", PlaceName.class);
+        query.setParameter("name", name);
+        return query.getSingleResult();
+    }
+
+    @Override
+    @Transactional
+    public void persistNewPlaceName(PlaceName placeName){
+        entityManager.persist(placeName);
     }
 
 }

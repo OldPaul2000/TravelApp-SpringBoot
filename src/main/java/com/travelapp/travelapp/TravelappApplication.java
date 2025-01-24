@@ -1,8 +1,8 @@
 package com.travelapp.travelapp;
 
 import com.travelapp.travelapp.model.userrelated.User;
-import com.travelapp.travelapp.repository.PictureRepository;
 import com.travelapp.travelapp.repository.UserRepository;
+import com.travelapp.travelapp.service.UserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,8 +18,7 @@ public class TravelappApplication {
 
 
 	/**TODO
-	 * -Implement all cascade types properly
-	 * -Refactor all variables, REST endpoints and methods names
+	 * -Refactor REST endpoints names
 	 * -Implement additional necessary methods
 	 * -TEST AGAIN all REST endpoints
 	 * */
@@ -27,15 +26,14 @@ public class TravelappApplication {
 
 
 	@Bean
-	public CommandLineRunner commandLineRunner(PictureRepository pictureRepository, UserRepository userRepository){
+	public CommandLineRunner commandLineRunner(UserRepository userRepository, UserService userService){
 		return runner -> {
 
 			User user = userRepository.findUserByIdWithInfoAndRoles(1);
 			System.out.println("In commandLineRunner");
 			System.out.println(user);
-//			System.out.println(user.getTouristicPictures());
 
-
+//			userService.deleteUserAccount(1, false);
 		};
 	};
 

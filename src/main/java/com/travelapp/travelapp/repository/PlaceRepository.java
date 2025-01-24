@@ -4,38 +4,33 @@ import com.travelapp.travelapp.model.locations.*;
 
 public interface PlaceRepository {
 
-    Country getCountryWithCities(String name);
+    Country findCountryWithCities(String name);
 
-    Country getCountryByIdWithCities(int id);
+    City findCityWithCommunes(String name);
 
-    City getCityWithCommunes(String name);
+    Commune findCommuneWithVillages(String name);
 
-    Village getVillage(String name);
+    Village findVillage(String name);
 
-    City getCityByIdWithCommunes(int id);
+    void persistNewCountry(Country country);
 
-    Commune getCommuneWithVillages(String name);
+    Country findCountryByIdWithCities(int id);
 
-    Commune getCommuneByIdWithVillages(int id);
+    void mergeCountry(Country country);
 
-    PlaceName getPlaceNameByName(String name);
+    City findCityByIdWithCommunes(int id);
 
-    void addNewCountry(Country country);
+    void mergeCity(City city);
 
-    void addPlaceName(PlaceName placeName);
+    Commune findCommuneByIdWithVillages(int id);
 
-    void updateCountry(Country country);
-
-    void updateCity(City city);
-
-    void updateCommune(Commune commune);
+    void mergeCommune(Commune commune);
 
 
 
-//    void addNewCity(City city);
-//
-//    void addNewCommune(Commune commune);
-//
-//    void addNewVillage(Village village);
+    PlaceName findPlaceNameByName(String name);
+
+    void persistNewPlaceName(PlaceName placeName);
+
 
 }

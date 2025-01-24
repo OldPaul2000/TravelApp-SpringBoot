@@ -15,8 +15,8 @@ public class Role {
     @Column(name = "role")
     private String role;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "user_id")
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference(value = "user-role")
     private User user;
 

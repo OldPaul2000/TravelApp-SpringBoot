@@ -5,6 +5,7 @@ import com.travelapp.travelapp.dto.places.CountryDTOGet;
 import com.travelapp.travelapp.model.locations.Commune;
 import com.travelapp.travelapp.model.locations.Village;
 import com.travelapp.travelapp.service.PlaceService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,25 +45,25 @@ public class PlaceController {
     @PostMapping("/newCountry/{country}")
     public ResponseEntity<String> addCountry(@PathVariable String country){
         placeService.addNewCountry(country);
-        return ResponseEntity.ok(null);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/newCity/{countryId}/{city}")
     public ResponseEntity<String> addCityToCountry(@PathVariable int countryId, @PathVariable String city){
         placeService.addNewCityForCountry(countryId, city);
-        return ResponseEntity.ok(null);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/newCommune/{cityId}/{commune}")
     public ResponseEntity<String> addCommuneToCity(@PathVariable int cityId, @PathVariable String commune){
         placeService.addNewCommuneForCity(cityId, commune);
-        return ResponseEntity.ok(null);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/newVillage/{communeId}/{village}")
     public ResponseEntity<String> addVillageToCommune(@PathVariable int communeId, @PathVariable String village){
         placeService.addNewVillageForCommune(communeId, village);
-        return ResponseEntity.ok(null);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

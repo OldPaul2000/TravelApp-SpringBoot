@@ -6,7 +6,7 @@ import com.travelapp.travelapp.dto.postedpictures.TouristicPictureDTOGet;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record CollagePostDTOGet(
+public record CollageDTOGet(
         Long id,
         String description,
         LocalDateTime dateTime,

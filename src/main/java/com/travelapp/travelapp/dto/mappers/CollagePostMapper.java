@@ -1,6 +1,6 @@
 package com.travelapp.travelapp.dto.mappers;
 
-import com.travelapp.travelapp.dto.collagepost.CollagePostDTOGet;
+import com.travelapp.travelapp.dto.collagepost.CollageDTOGet;
 import com.travelapp.travelapp.dto.postedpictures.PostingUserDTOGet;
 import com.travelapp.travelapp.dto.postedpictures.TouristicPictureDTOGet;
 import com.travelapp.travelapp.model.usersposts.CollagePost;
@@ -22,7 +22,7 @@ public class CollagePostMapper {
         this.pictureMapper = pictureMapper;
     }
 
-    public CollagePostDTOGet toDTO(CollagePost collagePost){
+    public CollageDTOGet toDTO(CollagePost collagePost){
 
         PostingUserDTOGet userDTO = userMapper.toDTO(collagePost.getUser());
 
@@ -32,7 +32,7 @@ public class CollagePostMapper {
                     return pictureMapper.toDTO(picture);
                 }).toList();
 
-        return new CollagePostDTOGet(
+        return new CollageDTOGet(
                 collagePost.getId(),
                 collagePost.getDescription(),
                 collagePost.getDateTime(),

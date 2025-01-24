@@ -3,9 +3,9 @@ package com.travelapp.travelapp.model.userrelated;
 import com.travelapp.travelapp.model.postedpictures.PictureComment;
 import com.travelapp.travelapp.model.postedpictures.PictureLike;
 import com.travelapp.travelapp.model.postedpictures.TouristicPicture;
+import com.travelapp.travelapp.model.usersposts.CollageComment;
+import com.travelapp.travelapp.model.usersposts.CollageLike;
 import com.travelapp.travelapp.model.usersposts.CollagePost;
-import com.travelapp.travelapp.model.usersposts.PostComment;
-import com.travelapp.travelapp.model.usersposts.PostLike;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -29,29 +29,29 @@ public class User{
     @Column(name = "enabled")
     private byte enabled;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Role> roles;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserInfo userInfo;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PictureLike> pictureLikes;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PictureComment> pictureComments;
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<TouristicPicture> touristicPictures;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CollagePost> collagePosts;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<PostLike> postLikes;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CollageLike> collageLikes;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<PostComment> postComments;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CollageComment> collageComments;
 
     public User() {}
     public User(Long id, String username, String password, byte enabled) {
@@ -173,7 +173,7 @@ public class User{
         this.collagePosts = collagePosts;
     }
 
-    public void addNewCollagePost(CollagePost collagePost){
+    public void addNewCollage(CollagePost collagePost){
         if(collagePosts == null){
             collagePosts = new ArrayList<>();
         }
@@ -181,36 +181,36 @@ public class User{
         collagePosts.add(collagePost);
     }
 
-    public List<PostLike> getPostLikes() {
-        return postLikes;
+    public List<CollageLike> getCollageLikes() {
+        return collageLikes;
     }
 
-    public void setPostLikes(List<PostLike> postLikes) {
-        this.postLikes = postLikes;
+    public void setCollageLikes(List<CollageLike> collageLikes) {
+        this.collageLikes = collageLikes;
     }
 
-    public void addNewPostLike(PostLike postLike){
-        if(postLikes == null){
-            postLikes.add(postLike);
+    public void addNewCollageLike(CollageLike collageLike){
+        if(collageLikes == null){
+            collageLikes.add(collageLike);
         }
 
-        postLikes.add(postLike);
+        collageLikes.add(collageLike);
     }
 
-    public List<PostComment> getPostComments() {
-        return postComments;
+    public List<CollageComment> getCollageComments() {
+        return collageComments;
     }
 
-    public void setPostComments(List<PostComment> postComments) {
-        this.postComments = postComments;
+    public void setCollageComments(List<CollageComment> collageComments) {
+        this.collageComments = collageComments;
     }
 
-    public void addNewPostComment(PostComment postComment){
-        if(postComments == null){
-            postComments = new ArrayList<>();
+    public void addNewCollageComment(CollageComment collageComment){
+        if(collageComments == null){
+            collageComments = new ArrayList<>();
         }
 
-        postComments.add(postComment);
+        collageComments.add(collageComment);
     }
 
     @Override
