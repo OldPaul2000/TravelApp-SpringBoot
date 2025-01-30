@@ -1,19 +1,23 @@
 package com.travelapp.travelapp.service;
 
 import com.travelapp.travelapp.dto.userrelated.*;
+import com.travelapp.travelapp.model.postedpictures.TouristicPicture;
 import com.travelapp.travelapp.model.userrelated.ProfilePicture;
 import com.travelapp.travelapp.model.userrelated.Role;
 import com.travelapp.travelapp.model.userrelated.User;
 import com.travelapp.travelapp.model.userrelated.UserInfo;
+import com.travelapp.travelapp.repository.CollageRepository;
+import com.travelapp.travelapp.repository.PictureRepository;
 import com.travelapp.travelapp.repository.UserRepository;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.users.UserGeneralException;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.users.UserNotFoundException;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.users.UserRegistrationException;
 import com.travelapp.travelapp.security.Roles;
+import jakarta.persistence.EntityManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,12 +28,21 @@ import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerr
 public class UserService {
 
     private UserRepository userRepository;
-    private PictureService pictureService;
+    private PictureRepository pictureRepository;
+    private CollageRepository collageRepository;
 
-    public UserService(UserRepository userRepository,
-                       PictureService pictureService) {
+    private PicturePlaceRemovalHelper picturePlaceRemovalHelper;
+
+    @Autowired
+    public UserService(EntityManager entityManager,
+                       UserRepository userRepository,
+                       PictureRepository pictureRepository,
+                       CollageRepository collageRepository,
+                       PicturePlaceRemovalHelper picturePlaceRemovalHelper) {
         this.userRepository = userRepository;
-        this.pictureService = pictureService;
+        this.pictureRepository = pictureRepository;
+        this.collageRepository = collageRepository;
+        this.picturePlaceRemovalHelper = picturePlaceRemovalHelper;
     }
 
     /* Works */
@@ -134,37 +147,58 @@ public class UserService {
         }
     }
 
-
     // Not finished
-    @Transactional
     public void deleteUserAccount(long userId, boolean userPicturesDelete){
         User user = userRepository.findUserById(userId);
 
+        user.getPictureLikes().clear();
+        user.getPictureComments().clear();
 
-        UserInfo userInfo = user.getUserInfo();
-        userInfo.setProfilePicture(null);
-        List<Role> roles = user.getRoles();
-        roles.forEach(role -> role.setUser(null));
-        user.setRoles(null);
+        user.getCollageLikes().clear();
+        user.getCollageComments().clear();
+        user.getCollagePosts().clear();
+
+        if(!userPicturesDelete){
+            user.getTouristicPictures().forEach(picture -> {
+                picture.setUser(null);
+            });
+        }
+        else {
+            List<TouristicPicture> touristicPictures = pictureRepository.findTouristicPicturesByUserId(userId);
+            touristicPictures.forEach(picture -> {
+                picture.getUser().getTouristicPictures().remove(picture);
+                picture.setUser(null);
+
+                picturePlaceRemovalHelper.removePlaceFromPicture(picture.getPicturePlace());
+
+                pictureRepository.removePicture(picture);
+            });
+
+            // ======================================= Bad code. Try to fix it later =======================================
+
+//            user.getTouristicPictures().forEach(picture -> {
+//                picture.getPictureLikes().clear();
+//                picture.getPictureComments().clear();
+//                picture.getCollagePosts().clear();
+//                picture.setCoordinates(null);
+//                picture.setUser(null);
+//                System.out.println("Picture place:");
+//                System.out.println("Picture id:" + picture.getId());
+//                System.out.println(picture.getPicturePlace());
+//                System.out.println(picture.getPicturePlace().getTouristicPicture().getId());
+//                System.out.println("=========================================================================================================");
+//                picture.setPicturePlace(null);
+//            });
+//            user.setTouristicPictures(null);
+
+            // ======================================= Bad code. Try to fix it later =======================================
+        }
+
+        user.getRoles().clear();
+        user.getUserInfo().setUser(null);
         user.setUserInfo(null);
-        userInfo.setUser(null);
-
-        user.getPictureLikes().forEach(pictureLike -> pictureLike.setUser(null));
-        user.setPictureLikes(null);
-        user.getPictureComments().forEach(pictureComment -> pictureComment.setUser(null));
-        user.setPictureComments(null);
-        user.getCollagePosts().forEach(collagePost -> collagePost.setUser(null));
-        user.setCollagePosts(null);
-        user.getCollageLikes().forEach(collageLike -> collageLike.setUser(null));
-        user.setCollageLikes(null);
-        user.getCollageComments().forEach(collageComment -> collageComment.setUser(null));
-        user.setCollageComments(null);
-
-
 
         userRepository.removeUser(user);
     }
-
-
 
 }

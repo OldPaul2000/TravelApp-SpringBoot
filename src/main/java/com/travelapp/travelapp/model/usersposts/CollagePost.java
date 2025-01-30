@@ -18,7 +18,7 @@ public class CollagePost {
     private Long id;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "post_date")
@@ -27,10 +27,10 @@ public class CollagePost {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "collagePost", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "collagePost", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CollageLike> collageLikes;
 
-    @OneToMany(mappedBy = "collagePost", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "collagePost", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CollageComment> collageComments;
 
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

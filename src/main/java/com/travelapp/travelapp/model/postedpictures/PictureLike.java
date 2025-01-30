@@ -13,11 +13,11 @@ public class PictureLike {
     private Long id;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "file_id")
+    @JoinColumn(name = "file_id", nullable = false)
     private TouristicPicture touristicPicture;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     public PictureLike() {}

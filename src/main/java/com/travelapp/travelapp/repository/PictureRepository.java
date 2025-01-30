@@ -1,6 +1,9 @@
 package com.travelapp.travelapp.repository;
 
-import com.travelapp.travelapp.model.postedpictures.*;
+import com.travelapp.travelapp.model.postedpictures.PictureComment;
+import com.travelapp.travelapp.model.postedpictures.PictureLike;
+import com.travelapp.travelapp.model.postedpictures.PicturePlace;
+import com.travelapp.travelapp.model.postedpictures.TouristicPicture;
 
 import java.util.List;
 
@@ -41,5 +44,7 @@ public interface PictureRepository {
 
     void removePictureLike(PictureLike pictureLike);
     PictureLike findPictureLike(int userId, int pictureId);
+
+    List<TouristicPicture> findTouristicPicturesByUserId(long userId);
 
 }

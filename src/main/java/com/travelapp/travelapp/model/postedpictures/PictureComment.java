@@ -23,11 +23,11 @@ public class PictureComment {
     private String comment;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "file_id")
+    @JoinColumn(name = "file_id", nullable = false)
     @JsonBackReference("touristicPicture-pictureComment")
     private TouristicPicture touristicPicture;
 

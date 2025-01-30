@@ -33,7 +33,7 @@ public class UserInfo {
     private LocalDateTime registrationDate;
 
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     @JsonBackReference(value = "user-userInfo")
     private User user;
 

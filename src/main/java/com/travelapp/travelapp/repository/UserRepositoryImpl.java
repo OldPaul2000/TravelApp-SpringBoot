@@ -1,6 +1,8 @@
 package com.travelapp.travelapp.repository;
 
+import com.travelapp.travelapp.model.userrelated.Role;
 import com.travelapp.travelapp.model.userrelated.User;
+import com.travelapp.travelapp.model.userrelated.UserInfo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
@@ -56,4 +58,15 @@ public class UserRepositoryImpl implements UserRepository {
     public void mergeUser(User user) {
         entityManager.merge(user);
     }
+
+    @Override
+    public void removeUserInfo(UserInfo userInfo) {
+        entityManager.remove(userInfo);
+    }
+
+    @Override
+    public void removeRole(Role role) {
+        entityManager.remove(role);
+    }
 }
+

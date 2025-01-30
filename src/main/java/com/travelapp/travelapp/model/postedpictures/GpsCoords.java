@@ -19,7 +19,7 @@ public class GpsCoords {
     private double longitude;
 
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "file_id")
+    @JoinColumn(name = "file_id", nullable = false)
     @JsonBackReference(value = "touristicPicture-coordinates")
     private TouristicPicture touristicPicture;
 

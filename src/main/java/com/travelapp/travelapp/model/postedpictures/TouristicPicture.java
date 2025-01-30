@@ -19,7 +19,7 @@ public class TouristicPicture {
     private Long id;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     @JsonBackReference(value = "user-touristicPictures")
     private User user;
 
@@ -32,16 +32,16 @@ public class TouristicPicture {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "touristicPicture", cascade = CascadeType.ALL)
-    private List<PictureLike> likes;
+    @OneToMany(mappedBy = "touristicPicture", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PictureLike> pictureLikes;
 
-    @OneToMany(mappedBy = "touristicPicture", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "touristicPicture", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PictureComment> pictureComments;
 
-    @OneToOne(mappedBy = "touristicPicture", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "touristicPicture", cascade = CascadeType.ALL, orphanRemoval = true)
     private GpsCoords coordinates;
 
-    @OneToOne(mappedBy = "touristicPicture", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "touristicPicture", cascade = CascadeType.ALL, orphanRemoval = true)
     private PicturePlace picturePlace;
 
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
@@ -99,19 +99,19 @@ public class TouristicPicture {
     }
 
     public List<PictureLike> getPictureLikes() {
-        return likes;
+        return pictureLikes;
     }
 
-    public void setLikes(List<PictureLike> likes) {
-        this.likes = likes;
+    public void setPictureLikes(List<PictureLike> likes) {
+        this.pictureLikes = likes;
     }
 
     public void addPictureLike(PictureLike like){
-        if(likes == null){
-            likes = new ArrayList<>();
+        if(pictureLikes == null){
+            pictureLikes = new ArrayList<>();
         }
 
-        likes.add(like);
+        pictureLikes.add(like);
     }
 
     public List<PictureComment> getPictureComments() {

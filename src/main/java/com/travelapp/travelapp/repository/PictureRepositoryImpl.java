@@ -170,5 +170,13 @@ public class PictureRepositoryImpl implements PictureRepository {
         return query.getSingleResult();
     }
 
+    @Override
+    public List<TouristicPicture> findTouristicPicturesByUserId(long userId){
+        TypedQuery<TouristicPicture> query = entityManager.createQuery("SELECT tp FROM TouristicPicture tp " +
+                                                                       "WHERE tp.user.id = :userId", TouristicPicture.class);
+        query.setParameter("userId", userId);
+
+        return query.getResultList();
+    }
 
 }

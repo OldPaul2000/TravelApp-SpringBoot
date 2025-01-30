@@ -1,6 +1,8 @@
 package com.travelapp.travelapp.repository;
 
+import com.travelapp.travelapp.model.userrelated.Role;
 import com.travelapp.travelapp.model.userrelated.User;
+import com.travelapp.travelapp.model.userrelated.UserInfo;
 
 public interface UserRepository {
 
@@ -17,5 +19,9 @@ public interface UserRepository {
     void removeUser(User user);
 
     void mergeUser(User user);
+
+    void removeUserInfo(UserInfo userInfo);
+
+    void removeRole(Role role);
 
 }

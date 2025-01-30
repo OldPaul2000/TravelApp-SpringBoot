@@ -4,6 +4,7 @@ import com.travelapp.travelapp.dto.userrelated.ProfilePictureDTOPost;
 import com.travelapp.travelapp.dto.userrelated.UserAndInfoDTOGet;
 import com.travelapp.travelapp.dto.userrelated.UserDTORegister;
 import com.travelapp.travelapp.dto.userrelated.UserInfoDTOUpdate;
+import com.travelapp.travelapp.repository.UserRepository;
 import com.travelapp.travelapp.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,12 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private UserService userService;
+    private UserRepository userRepository;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService,
+                          UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/userById/{id}")
@@ -51,8 +55,6 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@PathVariable long userId,
                                              @PathVariable boolean userPicturesDelete){
         userService.deleteUserAccount(userId, userPicturesDelete);
-        System.out.println("userId: " + userId);
-        System.out.println("userPicturesDelete: " + userPicturesDelete);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -13,11 +13,11 @@ public class CollageLike {
     private Long id;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id", nullable = false)
     private CollagePost collagePost;
 
 
@@ -45,5 +45,14 @@ public class CollageLike {
 
     public void setCollagePost(CollagePost collagePost) {
         this.collagePost = collagePost;
+    }
+
+    @Override
+    public String toString() {
+        return "CollageLike{" +
+                "id=" + id +
+                ", userId=" + user.getId() +
+                ", collagePostId=" + collagePost.getId() +
+                '}';
     }
 }

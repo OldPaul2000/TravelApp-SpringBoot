@@ -37,19 +37,23 @@ public class PictureService {
     private PictureCommentMapper pictureCommentMapper;
     private PictureLikeMapper pictureLikeMapper;
 
+    private PicturePlaceRemovalHelper picturePlaceRemovalHelper;
+
     @Autowired
     public PictureService(PictureRepository pictureRepository,
                           UserRepository userRepository,
                           PlaceRepository placeRepository,
                           TouristicPictureMapper pictureMapper,
                           PictureCommentMapper pictureCommentMapper,
-                          PictureLikeMapper pictureLikeMapper) {
+                          PictureLikeMapper pictureLikeMapper,
+                          PicturePlaceRemovalHelper picturePlaceRemovalHelper) {
         this.pictureRepository = pictureRepository;
         this.userRepository = userRepository;
         this.placeRepository = placeRepository;
         this.pictureMapper = pictureMapper;
         this.pictureCommentMapper = pictureCommentMapper;
         this.pictureLikeMapper = pictureLikeMapper;
+        this.picturePlaceRemovalHelper = picturePlaceRemovalHelper;
     }
 
     /* Works */
@@ -167,7 +171,7 @@ public class PictureService {
         touristicPicture.getUser().getTouristicPictures().remove(touristicPicture);
         touristicPicture.setUser(null);
 
-        picturePlaceRemovalHelper(touristicPicture.getPicturePlace());
+        picturePlaceRemovalHelper.removePlaceFromPicture(touristicPicture.getPicturePlace());
 
         touristicPicture.getCollagePosts().forEach(collagePost -> {
             collagePost.getTouristicPictures().remove(touristicPicture);
@@ -175,28 +179,6 @@ public class PictureService {
         touristicPicture.setCollagePosts(null);
 
         pictureRepository.removePicture(touristicPicture);
-    }
-    private void picturePlaceRemovalHelper(PicturePlace picturePlace){
-        Country country = picturePlace.getCountry();
-        City city = picturePlace.getCity();
-        Commune commune = picturePlace.getCommune();
-        Village village = picturePlace.getVillage();
-        PlaceName placeName = picturePlace.getPlaceName();
-
-        country.getPicturePlaces().remove(picturePlace);
-        picturePlace.setCountry(null);
-        city.getPicturePlaces().remove(picturePlace);
-        picturePlace.setCity(null);
-        commune.getPicturePlaces().remove(picturePlace);
-        picturePlace.setCommune(null);
-        village.getPicturePlaces().remove(picturePlace);
-        picturePlace.setVillage(null);
-        placeName.setPicturePlace(null);
-        picturePlace.setPlaceName(null);
-        picturePlace.getTouristicPicture().setPicturePlace(null);
-        picturePlace.setTouristicPicture(null);
-
-        pictureRepository.removePicturePlace(picturePlace);
     }
 
     /* Works */
@@ -235,13 +217,10 @@ public class PictureService {
     }
 
     /* Works */
-    public void deletePictureComment(int userId, int pictureId){
-        PictureComment comment = pictureRepository.findPictureComment(userId, pictureId);
+    public void deletePictureComment(int userId, int commentId){
+        PictureComment comment = pictureRepository.findPictureComment(userId, commentId);
 
         comment.setUser(null);
-        comment.getTouristicPicture()
-                .getPictureComments()
-                .remove(comment);
         comment.setTouristicPicture(null);
 
         pictureRepository.removePictureComment(comment);
@@ -288,9 +267,6 @@ public class PictureService {
     public void dislikePicture(int userId, int pictureId){
         PictureLike pictureLike = pictureRepository.findPictureLike(userId, pictureId);
         pictureLike.setUser(null);
-        pictureLike.getTouristicPicture()
-                .getPictureLikes()
-                .remove(pictureLike);
         pictureLike.setTouristicPicture(null);
 
         pictureRepository.removePictureLike(pictureLike);
