@@ -57,7 +57,7 @@ public class PictureService {
     }
 
     /* Works */
-    public List<TouristicPictureDTOGet> getTouristicPicturesByUser(int userId){
+    public List<TouristicPictureDTOGet> getTouristicPicturesByUser(long userId){
         List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByUser(userId)
                 .stream().map(picture -> pictureMapper.toDTO(picture))
                 .toList();
@@ -103,7 +103,7 @@ public class PictureService {
 
     /* Works */
     @Transactional
-    public void postNewPicture(int userId, TouristicPictureDTOPost touristicPictureDTO){
+    public void postNewPicture(long userId, TouristicPictureDTOPost touristicPictureDTO){
 
         User user;
         try{
@@ -182,7 +182,7 @@ public class PictureService {
     }
 
     /* Works */
-    public void postPictureComment(int userId, int pictureId, PictureCommentDTOPost userComment){
+    public void postPictureComment(long userId, long pictureId, PictureCommentDTOPost userComment){
 
         User user = userRepository.findUserById(userId);
         if(user == null){
@@ -205,19 +205,19 @@ public class PictureService {
     }
 
     /* Works */
-    public List<PictureCommentDTOGet> getPictureComments(int pictureId){
+    public List<PictureCommentDTOGet> getPictureComments(long pictureId){
         List<PictureComment> pictureComments = pictureRepository.findPictureComments(pictureId);
         return pictureComments.stream()
                 .map(comment -> pictureCommentMapper.toDTO(comment)).toList();
     }
 
     /* Works */
-    public Long getPictureCommentsCount(int pictureId){
+    public Long getPictureCommentsCount(long pictureId){
         return pictureRepository.findPictureCommentsCount(pictureId);
     }
 
     /* Works */
-    public void deletePictureComment(int userId, int commentId){
+    public void deletePictureComment(long userId, long commentId){
         PictureComment comment = pictureRepository.findPictureComment(userId, commentId);
 
         comment.setUser(null);
@@ -227,7 +227,7 @@ public class PictureService {
     }
 
     /* Works */
-    public void likePicture(int userId, int pictureId){
+    public void likePicture(long userId, long pictureId){
         User user = userRepository.findUserById(userId);
         if(user == null){
             throw new UserNotFoundException(USER_NOT_FOUND.message());
@@ -251,7 +251,7 @@ public class PictureService {
     }
 
     /* Works */
-    public List<PictureLikeDTOGet> getPictureLikes(int pictureId){
+    public List<PictureLikeDTOGet> getPictureLikes(long pictureId){
         return pictureRepository.findPictureLikes(pictureId)
                 .stream()
                 .map(like -> pictureLikeMapper.toDTO(like))
@@ -259,12 +259,12 @@ public class PictureService {
     }
 
     /* Works */
-    public Long getPictureLikesCount(int pictureId){
+    public Long getPictureLikesCount(long pictureId){
         return pictureRepository.findPictureLikesCount(pictureId);
     }
 
     /* Works */
-    public void dislikePicture(int userId, int pictureId){
+    public void dislikePicture(long userId, long pictureId){
         PictureLike pictureLike = pictureRepository.findPictureLike(userId, pictureId);
         pictureLike.setUser(null);
         pictureLike.setTouristicPicture(null);

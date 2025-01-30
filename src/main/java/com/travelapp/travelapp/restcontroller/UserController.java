@@ -23,9 +23,9 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/userById/{id}")
-    public ResponseEntity<UserAndInfoDTOGet> userById(@PathVariable int id){
-        UserAndInfoDTOGet user = userService.getUserByIdWithInfoAndRoles(id);
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserAndInfoDTOGet> userById(@PathVariable long userId){
+        UserAndInfoDTOGet user = userService.getUserByIdWithInfoAndRoles(userId);
 
         return ResponseEntity.ok(user);
     }
@@ -38,14 +38,14 @@ public class UserController {
     }
 
     @PutMapping("/updateProfilePicture/{userId}")
-    public ResponseEntity<String> updateProfilePicture(@PathVariable int userId, @RequestBody ProfilePictureDTOPost profilePicture){
+    public ResponseEntity<String> changeProfilePicture(@PathVariable long userId, @RequestBody ProfilePictureDTOPost profilePicture){
             userService.updateProfilePicture(userId, profilePicture);
 
             return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/updateUserInfo/{userId}")
-    public ResponseEntity<String> updateUserInfo(@PathVariable int userId, @RequestBody UserInfoDTOUpdate userInfo){
+    public ResponseEntity<String> updateUserInfo(@PathVariable long userId, @RequestBody UserInfoDTOUpdate userInfo){
         userService.updateUserInfo(userId, userInfo);
 
         return new ResponseEntity<>(HttpStatus.OK);

@@ -60,7 +60,7 @@ public class CollageService {
     }
 
     /* Works */
-    public CollageDTOGet getCollageById(int id){
+    public CollageDTOGet getCollageById(long id){
         CollagePost collagePost = collageRepository.findCollageById(id);
 
         if(collagePost == null){

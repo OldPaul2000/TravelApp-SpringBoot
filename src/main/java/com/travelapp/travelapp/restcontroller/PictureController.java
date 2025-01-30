@@ -18,7 +18,7 @@ public class PictureController {
     }
 
     @GetMapping("/fromUser/{userId}")
-    public List<TouristicPictureDTOGet> getAllPicturesByUser(@PathVariable("userId") int id){
+    public List<TouristicPictureDTOGet> getAllPicturesByUser(@PathVariable("userId") long id){
         List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByUser(id);
 
         return touristicPictures;
@@ -53,7 +53,7 @@ public class PictureController {
     }
 
     @PostMapping("/picture/{userId}")
-    public ResponseEntity<String> postNewPicture(@PathVariable int userId,
+    public ResponseEntity<String> postNewPicture(@PathVariable long userId,
                                                  @RequestBody TouristicPictureDTOPost touristicPicture){
         pictureService.postNewPicture(userId, touristicPicture);
 
@@ -69,60 +69,60 @@ public class PictureController {
     }
 
     @PostMapping("/comments/{userId}/{pictureId}")
-    public ResponseEntity<String> givePictureComment(@PathVariable int userId,
-                                                     @PathVariable int pictureId,
+    public ResponseEntity<String> givePictureComment(@PathVariable long userId,
+                                                     @PathVariable long pictureId,
                                                      @RequestBody PictureCommentDTOPost pictureComment){
         pictureService.postPictureComment(userId, pictureId, pictureComment);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/pictureComments/{pictureId}")
-    public List<PictureCommentDTOGet> getPictureComments(@PathVariable int pictureId){
+    public List<PictureCommentDTOGet> getPictureComments(@PathVariable long pictureId){
         List<PictureCommentDTOGet> pictureComments = pictureService.getPictureComments(pictureId);
 
         return pictureComments;
     }
 
     @GetMapping("/pictureCommentsCount/{pictureId}")
-    public Long getPictureCommentsCount(@PathVariable int pictureId){
+    public Long getPictureCommentsCount(@PathVariable long pictureId){
         Long commentsCount = pictureService.getPictureCommentsCount(pictureId);
 
         return commentsCount;
     }
 
     @DeleteMapping("/deletePictureComment/{userId}/{commentId}")
-    public ResponseEntity<String> deletePictureComment(@PathVariable int userId,
-                                                       @PathVariable int commentId){
+    public ResponseEntity<String> deletePictureComment(@PathVariable long userId,
+                                                       @PathVariable long commentId){
         pictureService.deletePictureComment(userId, commentId);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/likePicture/{userId}/{pictureId}")
-    public ResponseEntity<String> givePictureLike(@PathVariable int userId,
-                                                  @PathVariable int pictureId){
+    public ResponseEntity<String> givePictureLike(@PathVariable long userId,
+                                                  @PathVariable long pictureId){
         pictureService.likePicture(userId, pictureId);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @GetMapping("/pictureLikes/{pictureId}")
-    public List<PictureLikeDTOGet> getPictureLikes(@PathVariable int pictureId){
+    public List<PictureLikeDTOGet> getPictureLikes(@PathVariable long pictureId){
         List<PictureLikeDTOGet> likes = pictureService.getPictureLikes(pictureId);
 
         return likes;
     }
 
     @GetMapping("/pictureLikesCount/{pictureId}")
-    public Long getLikesCount(@PathVariable int pictureId){
+    public Long getLikesCount(@PathVariable long pictureId){
         Long likesCount = pictureService.getPictureLikesCount(pictureId);
 
         return likesCount;
     }
 
     @DeleteMapping("deletePictureLike/{userId}/{pictureId}")
-    public ResponseEntity<String> dislikePicture(@PathVariable int userId,
-                                                @PathVariable int pictureId){
+    public ResponseEntity<String> dislikePicture(@PathVariable long userId,
+                                                @PathVariable long pictureId){
         pictureService.dislikePicture(userId, pictureId);
 
         return new ResponseEntity<>(HttpStatus.OK);

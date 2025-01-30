@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface PictureRepository {
 
-    List<TouristicPicture> findTouristicPicturesByUser(int id);
+    List<TouristicPicture> findTouristicPicturesByUser(long id);
 
     List<TouristicPicture> findTouristicPicturesByCity(String name);
 
@@ -27,23 +27,23 @@ public interface PictureRepository {
 
     void persistNewPictureComment(PictureComment pictureComment);
 
-    TouristicPicture findTouristicPictureById(int id);
+    TouristicPicture findTouristicPictureById(long id);
 
-    List<PictureComment> findPictureComments(int id);
+    List<PictureComment> findPictureComments(long id);
 
-    Long findPictureCommentsCount(int pictureId);
+    Long findPictureCommentsCount(long pictureId);
 
     void removePictureComment(PictureComment pictureComment);
-    PictureComment findPictureComment(int userId, int pictureId);
+    PictureComment findPictureComment(long userId, long pictureId);
 
     void persistNewPictureLike(PictureLike pictureLike);
 
-    List<PictureLike> findPictureLikes(int pictureId);
+    List<PictureLike> findPictureLikes(long pictureId);
 
-    Long findPictureLikesCount(int pictureId);
+    Long findPictureLikesCount(long pictureId);
 
     void removePictureLike(PictureLike pictureLike);
-    PictureLike findPictureLike(int userId, int pictureId);
+    PictureLike findPictureLike(long userId, long pictureId);
 
     List<TouristicPicture> findTouristicPicturesByUserId(long userId);
 

@@ -18,7 +18,7 @@ public class PictureRepositoryImpl implements PictureRepository {
     }
 
     @Override
-    public List<TouristicPicture> findTouristicPicturesByUser(int id) {
+    public List<TouristicPicture> findTouristicPicturesByUser(long id) {
         TypedQuery<TouristicPicture> query = entityManager.createQuery("SELECT tp FROM TouristicPicture tp " +
                                                                        "LEFT JOIN FETCH tp.user u " +
                                                                        "WHERE u.id = :id", TouristicPicture.class);
@@ -92,12 +92,12 @@ public class PictureRepositoryImpl implements PictureRepository {
         entityManager.persist(pictureComment);
     }
     @Override
-    public TouristicPicture findTouristicPictureById(int id){
+    public TouristicPicture findTouristicPictureById(long id){
         return entityManager.find(TouristicPicture.class, id);
     }
 
     @Override
-    public List<PictureComment> findPictureComments(int id){
+    public List<PictureComment> findPictureComments(long id){
         TypedQuery<PictureComment> query = entityManager.createQuery("SELECT pc FROM PictureComment pc " +
                 "WHERE pc.touristicPicture.id = :id", PictureComment.class);
         query.setParameter("id", id);
@@ -106,7 +106,7 @@ public class PictureRepositoryImpl implements PictureRepository {
     }
 
     @Override
-    public Long findPictureCommentsCount(int pictureId){
+    public Long findPictureCommentsCount(long pictureId){
         TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(pc) FROM PictureComment pc " +
                 "WHERE pc.touristicPicture.id = :id", Long.class);
         query.setParameter("id", pictureId);
@@ -120,7 +120,7 @@ public class PictureRepositoryImpl implements PictureRepository {
         entityManager.remove(pictureComment);
     }
     @Override
-    public PictureComment findPictureComment(int userId, int commentId){
+    public PictureComment findPictureComment(long userId, long commentId){
         TypedQuery<PictureComment> query = entityManager.createQuery("SELECT pc FROM PictureComment pc " +
                 "WHERE pc.user.id = :userId AND " +
                 "pc.id = :commentId", PictureComment.class);
@@ -137,7 +137,7 @@ public class PictureRepositoryImpl implements PictureRepository {
     }
 
     @Override
-    public List<PictureLike> findPictureLikes(int pictureId){
+    public List<PictureLike> findPictureLikes(long pictureId){
         TypedQuery<PictureLike> query = entityManager.createQuery("SELECT pl FROM PictureLike pl " +
                 "WHERE pl.touristicPicture.id = :id", PictureLike.class);
         query.setParameter("id", pictureId);
@@ -146,7 +146,7 @@ public class PictureRepositoryImpl implements PictureRepository {
     }
 
     @Override
-    public Long findPictureLikesCount(int pictureId){
+    public Long findPictureLikesCount(long pictureId){
         TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(pl) FROM PictureLike pl " +
                 "WHERE pl.touristicPicture.id = :id", Long.class);
         query.setParameter("id", pictureId);
@@ -160,7 +160,7 @@ public class PictureRepositoryImpl implements PictureRepository {
         entityManager.remove(pictureLike);
     }
     @Override
-    public PictureLike findPictureLike(int userId, int pictureId){
+    public PictureLike findPictureLike(long userId, long pictureId){
         TypedQuery<PictureLike> query = entityManager.createQuery("SELECT pl FROM PictureLike pl " +
                 "WHERE pl.user.id = :userId AND " +
                 "pl.touristicPicture.id = :pictureId", PictureLike.class);

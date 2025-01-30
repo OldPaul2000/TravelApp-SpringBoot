@@ -13,7 +13,7 @@ public record TouristicPictureDTOGet(
         String description,
         PicturePlaceDTOGet picturePlace,
         GpsCoords coords,
-        int likesCount,
-        int commentsCount
+        long likesCount,
+        long commentsCount
 ) {
 }

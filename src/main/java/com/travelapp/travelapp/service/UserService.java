@@ -46,7 +46,7 @@ public class UserService {
     }
 
     /* Works */
-    public UserAndInfoDTOGet getUserByIdWithInfoAndRoles(int id){
+    public UserAndInfoDTOGet getUserByIdWithInfoAndRoles(long id){
         try{
             User user = userRepository.findUserByIdWithInfoAndRoles(id);
             UserInfo info = user.getUserInfo();
@@ -116,7 +116,7 @@ public class UserService {
     }
 
     /* Works */
-    public void updateProfilePicture(int userId, ProfilePictureDTOPost profilePicture){
+    public void updateProfilePicture(long userId, ProfilePictureDTOPost profilePicture){
         try{
             User user = userRepository.findUserByIdWithInfoAndRoles(userId);
             user.getUserInfo()
@@ -130,7 +130,7 @@ public class UserService {
     }
 
     /* Works */
-    public void updateUserInfo(int userId, UserInfoDTOUpdate userInfoDTOUpdate){
+    public void updateUserInfo(long userId, UserInfoDTOUpdate userInfoDTOUpdate){
         try{
             User userToUpdate = userRepository.findUserById(userId);
 
