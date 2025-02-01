@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     private UserService userService;
@@ -23,6 +23,7 @@ public class UserController {
         this.userRepository = userRepository;
     }
 
+    /* Works */
     @GetMapping("/{userId}")
     public ResponseEntity<UserAndInfoDTOGet> userById(@PathVariable long userId){
         UserAndInfoDTOGet user = userService.getUserByIdWithInfoAndRoles(userId);
@@ -30,31 +31,35 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/register")
+    /* Works */
+    @PostMapping
     public ResponseEntity<String> registerUser(@RequestBody UserDTORegister user){
         userService.registerUser(user);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PutMapping("/updateProfilePicture/{userId}")
+    /* Works */
+    @PutMapping("/{userId}/profile-pictures")
     public ResponseEntity<String> changeProfilePicture(@PathVariable long userId, @RequestBody ProfilePictureDTOPost profilePicture){
             userService.updateProfilePicture(userId, profilePicture);
 
             return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/updateUserInfo/{userId}")
+    /* Works */
+    @PutMapping("/{userId}/user-infos")
     public ResponseEntity<String> updateUserInfo(@PathVariable long userId, @RequestBody UserInfoDTOUpdate userInfo){
         userService.updateUserInfo(userId, userInfo);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{userId}/{userPicturesDelete}")
+    /* Works */
+    @DeleteMapping("/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable long userId,
-                                             @PathVariable boolean userPicturesDelete){
-        userService.deleteUserAccount(userId, userPicturesDelete);
+                                             @RequestParam Boolean deletePictures){
+        userService.deleteUserAccount(userId, deletePictures);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

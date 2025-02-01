@@ -67,9 +67,9 @@ public class CollageRepositoryImpl implements CollageRepository {
     }
     @Override
     public CollageComment findCollageComment(long userId, long commentId){
-        TypedQuery<CollageComment> query = entityManager.createQuery("SELECT pc FROM CollageComment pc " +
-                "WHERE pc.user.id = :userId AND " +
-                "pc.id = :commentId", CollageComment.class);
+        TypedQuery<CollageComment> query = entityManager.createQuery("SELECT cc FROM CollageComment cc " +
+                                                                    "WHERE cc.user.id = :userId AND " +
+                                                                    "cc.id = :commentId", CollageComment.class);
         query.setParameter("userId", userId);
         query.setParameter("commentId", commentId);
 

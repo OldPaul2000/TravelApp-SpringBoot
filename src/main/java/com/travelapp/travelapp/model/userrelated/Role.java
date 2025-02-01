@@ -51,7 +51,7 @@ public class Role {
 
     @Override
     public String toString() {
-        return "Role{" +
+        return "Roles{" +
                 "id=" + id +
                 ", role='" + role + '\'' +
                 '}';

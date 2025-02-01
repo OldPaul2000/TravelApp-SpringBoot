@@ -192,7 +192,7 @@ public class PictureService {
         try{
             TouristicPicture touristicPicture = pictureRepository.findTouristicPictureById(pictureId);
 
-            PictureComment comment = new PictureComment(userComment.userComment());
+            PictureComment comment = new PictureComment(userComment.comment());
             comment.setDateTime(LocalDateTime.now());
             comment.setTouristicPicture(touristicPicture);
             comment.setUser(user);

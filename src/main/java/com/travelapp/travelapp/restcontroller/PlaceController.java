@@ -1,7 +1,6 @@
 package com.travelapp.travelapp.restcontroller;
 
-import com.travelapp.travelapp.dto.places.CityDTOGet;
-import com.travelapp.travelapp.dto.places.CountryDTOGet;
+import com.travelapp.travelapp.dto.places.*;
 import com.travelapp.travelapp.model.locations.Commune;
 import com.travelapp.travelapp.model.locations.Village;
 import com.travelapp.travelapp.service.PlaceService;
@@ -19,50 +18,59 @@ public class PlaceController {
         this.placeService = placeService;
     }
 
-    @GetMapping("/country/{country}")
-    public ResponseEntity<CountryDTOGet> getCountryAndCities(@PathVariable("country") String countryName) {
-        CountryDTOGet country = placeService.getCountryWithCities(countryName);
-        return ResponseEntity.ok(country);
+    /* Works */
+    @GetMapping("/countries")
+    public ResponseEntity<CountryDTOGet> getCountryAndCities(@RequestParam String country) {
+        CountryDTOGet countryDTO = placeService.getCountryWithCities(country);
+        return ResponseEntity.ok(countryDTO);
     }
 
-    @GetMapping("/city/{city}")
-    public ResponseEntity<CityDTOGet> getCityAndCommunes(@PathVariable("city") String cityName){
-        CityDTOGet city = placeService.getCityWithCommunes(cityName);
-        return ResponseEntity.ok(city);
+    /* Works */
+    @GetMapping("/cities")
+    public ResponseEntity<CityDTOGet> getCityAndCommunes(@RequestParam String city){
+        CityDTOGet cityDTO = placeService.getCityWithCommunes(city);
+        return ResponseEntity.ok(cityDTO);
     }
 
-    @GetMapping("/commune/{commune}")
-    public ResponseEntity<Commune> getCommuneAndVillages(@PathVariable("commune") String communeName){
-        Commune commune = placeService.getCommuneWithVillages(communeName);
-        return ResponseEntity.ok(commune);
+    /* Works */
+    @GetMapping("/communes")
+    public ResponseEntity<Commune> getCommuneAndVillages(@RequestParam String commune){
+        Commune communeDTO = placeService.getCommuneWithVillages(commune);
+        return ResponseEntity.ok(communeDTO);
     }
 
-    @GetMapping("/village/{village}")
-    public ResponseEntity<Village> getVillage(@PathVariable("village") String villageName){
-        Village village = placeService.getVillage(villageName);
-        return ResponseEntity.ok(village);
+    /* Works */
+    @GetMapping("/villages")
+    public ResponseEntity<Village> getVillage(@RequestParam String village){
+        Village villageDTO = placeService.getVillage(village);
+        return ResponseEntity.ok(villageDTO);
     }
-    @PostMapping("/newCountry/{country}")
-    public ResponseEntity<String> addCountry(@PathVariable String country){
-        placeService.addNewCountry(country);
+
+    /* Works */
+    @PostMapping("/countries")
+    public ResponseEntity<String> addCountry(@RequestBody CountryDTOPost country){
+        placeService.addNewCountry(country.country());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/newCity/{countryId}/{city}")
-    public ResponseEntity<String> addCityToCountry(@PathVariable int countryId, @PathVariable String city){
-        placeService.addNewCityForCountry(countryId, city);
+    /* Works */
+    @PostMapping("/cities/{countryId}")
+    public ResponseEntity<String> addCityForCountry(@PathVariable int countryId, @RequestBody CityDTOPost city){
+        placeService.addNewCityForCountry(countryId, city.city());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/newCommune/{cityId}/{commune}")
-    public ResponseEntity<String> addCommuneToCity(@PathVariable int cityId, @PathVariable String commune){
-        placeService.addNewCommuneForCity(cityId, commune);
+    /* Works */
+    @PostMapping("/communes/{cityId}")
+    public ResponseEntity<String> addCommuneForCity(@PathVariable int cityId, @RequestBody CommuneDTOPost commune){
+        placeService.addNewCommuneForCity(cityId, commune.commune());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/newVillage/{communeId}/{village}")
-    public ResponseEntity<String> addVillageToCommune(@PathVariable int communeId, @PathVariable String village){
-        placeService.addNewVillageForCommune(communeId, village);
+    /* Works */
+    @PostMapping("/villages/{communeId}")
+    public ResponseEntity<String> addVillageForCommune(@PathVariable int communeId, @RequestBody VillageDTOPost village){
+        placeService.addNewVillageForCommune(communeId, village.village());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

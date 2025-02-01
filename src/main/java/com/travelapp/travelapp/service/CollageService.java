@@ -139,7 +139,7 @@ public class CollageService {
         try{
             CollagePost collagePost = collageRepository.findCollageById(collageId);
 
-            CollageComment comment = new CollageComment(userComment.userComment());
+            CollageComment comment = new CollageComment(userComment.comment());
             comment.setDateTime(LocalDateTime.now());
             comment.setCollagePost(collagePost);
             comment.setUser(user);

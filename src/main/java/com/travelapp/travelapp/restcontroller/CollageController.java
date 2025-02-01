@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/collage")
+@RequestMapping("/api/v1/collages")
 
 public class CollageController {
 
@@ -18,34 +18,38 @@ public class CollageController {
         this.collageService = collageService;
     }
 
-    @PostMapping("/newCollage")
+    /* Works */
+    @PostMapping
     public ResponseEntity<String> postNewCollage(@RequestBody CollageDTOPost collagePost){
         collageService.postNewCollage(collagePost);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/deleteCollage/{userId}/{collageId}")
+    /* Works */
+    @DeleteMapping("/{userId}/{collageId}")
     public ResponseEntity<String> deleteCollage(@PathVariable long userId,
                                                 @PathVariable long collageId){
         collageService.deleteCollage(userId, collageId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/byId/{id}")
+    /* Works */
+    @GetMapping("/{id}")
     public CollageDTOGet getCollagePost(@PathVariable long id){
         CollageDTOGet collage = collageService.getCollageById(id);
         return collage;
     }
 
-    @GetMapping("/fromUser/{id}")
+    /* Works */
+    @GetMapping("/users/{id}")
     public List<CollageDTOGet> getCollagesFromUser(@PathVariable long id){
         List<CollageDTOGet> collages = collageService.getCollagesFromUser(id);
         return collages;
     }
 
-
-    @PostMapping("/comment/{userId}/{collageId}")
+    /* Works */
+    @PostMapping("/comments/{userId}/{collageId}")
     public ResponseEntity<String> postCollageComment(@PathVariable long userId,
                                                      @PathVariable long collageId,
                                                      @RequestBody CollageCommentDTOPost collageComment){
@@ -54,7 +58,8 @@ public class CollageController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/removeComment/{userId}/{commentId}")
+    /* Works */
+    @DeleteMapping("/comments/{userId}/{commentId}")
     public ResponseEntity<String> deleteCollageComment(@PathVariable long userId,
                                                        @PathVariable long commentId){
         collageService.deleteCollageComment(userId, commentId);
@@ -62,17 +67,20 @@ public class CollageController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /* Works */
     @GetMapping("/comments/{collageId}")
     public List<CollageCommentDTOGet> getCollageComments(@PathVariable long collageId){
         return collageService.getCollageComments(collageId);
     }
 
-    @GetMapping("/commentsCount/{collageId}")
+    /* Works */
+    @GetMapping("/comments/count/{collageId}")
     public Long getPostCommentsCount(@PathVariable long collageId){
         return collageService.getCollageCommentsCount(collageId);
     }
 
-    @PostMapping("/likeCollage/{userId}/{collageId}")
+    /* Works */
+    @PostMapping("/likes/{userId}/{collageId}")
     public ResponseEntity<String> likeCollage(@PathVariable long userId,
                                               @PathVariable long collageId){
         collageService.likeCollage(userId, collageId);
@@ -80,7 +88,8 @@ public class CollageController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/dislikeCollage/{userId}/{collageId}")
+    /* Works */
+    @DeleteMapping("/likes/{userId}/{collageId}")
     public ResponseEntity<String> dislikeCollage(@PathVariable long userId,
                                                  @PathVariable long collageId){
         collageService.dislikeCollage(userId, collageId);
@@ -88,12 +97,14 @@ public class CollageController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/collageLikes/{collageId}")
+    /* Works */
+    @GetMapping("/{collageId}/likes")
     public List<CollageLikeDTOGet> getCollageLikes(@PathVariable long collageId){
         return collageService.getCollageLikes(collageId);
     }
 
-    @GetMapping("/collageLikesCount/{collageId}")
+    /* Works */
+    @GetMapping("/{collageId}/likes/count/")
     public long getCollageLikesCount(@PathVariable long collageId){
         return collageService.getCollageLikesCount(collageId);
     }

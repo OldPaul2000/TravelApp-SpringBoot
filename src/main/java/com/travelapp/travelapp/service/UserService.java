@@ -87,9 +87,14 @@ public class UserService {
         user.setPassword(userDTORegister.password());
         user.setEnabled((byte)1);
 
-        Role role = new Role(Roles.USER.name());
-        role.setUser(user);
-        user.addRole(role);
+        for(int i = 0; i < userDTORegister.roles().length; i++){
+            String dtoRole = userDTORegister.roles()[i];
+            if(Roles.getRoles().containsValue(dtoRole)){
+                Role role = new Role(Roles.getRoles().get(dtoRole));
+                role.setUser(user);
+                user.addRole(role);
+            }
+        }
 
         UserInfo userInfo = new UserInfo();
         userInfo.setFirstName(userDTORegister.userInfo().firstName());
@@ -147,7 +152,7 @@ public class UserService {
         }
     }
 
-    // Not finished
+    /* Works */
     public void deleteUserAccount(long userId, boolean userPicturesDelete){
         User user = userRepository.findUserById(userId);
 
