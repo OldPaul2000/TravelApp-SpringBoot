@@ -15,13 +15,9 @@ public class TravelappApplication {
 		SpringApplication.run(TravelappApplication.class, args);
 	}
 
-
-	/**TODO
-	 * -Refactor REST endpoints names
-	 * -Implement additional necessary methods
-	 * -TEST AGAIN all REST endpoints
-	 * */
-
+    /**TODO
+     * Implement security and JWT authentication
+     */
 
 	@Bean
 	public CommandLineRunner commandLineRunner(UserRepository userRepository, UserService userService){

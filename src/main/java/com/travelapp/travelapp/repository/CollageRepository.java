@@ -1,23 +1,23 @@
 package com.travelapp.travelapp.repository;
 
+import com.travelapp.travelapp.model.usersposts.Collage;
 import com.travelapp.travelapp.model.usersposts.CollageComment;
 import com.travelapp.travelapp.model.usersposts.CollageLike;
-import com.travelapp.travelapp.model.usersposts.CollagePost;
 
 import java.util.List;
 
 public interface CollageRepository {
 
-    CollagePost findCollageById(long id);
+    Collage findCollageById(long id);
 
-    List<CollagePost> findCollagesByUserId(long userId);
+    List<Collage> findCollagesByUserId(long userId);
 
-    void persistNewCollage(CollagePost collagePost);
+    void persistNewCollage(Collage collage);
 
-    void removeCollage(CollagePost collagePost);
+    void removeCollage(Collage collage);
 
     void persistNewCollageComment(CollageComment collageComment);
-    CollagePost findCollageByCollageAndUserId(long collageId, long userId);
+    Collage findCollageByCollageAndUserId(long collageId, long userId);
 
     void removeCollageComment(CollageComment collageComment);
     CollageComment findCollageComment(long userId, long commentId);
@@ -26,7 +26,7 @@ public interface CollageRepository {
 
     long findCollageCommentsCount(long collageId);
 
-    void mergeCollage(CollagePost collagePost);
+    void mergeCollage(Collage collage);
 
     void persistNewCollageLike(CollageLike collageLike);
 

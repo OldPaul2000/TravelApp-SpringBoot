@@ -2,7 +2,7 @@ package com.travelapp.travelapp.model.postedpictures;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.travelapp.travelapp.model.userrelated.User;
-import com.travelapp.travelapp.model.usersposts.CollagePost;
+import com.travelapp.travelapp.model.usersposts.Collage;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -48,7 +48,7 @@ public class TouristicPicture {
     @JoinTable(name = "collage_picture",
                joinColumns = @JoinColumn(name = "picture_id"),
                inverseJoinColumns = @JoinColumn(name = "collage_id"))
-    private List<CollagePost> collagePosts;
+    private List<Collage> collages;
 
 
 
@@ -147,20 +147,20 @@ public class TouristicPicture {
     }
 
 
-    public List<CollagePost> getCollagePosts() {
-        return collagePosts;
+    public List<Collage> getCollagePosts() {
+        return collages;
     }
 
-    public void setCollagePosts(List<CollagePost> collagePosts) {
-        this.collagePosts = collagePosts;
+    public void setCollagePosts(List<Collage> collages) {
+        this.collages = collages;
     }
 
-    public void addCollagePost(CollagePost collagePost){
-        if(collagePosts == null){
-            collagePosts = new ArrayList<>();
+    public void addCollagePost(Collage collage){
+        if(collages == null){
+            collages = new ArrayList<>();
         }
 
-        collagePosts.add(collagePost);
+        collages.add(collage);
     }
 
     @Override

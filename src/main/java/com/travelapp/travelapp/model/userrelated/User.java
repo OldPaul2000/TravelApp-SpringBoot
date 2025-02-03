@@ -5,7 +5,7 @@ import com.travelapp.travelapp.model.postedpictures.PictureLike;
 import com.travelapp.travelapp.model.postedpictures.TouristicPicture;
 import com.travelapp.travelapp.model.usersposts.CollageComment;
 import com.travelapp.travelapp.model.usersposts.CollageLike;
-import com.travelapp.travelapp.model.usersposts.CollagePost;
+import com.travelapp.travelapp.model.usersposts.Collage;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class User{
     private List<TouristicPicture> touristicPictures;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CollagePost> collagePosts;
+    private List<Collage> collages;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CollageLike> collageLikes;
@@ -165,20 +165,20 @@ public class User{
         touristicPictures.add(picture);
     }
 
-    public List<CollagePost> getCollagePosts() {
-        return collagePosts;
+    public List<Collage> getCollagePosts() {
+        return collages;
     }
 
-    public void setCollagePosts(List<CollagePost> collagePosts) {
-        this.collagePosts = collagePosts;
+    public void setCollagePosts(List<Collage> collages) {
+        this.collages = collages;
     }
 
-    public void addNewCollage(CollagePost collagePost){
-        if(collagePosts == null){
-            collagePosts = new ArrayList<>();
+    public void addNewCollage(Collage collage){
+        if(collages == null){
+            collages = new ArrayList<>();
         }
 
-        collagePosts.add(collagePost);
+        collages.add(collage);
     }
 
     public List<CollageLike> getCollageLikes() {

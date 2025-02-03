@@ -3,7 +3,7 @@ package com.travelapp.travelapp.dto.mappers;
 import com.travelapp.travelapp.dto.collagepost.CollageDTOGet;
 import com.travelapp.travelapp.dto.postedpictures.PostingUserDTOGet;
 import com.travelapp.travelapp.dto.postedpictures.TouristicPictureDTOGet;
-import com.travelapp.travelapp.model.usersposts.CollagePost;
+import com.travelapp.travelapp.model.usersposts.Collage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,20 +22,20 @@ public class CollagePostMapper {
         this.pictureMapper = pictureMapper;
     }
 
-    public CollageDTOGet toDTO(CollagePost collagePost){
+    public CollageDTOGet toDTO(Collage collage){
 
-        PostingUserDTOGet userDTO = userMapper.toDTO(collagePost.getUser());
+        PostingUserDTOGet userDTO = userMapper.toDTO(collage.getUser());
 
-        List<TouristicPictureDTOGet> picturesDTO = collagePost.getTouristicPictures()
+        List<TouristicPictureDTOGet> picturesDTO = collage.getTouristicPictures()
                 .stream()
                 .map(picture -> {
                     return pictureMapper.toDTO(picture);
                 }).toList();
 
         return new CollageDTOGet(
-                collagePost.getId(),
-                collagePost.getDescription(),
-                collagePost.getDateTime(),
+                collage.getId(),
+                collage.getDescription(),
+                collage.getDateTime(),
                 userDTO,
                 picturesDTO
         );

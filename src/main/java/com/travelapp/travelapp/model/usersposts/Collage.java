@@ -10,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "collage")
-public class CollagePost {
+public class Collage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,10 +27,10 @@ public class CollagePost {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "collagePost", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "collage", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CollageLike> collageLikes;
 
-    @OneToMany(mappedBy = "collagePost", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "collage", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CollageComment> collageComments;
 
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
@@ -40,9 +40,9 @@ public class CollagePost {
     private List<TouristicPicture> touristicPictures;
 
 
-    public CollagePost() {}
+    public Collage() {}
 
-    public CollagePost(String description) {
+    public Collage(String description) {
         this.description = description;
     }
 
@@ -128,7 +128,7 @@ public class CollagePost {
 
     @Override
     public String toString() {
-        return "CollagePost{" +
+        return "Collage{" +
                 "id=" + id +
                 ", user=" + user +
                 ", dateTime=" + dateTime +

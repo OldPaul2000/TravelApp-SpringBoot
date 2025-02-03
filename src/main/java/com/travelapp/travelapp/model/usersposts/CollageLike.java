@@ -4,7 +4,7 @@ import com.travelapp.travelapp.model.userrelated.User;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "post_like")
+@Table(name = "collage_like")
 public class CollageLike {
 
     @Id
@@ -17,8 +17,8 @@ public class CollageLike {
     private User user;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "post_id", nullable = false)
-    private CollagePost collagePost;
+    @JoinColumn(name = "collage_id", nullable = false)
+    private Collage collage;
 
 
     public CollageLike() {}
@@ -39,12 +39,12 @@ public class CollageLike {
         this.user = user;
     }
 
-    public CollagePost getCollagePost() {
-        return collagePost;
+    public Collage getCollagePost() {
+        return collage;
     }
 
-    public void setCollagePost(CollagePost collagePost) {
-        this.collagePost = collagePost;
+    public void setCollagePost(Collage collage) {
+        this.collage = collage;
     }
 
     @Override
@@ -52,7 +52,7 @@ public class CollageLike {
         return "CollageLike{" +
                 "id=" + id +
                 ", userId=" + user.getId() +
-                ", collagePostId=" + collagePost.getId() +
+                ", collagePostId=" + collage.getId() +
                 '}';
     }
 }

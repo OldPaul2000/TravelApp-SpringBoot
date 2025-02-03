@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "post_comment")
+@Table(name = "collage_comment")
 public class CollageComment {
 
 
@@ -20,8 +20,8 @@ public class CollageComment {
     private User user;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "post_id")
-    private CollagePost collagePost;
+    @JoinColumn(name = "collage_id")
+    private Collage collage;
 
     @Column(name = "comment_date")
     private LocalDateTime dateTime;
@@ -50,12 +50,12 @@ public class CollageComment {
         this.user = user;
     }
 
-    public CollagePost getCollagePost() {
-        return collagePost;
+    public Collage getCollagePost() {
+        return collage;
     }
 
-    public void setCollagePost(CollagePost collagePost) {
-        this.collagePost = collagePost;
+    public void setCollagePost(Collage collage) {
+        this.collage = collage;
     }
 
     public LocalDateTime getDateTime() {

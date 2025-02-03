@@ -1,8 +1,8 @@
 package com.travelapp.travelapp.repository;
 
+import com.travelapp.travelapp.model.usersposts.Collage;
 import com.travelapp.travelapp.model.usersposts.CollageComment;
 import com.travelapp.travelapp.model.usersposts.CollageLike;
-import com.travelapp.travelapp.model.usersposts.CollagePost;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
@@ -19,14 +19,14 @@ public class CollageRepositoryImpl implements CollageRepository {
     }
 
     @Override
-    public CollagePost findCollageById(long id){
-        return entityManager.find(CollagePost.class, id);
+    public Collage findCollageById(long id){
+        return entityManager.find(Collage.class, id);
     }
 
     @Override
-    public List<CollagePost> findCollagesByUserId(long id){
-        TypedQuery<CollagePost> query = entityManager.createQuery("SELECT cp FROM CollagePost cp " +
-                "WHERE cp.user.id = :id", CollagePost.class);
+    public List<Collage> findCollagesByUserId(long id){
+        TypedQuery<Collage> query = entityManager.createQuery("SELECT cp FROM Collage cp " +
+                "WHERE cp.user.id = :id", Collage.class);
         query.setParameter("id", id);
 
         return query.getResultList();
@@ -34,14 +34,14 @@ public class CollageRepositoryImpl implements CollageRepository {
 
     @Override
     @Transactional
-    public void persistNewCollage(CollagePost collagePost) {
-        entityManager.persist(collagePost);
+    public void persistNewCollage(Collage collage) {
+        entityManager.persist(collage);
     }
 
     @Override
     @Transactional
-    public void removeCollage(CollagePost collagePost) {
-        entityManager.remove(collagePost);
+    public void removeCollage(Collage collage) {
+        entityManager.remove(collage);
     }
 
     @Override
@@ -50,10 +50,10 @@ public class CollageRepositoryImpl implements CollageRepository {
         entityManager.persist(collageComment);
     }
     @Override
-    public CollagePost findCollageByCollageAndUserId(long collageId, long userId){
-        TypedQuery<CollagePost> query = entityManager.createQuery("SELECT cp FROM CollagePost cp " +
+    public Collage findCollageByCollageAndUserId(long collageId, long userId){
+        TypedQuery<Collage> query = entityManager.createQuery("SELECT cp FROM Collage cp " +
                 "WHERE cp.id = :collageId AND " +
-                "cp.user.id = :userId", CollagePost.class);
+                "cp.user.id = :userId", Collage.class);
         query.setParameter("collageId", collageId);
         query.setParameter("userId", userId);
 
@@ -96,8 +96,8 @@ public class CollageRepositoryImpl implements CollageRepository {
 
     @Override
     @Transactional
-    public void mergeCollage(CollagePost collagePost) {
-        entityManager.merge(collagePost);
+    public void mergeCollage(Collage collage) {
+        entityManager.merge(collage);
     }
 
     @Override

@@ -6,9 +6,9 @@ import com.travelapp.travelapp.dto.postedpictures.PostingUserDTOGet;
 import com.travelapp.travelapp.dto.postedpictures.TouristicPictureDTOGet;
 import com.travelapp.travelapp.model.postedpictures.TouristicPicture;
 import com.travelapp.travelapp.model.userrelated.User;
+import com.travelapp.travelapp.model.usersposts.Collage;
 import com.travelapp.travelapp.model.usersposts.CollageComment;
 import com.travelapp.travelapp.model.usersposts.CollageLike;
-import com.travelapp.travelapp.model.usersposts.CollagePost;
 import com.travelapp.travelapp.repository.CollageRepository;
 import com.travelapp.travelapp.repository.PictureRepository;
 import com.travelapp.travelapp.repository.UserRepository;
@@ -61,22 +61,22 @@ public class CollageService {
 
     /* Works */
     public CollageDTOGet getCollageById(long id){
-        CollagePost collagePost = collageRepository.findCollageById(id);
+        Collage collage = collageRepository.findCollageById(id);
 
-        if(collagePost == null){
+        if(collage == null){
             throw new CollagePostNotFoundException(COLLAGE_POST_NOT_FOUND.message());
         }
 
-        PostingUserDTOGet userDTO = postingUserMapper.toDTO(collagePost.getUser());
-        List<TouristicPictureDTOGet> collagePictures = collagePost.getTouristicPictures()
+        PostingUserDTOGet userDTO = postingUserMapper.toDTO(collage.getUser());
+        List<TouristicPictureDTOGet> collagePictures = collage.getTouristicPictures()
                 .stream()
                 .map(picture -> touristicPictureMapper.toDTO(picture))
                 .toList();
 
         CollageDTOGet collageUserDTOGet = new CollageDTOGet(
-                collagePost.getId(),
-                collagePost.getDescription(),
-                collagePost.getDateTime(),
+                collage.getId(),
+                collage.getDescription(),
+                collage.getDateTime(),
                 userDTO,
                 collagePictures
         );
@@ -100,7 +100,7 @@ public class CollageService {
                 .map(pictureId -> pictureRepository.findTouristicPictureById(pictureId))
                 .toList();
 
-        CollagePost collage = new CollagePost();
+        Collage collage = new Collage();
         collage.setDescription(collageDTO.description());
         collage.setDateTime(LocalDateTime.now());
         collage.setUser(user);
@@ -115,13 +115,13 @@ public class CollageService {
     /* Works */
     public void deleteCollage(long userId, long collageId){
         try{
-            CollagePost collagePost = collageRepository.findCollageByCollageAndUserId(collageId, userId);
-            collagePost.getTouristicPictures().forEach(picture -> {
-                picture.getCollagePosts().remove(collagePost);
+            Collage collage = collageRepository.findCollageByCollageAndUserId(collageId, userId);
+            collage.getTouristicPictures().forEach(picture -> {
+                picture.getCollagePosts().remove(collage);
             });
-            collagePost.setTouristicPictures(null);
+            collage.setTouristicPictures(null);
 
-            collageRepository.removeCollage(collagePost);
+            collageRepository.removeCollage(collage);
         }
         catch (EmptyResultDataAccessException e){
             throw new CollagePostNotFoundException(COLLAGE_POST_NOT_FOUND.message());
@@ -137,11 +137,11 @@ public class CollageService {
         }
 
         try{
-            CollagePost collagePost = collageRepository.findCollageById(collageId);
+            Collage collage = collageRepository.findCollageById(collageId);
 
             CollageComment comment = new CollageComment(userComment.comment());
             comment.setDateTime(LocalDateTime.now());
-            comment.setCollagePost(collagePost);
+            comment.setCollagePost(collage);
             comment.setUser(user);
 
             collageRepository.persistNewCollageComment(comment);
@@ -182,7 +182,7 @@ public class CollageService {
             throw new UserNotFoundException(USER_NOT_FOUND.message());
         }
 
-        CollagePost collage = collageRepository.findCollageById(collageId);
+        Collage collage = collageRepository.findCollageById(collageId);
         if(collage == null){
             throw new CollagePostNotFoundException(COLLAGE_POST_NOT_FOUND.message());
         }
