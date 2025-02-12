@@ -54,7 +54,7 @@ public class CollageComment {
         return collage;
     }
 
-    public void setCollagePost(Collage collage) {
+    public void setCollage(Collage collage) {
         this.collage = collage;
     }
 

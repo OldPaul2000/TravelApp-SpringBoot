@@ -9,18 +9,17 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/v1/practice")
 public class PracticeController {
 
     @PostMapping("/file")
-    public void uploadFile(@RequestParam MultipartFile file,
-                           @RequestParam String fileName){
+    public void uploadFile(@RequestParam MultipartFile file){
         try{
-//            System.out.println(Arrays.toString(file.getBytes()));
-            System.out.println("File name: " + fileName);
-            writeFile("C:\\Users\\paulb\\Desktop\\picture from app.jpg", file.getBytes());
+            System.out.println(Arrays.toString(file.getBytes()));
+//            writeFile("C:\\Users\\paulb\\Desktop\\picture from app.jpg", file.getBytes());
         }
         catch (IOException e){
             System.out.println("Error receiving file");

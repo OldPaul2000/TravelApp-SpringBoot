@@ -39,11 +39,11 @@ public class CollageLike {
         this.user = user;
     }
 
-    public Collage getCollagePost() {
+    public Collage getCollage() {
         return collage;
     }
 
-    public void setCollagePost(Collage collage) {
+    public void setCollage(Collage collage) {
         this.collage = collage;
     }
 
@@ -52,7 +52,7 @@ public class CollageLike {
         return "CollageLike{" +
                 "id=" + id +
                 ", userId=" + user.getId() +
-                ", collagePostId=" + collage.getId() +
+                ", collageId=" + collage.getId() +
                 '}';
     }
 }

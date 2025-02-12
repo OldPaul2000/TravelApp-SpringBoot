@@ -50,28 +50,28 @@ public class PlaceController {
     @PostMapping("/countries")
     public ResponseEntity<String> addCountry(@RequestBody CountryDTOPost country){
         placeService.addNewCountry(country.country());
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     /* Works */
     @PostMapping("/cities/{countryId}")
     public ResponseEntity<String> addCityForCountry(@PathVariable int countryId, @RequestBody CityDTOPost city){
         placeService.addNewCityForCountry(countryId, city.city());
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     /* Works */
     @PostMapping("/communes/{cityId}")
     public ResponseEntity<String> addCommuneForCity(@PathVariable int cityId, @RequestBody CommuneDTOPost commune){
         placeService.addNewCommuneForCity(cityId, commune.commune());
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     /* Works */
     @PostMapping("/villages/{communeId}")
     public ResponseEntity<String> addVillageForCommune(@PathVariable int communeId, @RequestBody VillageDTOPost village){
         placeService.addNewVillageForCommune(communeId, village.village());
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
 

@@ -1,6 +1,9 @@
 package com.travelapp.travelapp.service;
 
+import com.travelapp.travelapp.constants.JWTConstants;
+import com.travelapp.travelapp.constants.Roles;
 import com.travelapp.travelapp.dto.userrelated.*;
+import com.travelapp.travelapp.model.login.LoginRequestDTO;
 import com.travelapp.travelapp.model.postedpictures.TouristicPicture;
 import com.travelapp.travelapp.model.userrelated.ProfilePicture;
 import com.travelapp.travelapp.model.userrelated.Role;
@@ -12,39 +15,85 @@ import com.travelapp.travelapp.repository.UserRepository;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.users.UserGeneralException;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.users.UserNotFoundException;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.users.UserRegistrationException;
-import com.travelapp.travelapp.security.Roles;
-import jakarta.persistence.EntityManager;
+import com.travelapp.travelapp.securityexceptionhandling.UserNotMatchingException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.UserErrorMessages.*;
+import static com.travelapp.travelapp.securityexceptionhandling.SecurityErrorMessages.USER_NOT_MATCHING;
 
 @Service
 public class UserService {
+
+    private CurrentUserVerifier currentUserVerifier;
 
     private UserRepository userRepository;
     private PictureRepository pictureRepository;
     private CollageRepository collageRepository;
 
     private PicturePlaceRemovalHelper picturePlaceRemovalHelper;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(EntityManager entityManager,
+    public UserService(CurrentUserVerifier currentUserVerifier,
                        UserRepository userRepository,
                        PictureRepository pictureRepository,
                        CollageRepository collageRepository,
-                       PicturePlaceRemovalHelper picturePlaceRemovalHelper) {
+                       PicturePlaceRemovalHelper picturePlaceRemovalHelper,
+                       PasswordEncoder passwordEncoder) {
+        this.currentUserVerifier = currentUserVerifier;
         this.userRepository = userRepository;
         this.pictureRepository = pictureRepository;
         this.collageRepository = collageRepository;
         this.picturePlaceRemovalHelper = picturePlaceRemovalHelper;
+        this.passwordEncoder = passwordEncoder;
     }
 
+
+    /* Works */
+    public String loginUserWithJwt(LoginRequestDTO loginRequest,
+                                   AuthenticationManager authenticationManager,
+                                   Environment env){
+        String jwt = "";
+        Authentication authentication = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.username(),
+                loginRequest.password());
+        Authentication authenticationResponse = authenticationManager.authenticate(authentication);
+        if(authenticationResponse != null && authenticationResponse.isAuthenticated()){
+            if(env != null){
+                // If JWT_SECRET environment key is not available JWTConstants.JWT_SECRET_DEFAULT_VALUE will be used
+                String secret = env.getProperty(JWTConstants.getJwtSecretKey(), JWTConstants.getJwtSecretDefaultValue());
+                SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+                jwt = Jwts.builder().issuer("Travel App").subject("JWT Token")
+                        .claim("username", authenticationResponse.getName())
+                        .claim("authorities", authenticationResponse.getAuthorities().stream().map(
+                                GrantedAuthority::getAuthority
+                        ).collect(Collectors.joining(",")))
+                        .issuedAt(new Date())
+                        .expiration(new Date((new Date()).getTime() + 600000))
+                        .signWith(secretKey).compact();
+            }
+        }
+        return jwt;
+    }
+
+    // Only for app maintenance(only used by OWNER or ADMIN, not used for regular app usage)
     /* Works */
     public UserAndInfoDTOGet getUserByIdWithInfoAndRoles(long id){
         try{
@@ -83,14 +132,13 @@ public class UserService {
     public void registerUser(UserDTORegister userDTORegister){
         User user = new User();
         user.setUsername(userDTORegister.username());
-        // Password needs to be encrypted before is set to the user
-        user.setPassword(userDTORegister.password());
+        user.setPassword(passwordEncoder.encode(userDTORegister.password()));
         user.setEnabled((byte)1);
 
         for(int i = 0; i < userDTORegister.roles().length; i++){
             String dtoRole = userDTORegister.roles()[i];
-            if(Roles.getRoles().containsValue(dtoRole)){
-                Role role = new Role(Roles.getRoles().get(dtoRole));
+            if(Roles.exists(dtoRole)){
+                Role role = new Role("ROLE_" + dtoRole);
                 role.setUser(user);
                 user.addRole(role);
             }
@@ -124,6 +172,9 @@ public class UserService {
     public void updateProfilePicture(long userId, ProfilePictureDTOPost profilePicture){
         try{
             User user = userRepository.findUserByIdWithInfoAndRoles(userId);
+            if(!currentUserVerifier.isCurrentUser(user.getUsername())){
+                throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+            }
             user.getUserInfo()
                     .getProfilePicture()
                     .setFileName(profilePicture.fileName());
@@ -137,15 +188,18 @@ public class UserService {
     /* Works */
     public void updateUserInfo(long userId, UserInfoDTOUpdate userInfoDTOUpdate){
         try{
-            User userToUpdate = userRepository.findUserById(userId);
+            User user = userRepository.findUserById(userId);
+            if(!currentUserVerifier.isCurrentUser(user.getUsername())){
+                throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+            }
 
-            UserInfo userInfo = userToUpdate.getUserInfo();
+            UserInfo userInfo = user.getUserInfo();
             userInfo.setFirstName(userInfoDTOUpdate.firstName());
             userInfo.setLastName(userInfoDTOUpdate.lastName());
             userInfo.setEmail(userInfoDTOUpdate.email());
             userInfo.setBirthDate(userInfoDTOUpdate.birthDate());
 
-            userRepository.mergeUser(userToUpdate);
+            userRepository.mergeUser(user);
         }
         catch (Exception e){
             throw new UserGeneralException(USER_UPDATE_ERROR.message());
@@ -178,25 +232,6 @@ public class UserService {
 
                 pictureRepository.removePicture(picture);
             });
-
-            // ======================================= Bad code. Try to fix it later =======================================
-
-//            user.getTouristicPictures().forEach(picture -> {
-//                picture.getPictureLikes().clear();
-//                picture.getPictureComments().clear();
-//                picture.getCollagePosts().clear();
-//                picture.setCoordinates(null);
-//                picture.setUser(null);
-//                System.out.println("Picture place:");
-//                System.out.println("Picture id:" + picture.getId());
-//                System.out.println(picture.getPicturePlace());
-//                System.out.println(picture.getPicturePlace().getTouristicPicture().getId());
-//                System.out.println("=========================================================================================================");
-//                picture.setPicturePlace(null);
-//            });
-//            user.setTouristicPictures(null);
-
-            // ======================================= Bad code. Try to fix it later =======================================
         }
 
         user.getRoles().clear();

@@ -19,9 +19,10 @@ public class CollageController {
     }
 
     /* Works */
-    @PostMapping
-    public ResponseEntity<String> postNewCollage(@RequestBody CollageDTOPost collagePost){
-        collageService.postNewCollage(collagePost);
+    @PostMapping("/{userId}")
+    public ResponseEntity<String> postNewCollage(@PathVariable long userId,
+                                                 @RequestBody CollageDTOPost collagePost){
+        collageService.postNewCollage(userId, collagePost);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
@@ -39,13 +40,6 @@ public class CollageController {
     public CollageDTOGet getCollagePost(@PathVariable long id){
         CollageDTOGet collage = collageService.getCollageById(id);
         return collage;
-    }
-
-    /* Works */
-    @GetMapping("/users/{id}")
-    public List<CollageDTOGet> getCollagesFromUser(@PathVariable long id){
-        List<CollageDTOGet> collages = collageService.getCollagesFromUser(id);
-        return collages;
     }
 
     /* Works */

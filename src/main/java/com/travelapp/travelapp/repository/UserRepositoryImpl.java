@@ -16,13 +16,24 @@ public class UserRepositoryImpl implements UserRepository {
         this.entityManager = entityManager;
     }
 
-    // JUST FOR TESTING
+     /**
+      * Only for testing
+      */
     @Override
     public User findUserByIdWithTouristicPictures(long id){
         TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u " +
                                                            "LEFT JOIN FETCH u.touristicPictures " +
                                                            "WHERE u.id = :id", User.class);
         query.setParameter("id", id);
+        return query.getSingleResult();
+    }
+
+    @Override
+    public User findUserByUsernameWithRoles(String username){
+        TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u " +
+                                                           "JOIN FETCH u.roles r " +
+                                                           "WHERE u.username = :username", User.class);
+        query.setParameter("username", username);
         return query.getSingleResult();
     }
 

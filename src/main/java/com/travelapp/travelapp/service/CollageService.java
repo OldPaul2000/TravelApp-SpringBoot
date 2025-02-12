@@ -15,6 +15,7 @@ import com.travelapp.travelapp.repository.UserRepository;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.collageposts.CollagePostAlreadyLikedException;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.collageposts.CollagePostNotFoundException;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.users.UserNotFoundException;
+import com.travelapp.travelapp.securityexceptionhandling.UserNotMatchingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -26,9 +27,12 @@ import java.util.List;
 import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.CollagePostErrorMessages.COLLAGE_POST_ALREADY_LIKED;
 import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.CollagePostErrorMessages.COLLAGE_POST_NOT_FOUND;
 import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.UserErrorMessages.USER_NOT_FOUND;
+import static com.travelapp.travelapp.securityexceptionhandling.SecurityErrorMessages.USER_NOT_MATCHING;
 
 @Service
 public class CollageService {
+
+    private CurrentUserVerifier currentUserVerifier;
 
     private CollageRepository collageRepository;
     private UserRepository userRepository;
@@ -41,7 +45,8 @@ public class CollageService {
     private CollageCommentMapper collageCommentMapper;
 
     @Autowired
-    public CollageService(CollageRepository collageRepository,
+    public CollageService(CurrentUserVerifier currentUserVerifier,
+                          CollageRepository collageRepository,
                           UserRepository userRepository,
                           PictureRepository pictureRepository,
                           PostingUserMapper postingUserMapper,
@@ -49,6 +54,7 @@ public class CollageService {
                           CollagePostMapper collageMapper,
                           CollageLikeMapper collageLikeMapper,
                           CollageCommentMapper collageCommentMapper) {
+        this.currentUserVerifier = currentUserVerifier;
         this.collageRepository = collageRepository;
         this.userRepository = userRepository;
         this.pictureRepository = pictureRepository;
@@ -62,7 +68,6 @@ public class CollageService {
     /* Works */
     public CollageDTOGet getCollageById(long id){
         Collage collage = collageRepository.findCollageById(id);
-
         if(collage == null){
             throw new CollagePostNotFoundException(COLLAGE_POST_NOT_FOUND.message());
         }
@@ -94,8 +99,11 @@ public class CollageService {
 
     /* Works */
     // Duplicate pictures error is not handled
-    public void postNewCollage(CollageDTOPost collageDTO){
-        User user = userRepository.findUserById(collageDTO.userId());
+    public void postNewCollage(long userId, CollageDTOPost collageDTO){
+        User user = userRepository.findUserById(userId);
+        if(!currentUserVerifier.isCurrentUser(user.getUsername())){
+            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+        }
         List<TouristicPicture> pictures = collageDTO.pictures().stream()
                 .map(pictureId -> pictureRepository.findTouristicPictureById(pictureId))
                 .toList();
@@ -116,6 +124,9 @@ public class CollageService {
     public void deleteCollage(long userId, long collageId){
         try{
             Collage collage = collageRepository.findCollageByCollageAndUserId(collageId, userId);
+            if(!currentUserVerifier.isCurrentUser(collage.getUser().getUsername())){
+                throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+            }
             collage.getTouristicPictures().forEach(picture -> {
                 picture.getCollagePosts().remove(collage);
             });
@@ -132,6 +143,9 @@ public class CollageService {
     // Collage not found error not handled
     public void postCollageComment(long userId, long collageId, CollageCommentDTOPost userComment){
         User user = userRepository.findUserById(userId);
+        if(!currentUserVerifier.isCurrentUser(user.getUsername())){
+            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+        }
         if(user == null){
             throw new UserNotFoundException(USER_NOT_FOUND.message());
         }
@@ -141,7 +155,7 @@ public class CollageService {
 
             CollageComment comment = new CollageComment(userComment.comment());
             comment.setDateTime(LocalDateTime.now());
-            comment.setCollagePost(collage);
+            comment.setCollage(collage);
             comment.setUser(user);
 
             collageRepository.persistNewCollageComment(comment);
@@ -168,9 +182,12 @@ public class CollageService {
     /* Works */
     public void deleteCollageComment(long userId, long commentId){
         CollageComment comment = collageRepository.findCollageComment(userId, commentId);
+        if(!currentUserVerifier.isCurrentUser(comment.getUser().getUsername())){
+            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+        }
 
         comment.setUser(null);
-        comment.setCollagePost(null);
+        comment.setCollage(null);
 
         collageRepository.removeCollageComment(comment);
     }
@@ -178,6 +195,9 @@ public class CollageService {
     /* Works */
     public void likeCollage(long userId, long collageId){
         User user = userRepository.findUserById(userId);
+        if(!currentUserVerifier.isCurrentUser(user.getUsername())){
+            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+        }
         if(user == null){
             throw new UserNotFoundException(USER_NOT_FOUND.message());
         }
@@ -188,7 +208,7 @@ public class CollageService {
         }
 
         CollageLike like = new CollageLike();
-        like.setCollagePost(collage);
+        like.setCollage(collage);
         like.setUser(user);
 
         try{
@@ -215,8 +235,11 @@ public class CollageService {
     /* Works */
     public void dislikeCollage(long userId, long collageId){
         CollageLike collageLike = collageRepository.findCollageLike(userId, collageId);
+        if(!currentUserVerifier.isCurrentUser(collageLike.getUser().getUsername())){
+            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+        }
         collageLike.setUser(null);
-        collageLike.setCollagePost(null);
+        collageLike.setCollage(null);
         collageRepository.removeCollageLike(collageLike);
     }
 

@@ -25,8 +25,8 @@ public class CollageRepositoryImpl implements CollageRepository {
 
     @Override
     public List<Collage> findCollagesByUserId(long id){
-        TypedQuery<Collage> query = entityManager.createQuery("SELECT cp FROM Collage cp " +
-                "WHERE cp.user.id = :id", Collage.class);
+        TypedQuery<Collage> query = entityManager.createQuery("SELECT c FROM Collage c " +
+                "WHERE c.user.id = :id", Collage.class);
         query.setParameter("id", id);
 
         return query.getResultList();
@@ -51,9 +51,9 @@ public class CollageRepositoryImpl implements CollageRepository {
     }
     @Override
     public Collage findCollageByCollageAndUserId(long collageId, long userId){
-        TypedQuery<Collage> query = entityManager.createQuery("SELECT cp FROM Collage cp " +
-                "WHERE cp.id = :collageId AND " +
-                "cp.user.id = :userId", Collage.class);
+        TypedQuery<Collage> query = entityManager.createQuery("SELECT c FROM Collage c " +
+                "WHERE c.id = :collageId AND " +
+                "c.user.id = :userId", Collage.class);
         query.setParameter("collageId", collageId);
         query.setParameter("userId", userId);
 
@@ -78,8 +78,8 @@ public class CollageRepositoryImpl implements CollageRepository {
 
     @Override
     public List<CollageComment> findCollageComments(long collageId){
-        TypedQuery<CollageComment> query = entityManager.createQuery("SELECT pc FROM CollageComment pc " +
-                "WHERE pc.collagePost.id = :id", CollageComment.class);
+        TypedQuery<CollageComment> query = entityManager.createQuery("SELECT cc FROM CollageComment cc " +
+                "WHERE cc.collage.id = :id", CollageComment.class);
         query.setParameter("id", collageId);
 
         return query.getResultList();
@@ -87,8 +87,8 @@ public class CollageRepositoryImpl implements CollageRepository {
 
     @Override
     public long findCollageCommentsCount(long collageId){
-        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(pc) FROM CollageComment pc " +
-                "WHERE pc.collagePost.id = :id", Long.class);
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(cc) FROM CollageComment cc " +
+                "WHERE cc.collage.id = :id", Long.class);
         query.setParameter("id", collageId);
 
         return query.getSingleResult();
@@ -113,9 +113,9 @@ public class CollageRepositoryImpl implements CollageRepository {
     }
     @Override
     public CollageLike findCollageLike(long userId, long collageId){
-        TypedQuery<CollageLike> query = entityManager.createQuery("SELECT pl FROM CollageLike pl " +
-                                                                   "WHERE pl.user.id = :userId AND " +
-                                                                   "pl.collagePost.id = :collageId", CollageLike.class);
+        TypedQuery<CollageLike> query = entityManager.createQuery("SELECT cl FROM CollageLike cl " +
+                                                                   "WHERE cl.user.id = :userId AND " +
+                                                                   "cl.collage.id = :collageId", CollageLike.class);
         query.setParameter("userId", userId);
         query.setParameter("collageId", collageId);
 
@@ -124,8 +124,8 @@ public class CollageRepositoryImpl implements CollageRepository {
 
     @Override
     public List<CollageLike> findCollageLikes(long collageId){
-        TypedQuery<CollageLike> query = entityManager.createQuery("SELECT pl FROM CollageLike pl " +
-                                                                   "WHERE pl.collagePost.id = :id", CollageLike.class);
+        TypedQuery<CollageLike> query = entityManager.createQuery("SELECT cl FROM CollageLike cl " +
+                                                                   "WHERE cl.collage.id = :id", CollageLike.class);
         query.setParameter("id", collageId);
 
         return query.getResultList();
@@ -133,8 +133,8 @@ public class CollageRepositoryImpl implements CollageRepository {
 
     @Override
     public long findCollageLikesCount(long collageId){
-        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(pl) FROM CollageLike pl " +
-                                                               "WHERE pl.collagePost.id = :id", Long.class);
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(cl) FROM CollageLike cl " +
+                                                               "WHERE cl.collage.id = :id", Long.class);
         query.setParameter("id", collageId);
 
         return query.getSingleResult();

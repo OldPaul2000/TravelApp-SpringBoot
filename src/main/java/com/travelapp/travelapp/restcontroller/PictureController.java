@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/pictures")
+@RequestMapping("/api/v1")
 public class PictureController {
 
     private PictureService pictureService;
@@ -26,39 +26,39 @@ public class PictureController {
     }
 
     /* Works */
-    @GetMapping("/cities/{city}/pictures")
-    public List<TouristicPictureDTOGet> getAllPicturesByCity(@PathVariable String city){
+    @GetMapping("/cities/pictures")
+    public List<TouristicPictureDTOGet> getAllPicturesByCity(@RequestParam String city){
         List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByCity(city);
 
         return touristicPictures;
     }
 
     /* Works */
-    @GetMapping("/communes/{commune}/pictures")
-    public List<TouristicPictureDTOGet> getAllPicturesByCommune(@PathVariable String commune){
+    @GetMapping("/communes/pictures")
+    public List<TouristicPictureDTOGet> getAllPicturesByCommune(@RequestParam String commune){
         List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByCommune(commune);
 
         return touristicPictures;
     }
 
     /* Works */
-    @GetMapping("/villages/{village}/pictures")
-    public List<TouristicPictureDTOGet> getAllPicturesByVillage(@PathVariable String village){
+    @GetMapping("/villages/pictures")
+    public List<TouristicPictureDTOGet> getAllPicturesByVillage(@RequestParam String village){
         List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByVillage(village);
 
         return touristicPictures;
     }
 
     /* Works */
-    @GetMapping("/place-names/{placeName}/pictures")
-    public List<TouristicPictureDTOGet> getAllPicturesByPlaceName(@PathVariable String placeName){
+    @GetMapping("/place-names/pictures")
+    public List<TouristicPictureDTOGet> getAllPicturesByPlaceName(@RequestParam String placeName){
         List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByPlaceName(placeName);
 
         return touristicPictures;
     }
 
     /* Works */
-    @PostMapping("/{userId}")
+    @PostMapping("/pictures/{userId}")
     public ResponseEntity<String> postNewPicture(@PathVariable long userId,
                                                  @RequestBody TouristicPictureDTOPost touristicPicture){
         pictureService.postNewPicture(userId, touristicPicture);
@@ -67,7 +67,7 @@ public class PictureController {
     }
 
     /* Works */
-    @DeleteMapping("/{userId}/{pictureId}")
+    @DeleteMapping("/pictures/{userId}/{pictureId}")
     public ResponseEntity<String> deletePicture(@PathVariable long userId,
                                                 @PathVariable long pictureId){
         pictureService.deletePicture(userId, pictureId);
@@ -76,7 +76,7 @@ public class PictureController {
     }
 
     /* Works */
-    @PostMapping("/comments/{userId}/{pictureId}")
+    @PostMapping("/pictures/comments/{userId}/{pictureId}")
     public ResponseEntity<String> givePictureComment(@PathVariable long userId,
                                                      @PathVariable long pictureId,
                                                      @RequestBody PictureCommentDTOPost pictureComment){
@@ -85,7 +85,7 @@ public class PictureController {
     }
 
     /* Works */
-    @GetMapping("/comments/{pictureId}")
+    @GetMapping("/pictures/comments/{pictureId}")
     public List<PictureCommentDTOGet> getPictureComments(@PathVariable long pictureId){
         List<PictureCommentDTOGet> pictureComments = pictureService.getPictureComments(pictureId);
 
@@ -93,7 +93,7 @@ public class PictureController {
     }
 
     /* Works */
-    @GetMapping("/comments/count/{pictureId}")
+    @GetMapping("/pictures/comments/count/{pictureId}")
     public Long getPictureCommentsCount(@PathVariable long pictureId){
         Long commentsCount = pictureService.getPictureCommentsCount(pictureId);
 
@@ -101,7 +101,7 @@ public class PictureController {
     }
 
     /* Works */
-    @DeleteMapping("/comments/{userId}/{commentId}")
+    @DeleteMapping("/pictures/comments/{userId}/{commentId}")
     public ResponseEntity<String> deletePictureComment(@PathVariable long userId,
                                                        @PathVariable long commentId){
         pictureService.deletePictureComment(userId, commentId);
@@ -110,7 +110,7 @@ public class PictureController {
     }
 
     /* Works */
-    @PostMapping("/likes/{userId}/{pictureId}")
+    @PostMapping("/pictures/likes/{userId}/{pictureId}")
     public ResponseEntity<String> givePictureLike(@PathVariable long userId,
                                                   @PathVariable long pictureId){
         pictureService.likePicture(userId, pictureId);
@@ -119,7 +119,7 @@ public class PictureController {
     }
 
     /* Works */
-    @GetMapping("/likes/{pictureId}")
+    @GetMapping("/pictures/likes/{pictureId}")
     public List<PictureLikeDTOGet> getPictureLikes(@PathVariable long pictureId){
         List<PictureLikeDTOGet> likes = pictureService.getPictureLikes(pictureId);
 
@@ -127,7 +127,7 @@ public class PictureController {
     }
 
     /* Works */
-    @GetMapping("/likes/count/{pictureId}")
+    @GetMapping("/pictures/likes/count/{pictureId}")
     public Long getLikesCount(@PathVariable long pictureId){
         Long likesCount = pictureService.getPictureLikesCount(pictureId);
 
@@ -135,7 +135,7 @@ public class PictureController {
     }
 
     /* Works */
-    @DeleteMapping("/likes/{userId}/{pictureId}")
+    @DeleteMapping("/pictures/likes/{userId}/{pictureId}")
     public ResponseEntity<String> dislikePicture(@PathVariable long userId,
                                                 @PathVariable long pictureId){
         pictureService.dislikePicture(userId, pictureId);

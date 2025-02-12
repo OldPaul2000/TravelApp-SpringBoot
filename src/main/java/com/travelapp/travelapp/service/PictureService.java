@@ -13,6 +13,7 @@ import com.travelapp.travelapp.repository.UserRepository;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.touristicpictures.PictureAlreadyLikedException;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.touristicpictures.TouristicPictureNotFoundException;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.users.UserNotFoundException;
+import com.travelapp.travelapp.securityexceptionhandling.UserNotMatchingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -25,9 +26,12 @@ import java.util.List;
 import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.PictureErrorMessages.ALREADY_LIKED_PICTURE;
 import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.PictureErrorMessages.PICTURE_NOT_FOUND;
 import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.UserErrorMessages.USER_NOT_FOUND;
+import static com.travelapp.travelapp.securityexceptionhandling.SecurityErrorMessages.USER_NOT_MATCHING;
 
 @Service
 public class PictureService {
+
+    private CurrentUserVerifier currentUserVerifier;
 
     private PictureRepository pictureRepository;
     private UserRepository userRepository;
@@ -40,13 +44,15 @@ public class PictureService {
     private PicturePlaceRemovalHelper picturePlaceRemovalHelper;
 
     @Autowired
-    public PictureService(PictureRepository pictureRepository,
+    public PictureService(CurrentUserVerifier currentUserVerifier,
+                          PictureRepository pictureRepository,
                           UserRepository userRepository,
                           PlaceRepository placeRepository,
                           TouristicPictureMapper pictureMapper,
                           PictureCommentMapper pictureCommentMapper,
                           PictureLikeMapper pictureLikeMapper,
                           PicturePlaceRemovalHelper picturePlaceRemovalHelper) {
+        this.currentUserVerifier = currentUserVerifier;
         this.pictureRepository = pictureRepository;
         this.userRepository = userRepository;
         this.placeRepository = placeRepository;
@@ -112,6 +118,9 @@ public class PictureService {
         catch (EmptyResultDataAccessException e){
             throw new UserNotFoundException(USER_NOT_FOUND.message());
         }
+        if(!currentUserVerifier.isCurrentUser(user.getUsername())){
+            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+        }
 
         Country country = placeRepository.findCountryWithCities(touristicPictureDTO.country());
         City city = country.getCities().stream()
@@ -168,6 +177,10 @@ public class PictureService {
     public void deletePicture(long userId, long pictureId){
         TouristicPicture touristicPicture = pictureRepository.findPictureByIdAndUserId(userId, pictureId);
 
+        if(!currentUserVerifier.isCurrentUser(touristicPicture.getUser().getUsername())){
+            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+        }
+
         touristicPicture.getUser().getTouristicPictures().remove(touristicPicture);
         touristicPicture.setUser(null);
 
@@ -187,6 +200,9 @@ public class PictureService {
         User user = userRepository.findUserById(userId);
         if(user == null){
             throw new UserNotFoundException(USER_NOT_FOUND.message());
+        }
+        if(!currentUserVerifier.isCurrentUser(user.getUsername())){
+            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
         }
 
         try{
@@ -220,6 +236,10 @@ public class PictureService {
     public void deletePictureComment(long userId, long commentId){
         PictureComment comment = pictureRepository.findPictureComment(userId, commentId);
 
+        if(!currentUserVerifier.isCurrentUser(comment.getUser().getUsername())){
+            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+        }
+
         comment.setUser(null);
         comment.setTouristicPicture(null);
 
@@ -231,6 +251,9 @@ public class PictureService {
         User user = userRepository.findUserById(userId);
         if(user == null){
             throw new UserNotFoundException(USER_NOT_FOUND.message());
+        }
+        if(!currentUserVerifier.isCurrentUser(user.getUsername())){
+            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
         }
 
         TouristicPicture touristicPicture = pictureRepository.findTouristicPictureById(pictureId);
@@ -266,6 +289,9 @@ public class PictureService {
     /* Works */
     public void dislikePicture(long userId, long pictureId){
         PictureLike pictureLike = pictureRepository.findPictureLike(userId, pictureId);
+        if(!currentUserVerifier.isCurrentUser(pictureLike.getUser().getUsername())){
+            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+        }
         pictureLike.setUser(null);
         pictureLike.setTouristicPicture(null);
 
