@@ -53,6 +53,16 @@ public class CollageController {
     }
 
     /* Works */
+    @PutMapping("/comments/{userId}/{commentId}")
+    public ResponseEntity<String> editCollageComment(@PathVariable long userId,
+                                                     @PathVariable long commentId,
+                                                     @RequestBody CollageCommentDTOPost collageComment){
+        collageService.editCollageComment(userId, commentId, collageComment);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /* Works */
     @DeleteMapping("/comments/{userId}/{commentId}")
     public ResponseEntity<String> deleteCollageComment(@PathVariable long userId,
                                                        @PathVariable long commentId){

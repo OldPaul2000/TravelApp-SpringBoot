@@ -29,6 +29,9 @@ public class CollageComment {
     @Column(name = "comment")
     private String comment;
 
+    @Column(name = "edited")
+    private boolean edited;
+
     public CollageComment() {}
     public CollageComment(String comment) {
         this.comment = comment;
@@ -50,7 +53,7 @@ public class CollageComment {
         this.user = user;
     }
 
-    public Collage getCollagePost() {
+    public Collage getCollage() {
         return collage;
     }
 
@@ -74,12 +77,21 @@ public class CollageComment {
         this.comment = comment;
     }
 
+    public boolean isEdited() {
+        return edited;
+    }
+
+    public void setEdited(boolean edited) {
+        this.edited = edited;
+    }
+
     @Override
     public String toString() {
         return "CollageComment{" +
                 "id=" + id +
-                ", comment='" + comment + '\'' +
                 ", dateTime=" + dateTime +
+                ", comment='" + comment + '\'' +
+                ", edited=" + edited +
                 '}';
     }
 }

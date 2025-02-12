@@ -62,6 +62,12 @@ public class CollageRepositoryImpl implements CollageRepository {
 
     @Override
     @Transactional
+    public void mergeCollageComment(CollageComment collageComment){
+        entityManager.merge(collageComment);
+    }
+
+    @Override
+    @Transactional
     public void removeCollageComment(CollageComment collageComment){
         entityManager.remove(collageComment);
     }

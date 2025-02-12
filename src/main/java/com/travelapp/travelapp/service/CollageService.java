@@ -157,12 +157,26 @@ public class CollageService {
             comment.setDateTime(LocalDateTime.now());
             comment.setCollage(collage);
             comment.setUser(user);
+            comment.setEdited(false);
 
             collageRepository.persistNewCollageComment(comment);
         }
         catch (EmptyResultDataAccessException e){
             throw new CollagePostNotFoundException(COLLAGE_POST_NOT_FOUND.message());
         }
+    }
+
+    /* Works */
+    public void editCollageComment(long userId, long commentId, CollageCommentDTOPost editedComment){
+        CollageComment comment = collageRepository.findCollageComment(userId, commentId);
+
+        if(!currentUserVerifier.isCurrentUser(comment.getUser().getUsername())){
+            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+        }
+        comment.setComment(editedComment.comment());
+        comment.setEdited(true);
+
+        collageRepository.mergeCollageComment(comment);
     }
 
     /* Works */

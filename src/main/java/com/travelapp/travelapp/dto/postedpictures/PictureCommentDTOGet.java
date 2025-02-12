@@ -6,6 +6,7 @@ public record PictureCommentDTOGet(
         Long id,
         String comment,
         LocalDateTime dateTime,
-        PostingUserDTOGet user
+        PostingUserDTOGet user,
+        boolean edited
 ) {
 }

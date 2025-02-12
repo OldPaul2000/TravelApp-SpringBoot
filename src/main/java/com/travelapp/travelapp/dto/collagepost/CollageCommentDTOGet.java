@@ -8,6 +8,7 @@ public record CollageCommentDTOGet(
         Long id,
         String comment,
         LocalDateTime dateTime,
-        PostingUserDTOGet user
+        PostingUserDTOGet user,
+        boolean edited
 ) {
 }

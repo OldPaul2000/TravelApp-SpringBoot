@@ -212,12 +212,26 @@ public class PictureService {
             comment.setDateTime(LocalDateTime.now());
             comment.setTouristicPicture(touristicPicture);
             comment.setUser(user);
+            comment.setEdited(false);
 
             pictureRepository.persistNewPictureComment(comment);
         }
         catch (EmptyResultDataAccessException e){
             throw new TouristicPictureNotFoundException(PICTURE_NOT_FOUND.message());
         }
+    }
+
+    /* Works */
+    public void editPictureComment(long userId, long commentId, PictureCommentDTOPost editedComment){
+        PictureComment comment = pictureRepository.findPictureComment(userId, commentId);
+
+        if(!currentUserVerifier.isCurrentUser(comment.getUser().getUsername())){
+            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+        }
+        comment.setComment(editedComment.comment());
+        comment.setEdited(true);
+
+        pictureRepository.mergePictureComment(comment);
     }
 
     /* Works */

@@ -26,8 +26,9 @@ public interface PictureRepository {
     void removePicturePlace(PicturePlace picturePlace);
 
     void persistNewPictureComment(PictureComment pictureComment);
-
     TouristicPicture findTouristicPictureById(long id);
+
+    void mergePictureComment(PictureComment pictureComment);
 
     List<PictureComment> findPictureComments(long id);
 

@@ -85,6 +85,16 @@ public class PictureController {
     }
 
     /* Works */
+    @PutMapping("/pictures/comments/{userId}/{commentId}")
+    public ResponseEntity<String> editPictureComment(@PathVariable long userId,
+                                                     @PathVariable long commentId,
+                                                     @RequestBody PictureCommentDTOPost pictureComment){
+        pictureService.editPictureComment(userId, commentId, pictureComment);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+    /* Works */
     @GetMapping("/pictures/comments/{pictureId}")
     public List<PictureCommentDTOGet> getPictureComments(@PathVariable long pictureId){
         List<PictureCommentDTOGet> pictureComments = pictureService.getPictureComments(pictureId);

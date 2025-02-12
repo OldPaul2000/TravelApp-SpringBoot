@@ -21,7 +21,8 @@ public class CollageCommentMapper {
                 comment.getId(),
                 comment.getComment(),
                 comment.getDateTime(),
-                userDTO
+                userDTO,
+                comment.isEdited()
         );
     }
 

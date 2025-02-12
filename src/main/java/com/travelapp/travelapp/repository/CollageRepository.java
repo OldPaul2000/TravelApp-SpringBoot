@@ -19,6 +19,8 @@ public interface CollageRepository {
     void persistNewCollageComment(CollageComment collageComment);
     Collage findCollageByCollageAndUserId(long collageId, long userId);
 
+    void mergeCollageComment(CollageComment collageComment);
+
     void removeCollageComment(CollageComment collageComment);
     CollageComment findCollageComment(long userId, long commentId);
 

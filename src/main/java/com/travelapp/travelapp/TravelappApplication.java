@@ -15,7 +15,6 @@ public class TravelappApplication {
 
 	/**TODO
 	 * -Build file upload rest endpoints
-	 * -Implement picture comments and collage comments edit function
      */
 
 	@Bean

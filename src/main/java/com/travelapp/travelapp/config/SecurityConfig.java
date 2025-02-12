@@ -76,6 +76,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/communes/pictures").permitAll() // Works
                         .requestMatchers("/api/v1/villages/pictures").permitAll() // Works
                         .requestMatchers("/api/v1/place-names/pictures").permitAll() // Works
+                        .requestMatchers(HttpMethod.GET, "/api/v1/pictures/**").permitAll() // Works
                         .requestMatchers(HttpMethod.POST, "/api/v1/pictures/**").hasAnyRole(Roles.ALL_ROLES) // Works
                         .requestMatchers(HttpMethod.PUT, "/api/v1/pictures/**").hasAnyRole(Roles.ALL_ROLES)
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/pictures/**").hasAnyRole(Roles.ALL_ROLES) // Works

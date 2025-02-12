@@ -31,6 +31,9 @@ public class PictureComment {
     @JsonBackReference("touristicPicture-pictureComment")
     private TouristicPicture touristicPicture;
 
+    @Column(name = "edited")
+    private boolean edited;
+
 
     public PictureComment() {}
     public PictureComment(String comment) {
@@ -77,6 +80,14 @@ public class PictureComment {
         this.touristicPicture = touristicPicture;
     }
 
+    public boolean isEdited() {
+        return edited;
+    }
+
+    public void setEdited(boolean edited) {
+        this.edited = edited;
+    }
+
     @Override
     public String toString() {
         return "PictureComment{" +
@@ -85,6 +96,7 @@ public class PictureComment {
                 ", comment='" + comment + '\'' +
                 ", user=" + user +
                 ", touristicPicture=" + touristicPicture +
+                ", edited=" + edited +
                 '}';
     }
 }

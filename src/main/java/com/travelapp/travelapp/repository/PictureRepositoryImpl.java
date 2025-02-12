@@ -97,6 +97,12 @@ public class PictureRepositoryImpl implements PictureRepository {
     }
 
     @Override
+    @Transactional
+    public void mergePictureComment(PictureComment pictureComment){
+        entityManager.merge(pictureComment);
+    }
+
+    @Override
     public List<PictureComment> findPictureComments(long id){
         TypedQuery<PictureComment> query = entityManager.createQuery("SELECT pc FROM PictureComment pc " +
                 "WHERE pc.touristicPicture.id = :id", PictureComment.class);

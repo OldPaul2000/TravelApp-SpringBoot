@@ -23,7 +23,8 @@ public class PictureCommentMapper {
                 comment.getId(),
                 comment.getComment(),
                 comment.getDateTime(),
-                userDTO
+                userDTO,
+                comment.isEdited()
         );
     }
 
