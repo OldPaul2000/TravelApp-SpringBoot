@@ -5,6 +5,7 @@ import com.travelapp.travelapp.service.PictureService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -57,14 +58,15 @@ public class PictureController {
         return touristicPictures;
     }
 
-    /* Works */
+    // ============= Finish implementation =============
     @PostMapping("/pictures/{userId}")
-    public ResponseEntity<String> postNewPicture(@PathVariable long userId,
-                                                 @RequestBody TouristicPictureDTOPost touristicPicture){
-        pictureService.postNewPicture(userId, touristicPicture);
+    public ResponseEntity<String> postNewPicture(@RequestParam MultipartFile file,
+                                                 @RequestParam TouristicPictureDTOPost pictureInfo){
+        pictureService.postNewPicture(file, pictureInfo);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    // ============= Finish implementation =============
 
     /* Works */
     @DeleteMapping("/pictures/{userId}/{pictureId}")

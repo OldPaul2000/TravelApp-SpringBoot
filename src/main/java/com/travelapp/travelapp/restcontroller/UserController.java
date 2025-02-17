@@ -28,7 +28,6 @@ public class UserController {
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     private AuthenticationManager authenticationManager;
-    private Environment env;
 
     public UserController(UserService userService,
                           CollageService collageService,
@@ -41,7 +40,6 @@ public class UserController {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
-        this.env = env;
     }
 
     /* Works */
@@ -62,7 +60,7 @@ public class UserController {
     /* Works */
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest){
-        String jwt = userService.loginUserWithJwt(loginRequest, authenticationManager, env);
+        String jwt = userService.loginUserWithJwt(loginRequest, authenticationManager);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new LoginResponseDTO(HttpStatus.OK.getReasonPhrase(), jwt));
     }

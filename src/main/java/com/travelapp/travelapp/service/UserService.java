@@ -19,7 +19,6 @@ import com.travelapp.travelapp.securityexceptionhandling.UserNotMatchingExceptio
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -43,6 +42,7 @@ import static com.travelapp.travelapp.securityexceptionhandling.SecurityErrorMes
 public class UserService {
 
     private CurrentUserVerifier currentUserVerifier;
+    private JWTService jwtService;
 
     private UserRepository userRepository;
     private PictureRepository pictureRepository;
@@ -53,12 +53,14 @@ public class UserService {
 
     @Autowired
     public UserService(CurrentUserVerifier currentUserVerifier,
+                       JWTService jwtService,
                        UserRepository userRepository,
                        PictureRepository pictureRepository,
                        CollageRepository collageRepository,
                        PicturePlaceRemovalHelper picturePlaceRemovalHelper,
                        PasswordEncoder passwordEncoder) {
         this.currentUserVerifier = currentUserVerifier;
+        this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.pictureRepository = pictureRepository;
         this.collageRepository = collageRepository;
@@ -69,26 +71,27 @@ public class UserService {
 
     /* Works */
     public String loginUserWithJwt(LoginRequestDTO loginRequest,
-                                   AuthenticationManager authenticationManager,
-                                   Environment env){
+                                   AuthenticationManager authenticationManager){
         String jwt = "";
         Authentication authentication = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.username(),
                 loginRequest.password());
         Authentication authenticationResponse = authenticationManager.authenticate(authentication);
         if(authenticationResponse != null && authenticationResponse.isAuthenticated()){
-            if(env != null){
-                // If JWT_SECRET environment key is not available JWTConstants.JWT_SECRET_DEFAULT_VALUE will be used
-                String secret = env.getProperty(JWTConstants.getJwtSecretKey(), JWTConstants.getJwtSecretDefaultValue());
-                SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-                jwt = Jwts.builder().issuer("Travel App").subject("JWT Token")
-                        .claim("username", authenticationResponse.getName())
-                        .claim("authorities", authenticationResponse.getAuthorities().stream().map(
-                                GrantedAuthority::getAuthority
-                        ).collect(Collectors.joining(",")))
-                        .issuedAt(new Date())
-                        .expiration(new Date((new Date()).getTime() + 600000))
-                        .signWith(secretKey).compact();
-            }
+            User user = userRepository.findUserByUsername(authenticationResponse.getName());
+
+            String secret = JWTConstants.getJwtSecretKey();
+            SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+            jwt = Jwts.builder().issuer("Travel App").subject("JWT Token")
+                    .claim("username", authenticationResponse.getName())
+                    .claim("authorities", authenticationResponse.getAuthorities().stream().map(
+                            GrantedAuthority::getAuthority
+                    ).collect(Collectors.joining(",")))
+                    .claim("userId", user.getId())
+                    .issuedAt(new Date())
+                    .expiration(new Date((new Date()).getTime() + 600000))
+                    .signWith(secretKey).compact();
+
+            jwtService.addNewToken(user, jwt);
         }
         return jwt;
     }

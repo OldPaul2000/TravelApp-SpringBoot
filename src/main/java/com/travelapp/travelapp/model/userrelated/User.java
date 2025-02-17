@@ -3,9 +3,10 @@ package com.travelapp.travelapp.model.userrelated;
 import com.travelapp.travelapp.model.postedpictures.PictureComment;
 import com.travelapp.travelapp.model.postedpictures.PictureLike;
 import com.travelapp.travelapp.model.postedpictures.TouristicPicture;
+import com.travelapp.travelapp.model.security.JWT;
+import com.travelapp.travelapp.model.usersposts.Collage;
 import com.travelapp.travelapp.model.usersposts.CollageComment;
 import com.travelapp.travelapp.model.usersposts.CollageLike;
-import com.travelapp.travelapp.model.usersposts.Collage;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -52,6 +53,17 @@ public class User{
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CollageComment> collageComments;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private JWT jwt;
+
+    public JWT getJwt() {
+        return jwt;
+    }
+
+    public void setJwt(JWT jwt) {
+        this.jwt = jwt;
+    }
 
     public User() {}
     public User(Long id, String username, String password, byte enabled) {

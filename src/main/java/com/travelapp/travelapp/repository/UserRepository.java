@@ -10,6 +10,8 @@ public interface UserRepository {
     // JUST FOR TESTING
     User findUserByIdWithTouristicPictures(long id);
 
+    User findUserByUsername(String username);
+
     User findUserByUsernameWithRoles(String username);
 
     User findUserByIdWithInfoAndRoles(long id);

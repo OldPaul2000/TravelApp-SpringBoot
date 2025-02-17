@@ -3,8 +3,11 @@ package com.travelapp.travelapp.config;
 import com.travelapp.travelapp.constants.Roles;
 import com.travelapp.travelapp.filter.CsrfCookieFilter;
 import com.travelapp.travelapp.filter.JWTValidatorFilter;
+import com.travelapp.travelapp.repository.JWTRepository;
+import com.travelapp.travelapp.repository.UserRepository;
 import com.travelapp.travelapp.securityexceptionhandling.CustomAccessDeniedHandler;
 import com.travelapp.travelapp.securityexceptionhandling.CustomBasicAuthenticationEntryPoint;
+import com.travelapp.travelapp.service.JWTService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +17,7 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +34,18 @@ import java.util.Collections;
 
 @Configuration
 public class SecurityConfig {
+
+    private UserRepository userRepository;
+    private JWTRepository jwtRepository;
+    private JWTService jwtService;
+
+    public SecurityConfig(UserRepository userRepository,
+                          JWTRepository jwtRepository,
+                          JWTService jwtService) {
+        this.userRepository = userRepository;
+        this.jwtRepository = jwtRepository;
+        this.jwtService = jwtService;
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
@@ -56,11 +72,13 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/api/v1/users/register")
                         .ignoringRequestMatchers("/api/v1/practice/file"))
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(new JWTValidatorFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JWTValidatorFilter(jwtRepository), BasicAuthenticationFilter.class)
                 // requiresSecure() (HTTPS) doesn't work on local network, so we will use requireInsecure() (HTTP)
                 // during the development phase
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
                 .authorizeHttpRequests(requests -> requests
+                        .requestMatchers("/api/v1/practice/file").permitAll()
+
                         .requestMatchers("/api/v1/users/login").permitAll() // Works
                         .requestMatchers("/api/v1/users/register").permitAll() // Works
                         .requestMatchers("/api/v1/users/profile-pictures/*").hasAnyRole(Roles.ALL_ROLES) // Works
@@ -69,6 +87,7 @@ public class SecurityConfig {
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/places/*").hasAnyRole(Roles.ALL_ROLES) // Works
                         .requestMatchers(HttpMethod.POST, "/api/v1/places/*").hasAnyRole(Roles.TOUR_GUIDE_ADMIN_OWNER) // Works
+
 
                         // /api/v1/users/{userId}/pictures is located in PictureController not in UserController
                         .requestMatchers("/api/v1/users/{userId}/pictures").permitAll() // Works
@@ -82,13 +101,18 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/pictures/**").hasAnyRole(Roles.ALL_ROLES) // Works
 
                         // /api/v1/users/collages/* is located in UserController not in CollageController
-                        // to avoid repeating /collage in every path in CollageController since it's the only
-                        // endpoint which contains /users in it
+                        // to avoid repeating '/collage' in every rest path since it's the only
+                        // endpoint which contains '/users' in it
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/collages/*").hasAnyRole(Roles.ALL_ROLES) // Works
                         .requestMatchers("/api/v1/collages/**").hasAnyRole(Roles.ALL_ROLES) // Works
                 );
 
         http.formLogin(formLogin -> formLogin.disable());
+        http.logout(logout -> {
+            logout.logoutSuccessHandler((succes, response, authentication) -> SecurityContextHolder.clearContext())
+                    .logoutUrl("/api/v1/users/logout")
+                    .addLogoutHandler(new LogoutService(jwtService));
+        });
         http.httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
         http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));
 

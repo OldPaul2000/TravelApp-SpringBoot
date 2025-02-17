@@ -19,6 +19,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,6 +41,7 @@ public class PictureService {
     private TouristicPictureMapper pictureMapper;
     private PictureCommentMapper pictureCommentMapper;
     private PictureLikeMapper pictureLikeMapper;
+    private FileStorageService fileStorageService;
 
     private PicturePlaceRemovalHelper picturePlaceRemovalHelper;
 
@@ -51,6 +53,7 @@ public class PictureService {
                           TouristicPictureMapper pictureMapper,
                           PictureCommentMapper pictureCommentMapper,
                           PictureLikeMapper pictureLikeMapper,
+                          FileStorageService fileStorageService,
                           PicturePlaceRemovalHelper picturePlaceRemovalHelper) {
         this.currentUserVerifier = currentUserVerifier;
         this.pictureRepository = pictureRepository;
@@ -59,6 +62,7 @@ public class PictureService {
         this.pictureMapper = pictureMapper;
         this.pictureCommentMapper = pictureCommentMapper;
         this.pictureLikeMapper = pictureLikeMapper;
+        this.fileStorageService = fileStorageService;
         this.picturePlaceRemovalHelper = picturePlaceRemovalHelper;
     }
 
@@ -107,13 +111,14 @@ public class PictureService {
         return pictures;
     }
 
-    /* Works */
+
+    // Need to build proper implementation
     @Transactional
-    public void postNewPicture(long userId, TouristicPictureDTOPost touristicPictureDTO){
+    public void postNewPicture(MultipartFile file, TouristicPictureDTOPost touristicPictureDTO){
 
         User user;
         try{
-            user = userRepository.findUserByIdWithTouristicPictures(userId);
+            user = userRepository.findUserByIdWithTouristicPictures(touristicPictureDTO.userId());
         }
         catch (EmptyResultDataAccessException e){
             throw new UserNotFoundException(USER_NOT_FOUND.message());
