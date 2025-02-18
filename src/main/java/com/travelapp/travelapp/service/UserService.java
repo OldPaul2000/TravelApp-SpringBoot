@@ -4,6 +4,7 @@ import com.travelapp.travelapp.constants.JWTConstants;
 import com.travelapp.travelapp.constants.Roles;
 import com.travelapp.travelapp.dto.userrelated.*;
 import com.travelapp.travelapp.model.login.LoginRequestDTO;
+import com.travelapp.travelapp.model.login.LoginResponseDTO;
 import com.travelapp.travelapp.model.postedpictures.TouristicPicture;
 import com.travelapp.travelapp.model.userrelated.ProfilePicture;
 import com.travelapp.travelapp.model.userrelated.Role;
@@ -19,6 +20,7 @@ import com.travelapp.travelapp.securityexceptionhandling.UserNotMatchingExceptio
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,8 +29,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.crypto.SecretKey;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -41,8 +45,10 @@ import static com.travelapp.travelapp.securityexceptionhandling.SecurityErrorMes
 @Service
 public class UserService {
 
+    private FileStorageService fileStorageService;
     private CurrentUserVerifier currentUserVerifier;
     private JWTService jwtService;
+    private JWTConstants jwtConstants;
 
     private UserRepository userRepository;
     private PictureRepository pictureRepository;
@@ -52,15 +58,19 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(CurrentUserVerifier currentUserVerifier,
+    public UserService(FileStorageService fileStorageService,
+                       CurrentUserVerifier currentUserVerifier,
                        JWTService jwtService,
+                       JWTConstants jwtConstants,
                        UserRepository userRepository,
                        PictureRepository pictureRepository,
                        CollageRepository collageRepository,
                        PicturePlaceRemovalHelper picturePlaceRemovalHelper,
                        PasswordEncoder passwordEncoder) {
+        this.fileStorageService = fileStorageService;
         this.currentUserVerifier = currentUserVerifier;
         this.jwtService = jwtService;
+        this.jwtConstants = jwtConstants;
         this.userRepository = userRepository;
         this.pictureRepository = pictureRepository;
         this.collageRepository = collageRepository;
@@ -68,18 +78,28 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Value("${jwt.secret-key}")
+    private String JWT_SECRET_KEY;
+
+    @Value("${app.files.profile-picture}")
+    private String PROFILE_PICTURE_LOCATION;
+
+    @Value("${app.files.touristic-pictures}")
+    private String TOURISTIC_PICTURE_LOCATION;
 
     /* Works */
-    public String loginUserWithJwt(LoginRequestDTO loginRequest,
-                                   AuthenticationManager authenticationManager){
+    public LoginResponseDTO loginUserWithJwt(LoginRequestDTO loginRequest,
+                                             AuthenticationManager authenticationManager){
+        long userId = -1;
         String jwt = "";
         Authentication authentication = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.username(),
                 loginRequest.password());
         Authentication authenticationResponse = authenticationManager.authenticate(authentication);
         if(authenticationResponse != null && authenticationResponse.isAuthenticated()){
             User user = userRepository.findUserByUsername(authenticationResponse.getName());
+            userId = user.getId();
 
-            String secret = JWTConstants.getJwtSecretKey();
+            String secret = jwtConstants.getSECRET_KEY();
             SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
             jwt = Jwts.builder().issuer("Travel App").subject("JWT Token")
                     .claim("username", authenticationResponse.getName())
@@ -93,7 +113,7 @@ public class UserService {
 
             jwtService.addNewToken(user, jwt);
         }
-        return jwt;
+        return new LoginResponseDTO(userId, jwt);
     }
 
     // Only for app maintenance(only used by OWNER or ADMIN, not used for regular app usage)
@@ -157,34 +177,47 @@ public class UserService {
         userInfo.setUser(user);
         user.setUserInfo(userInfo);
 
-        ProfilePicture profilePicture = new ProfilePicture();
-        profilePicture.setFileName(userDTORegister.userInfo().profilePicture().fileName());
-
-        userInfo.setProfilePicture(profilePicture);
-
         try{
             userRepository.persistNewUser(user);
         }
         catch (DataIntegrityViolationException e){
-            System.out.println(e);
             throw new UserRegistrationException(ALREADY_EXISTING_USER.message());
         }
     }
 
     /* Works */
-    public void updateProfilePicture(long userId, ProfilePictureDTOPost profilePicture){
+    public void updateProfilePicture(long userId, MultipartFile file){
         try{
             User user = userRepository.findUserByIdWithInfoAndRoles(userId);
             if(!currentUserVerifier.isCurrentUser(user.getUsername())){
                 throw new UserNotMatchingException(USER_NOT_MATCHING.message());
             }
-            user.getUserInfo()
-                    .getProfilePicture()
-                    .setFileName(profilePicture.fileName());
+            ProfilePicture picture = user.getUserInfo().getProfilePicture();
+            if(picture == null){
+                picture = new ProfilePicture();
+                picture.setFileName(file.getOriginalFilename());
+
+                user.getUserInfo().setProfilePicture(picture);
+            }
+            else{
+                fileStorageService.deleteFile(userId,
+                        PROFILE_PICTURE_LOCATION,
+                        picture.getFileName());
+                picture.setFileName(file.getOriginalFilename());
+            }
+
+            fileStorageService.storeFile(userId,
+                    PROFILE_PICTURE_LOCATION,
+                    picture.getFileName(),
+                    file.getBytes());
+
             userRepository.mergeUser(user);
         }
         catch (EmptyResultDataAccessException e){
             throw new UserNotFoundException(USER_NOT_FOUND.message());
+        }
+        catch (IOException e){
+            System.out.println("Setting profile picture failed");
         }
     }
 
@@ -212,6 +245,9 @@ public class UserService {
     /* Works */
     public void deleteUserAccount(long userId, boolean userPicturesDelete){
         User user = userRepository.findUserById(userId);
+        if(!currentUserVerifier.isCurrentUser(user.getUsername())){
+            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+        }
 
         user.getPictureLikes().clear();
         user.getPictureComments().clear();
@@ -226,22 +262,40 @@ public class UserService {
             });
         }
         else {
-            List<TouristicPicture> touristicPictures = pictureRepository.findTouristicPicturesByUserId(userId);
-            touristicPictures.forEach(picture -> {
-                picture.getUser().getTouristicPictures().remove(picture);
-                picture.setUser(null);
-
-                picturePlaceRemovalHelper.removePlaceFromPicture(picture.getPicturePlace());
-
-                pictureRepository.removePicture(picture);
-            });
+            removeTouristicPictures(userId);
         }
+
+        removeProfilePicture(userId, user);
 
         user.getRoles().clear();
         user.getUserInfo().setUser(null);
         user.setUserInfo(null);
 
         userRepository.removeUser(user);
+    }
+
+    private void removeProfilePicture(long userId, User user){
+        String profilePicture = user.getUserInfo().getProfilePicture().getFileName();
+        if(profilePicture != null){
+            fileStorageService.deleteFile(userId,
+                    PROFILE_PICTURE_LOCATION,
+                    profilePicture);
+        }
+    }
+
+    private void removeTouristicPictures(long userId){
+        List<TouristicPicture> touristicPictures = pictureRepository.findTouristicPicturesByUserId(userId);
+        touristicPictures.forEach(picture -> {
+            picture.getUser().getTouristicPictures().remove(picture);
+            picture.setUser(null);
+            picturePlaceRemovalHelper.removePlaceFromPicture(picture.getPicturePlace());
+
+            pictureRepository.removePicture(picture);
+
+            fileStorageService.deleteFile(userId,
+                    TOURISTIC_PICTURE_LOCATION,
+                    picture.getFileName());
+        });
     }
 
 }

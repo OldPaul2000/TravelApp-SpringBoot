@@ -1,5 +1,6 @@
 package com.travelapp.travelapp.filter;
 
+
 import com.travelapp.travelapp.constants.JWTConstants;
 import com.travelapp.travelapp.model.security.JWT;
 import com.travelapp.travelapp.repository.JWTRepository;
@@ -16,28 +17,31 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-@Component
+@Service
 public class JWTValidatorFilter extends OncePerRequestFilter {
 
     private JWTRepository jwtRepository;
+    private JWTConstants jwtConstants;
 
-    public JWTValidatorFilter(JWTRepository jwtRepository) {
+    public JWTValidatorFilter(JWTRepository jwtRepository,
+                              JWTConstants jwtConstants) {
         this.jwtRepository = jwtRepository;
+        this.jwtConstants = jwtConstants;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, ExpiredJwtException {
-        String jwt = request.getHeader(JWTConstants.getJwtHeader());
+        String jwt = request.getHeader(jwtConstants.getHEADER());
         if(jwt != null){
             try {
-                String secret = JWTConstants.getJwtSecretKey();
+                String secret = jwtConstants.getSECRET_KEY();
                 SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
                 if (secretKey != null) {
                     Claims claims = Jwts.parser().verifyWith(secretKey)

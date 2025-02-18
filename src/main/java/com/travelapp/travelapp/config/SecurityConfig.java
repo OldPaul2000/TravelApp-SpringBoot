@@ -1,5 +1,6 @@
 package com.travelapp.travelapp.config;
 
+import com.travelapp.travelapp.constants.JWTConstants;
 import com.travelapp.travelapp.constants.Roles;
 import com.travelapp.travelapp.filter.CsrfCookieFilter;
 import com.travelapp.travelapp.filter.JWTValidatorFilter;
@@ -38,13 +39,16 @@ public class SecurityConfig {
     private UserRepository userRepository;
     private JWTRepository jwtRepository;
     private JWTService jwtService;
+    private JWTConstants jwtConstants;
 
     public SecurityConfig(UserRepository userRepository,
                           JWTRepository jwtRepository,
-                          JWTService jwtService) {
+                          JWTService jwtService,
+                          JWTConstants jwtConstants) {
         this.userRepository = userRepository;
         this.jwtRepository = jwtRepository;
         this.jwtService = jwtService;
+        this.jwtConstants = jwtConstants;
     }
 
     @Bean
@@ -70,20 +74,20 @@ public class SecurityConfig {
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .ignoringRequestMatchers("/api/v1/users/login")
                         .ignoringRequestMatchers("/api/v1/users/register")
-                        .ignoringRequestMatchers("/api/v1/practice/file"))
+                        .ignoringRequestMatchers("/api/v1/practice/**"))
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(new JWTValidatorFilter(jwtRepository), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JWTValidatorFilter(jwtRepository, jwtConstants), BasicAuthenticationFilter.class)
                 // requiresSecure() (HTTPS) doesn't work on local network, so we will use requireInsecure() (HTTP)
                 // during the development phase
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/api/v1/practice/file").permitAll()
+                        .requestMatchers("/api/v1/practice/**").permitAll()
 
                         .requestMatchers("/api/v1/users/login").permitAll() // Works
                         .requestMatchers("/api/v1/users/register").permitAll() // Works
                         .requestMatchers("/api/v1/users/profile-pictures/*").hasAnyRole(Roles.ALL_ROLES) // Works
                         .requestMatchers("/api/v1/users/user-info/*").hasAnyRole(Roles.ALL_ROLES) // Works
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users").hasAnyRole(Roles.ALL_ROLES)
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/{userId}").hasAnyRole(Roles.ALL_ROLES)
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/places/*").hasAnyRole(Roles.ALL_ROLES) // Works
                         .requestMatchers(HttpMethod.POST, "/api/v1/places/*").hasAnyRole(Roles.TOUR_GUIDE_ADMIN_OWNER) // Works
@@ -111,7 +115,7 @@ public class SecurityConfig {
         http.logout(logout -> {
             logout.logoutSuccessHandler((succes, response, authentication) -> SecurityContextHolder.clearContext())
                     .logoutUrl("/api/v1/users/logout")
-                    .addLogoutHandler(new LogoutService(jwtService));
+                    .addLogoutHandler(new LogoutService(jwtService, jwtConstants));
         });
         http.httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
         http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new CustomAccessDeniedHandler()));

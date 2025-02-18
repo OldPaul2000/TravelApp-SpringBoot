@@ -6,7 +6,6 @@ public record UserInfoDTORegister(
         String firstName,
         String lastName,
         String email,
-        LocalDate birthDate,
-        ProfilePictureDTOPost profilePicture
+        LocalDate birthDate
 ) {
 }

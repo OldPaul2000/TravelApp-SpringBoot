@@ -9,27 +9,38 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class TouristicPictureRestExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<TouristicPictureErrorResponse> handlerPictureNotFound(TouristicPictureNotFoundException exc){
+    public ResponseEntity<TouristicPictureErrorResponse> handlePictureAlreadyExists(FileAlreadyExistsException exc){
 
-        TouristicPictureErrorResponse errorResponse = new TouristicPictureErrorResponse();
+        TouristicPictureErrorResponse response = new TouristicPictureErrorResponse();
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setTimestamp(System.currentTimeMillis());
+        response.setMessage(exc.getMessage());
 
-        errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
-        errorResponse.setMessage(exc.getMessage());
-        errorResponse.setTimestamp(System.currentTimeMillis());
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity<TouristicPictureErrorResponse> handlerPictureNotFound(PictureAlreadyLikedException exc){
+    public ResponseEntity<TouristicPictureErrorResponse> handlePictureNotFound(TouristicPictureNotFoundException exc){
 
-        TouristicPictureErrorResponse errorResponse = new TouristicPictureErrorResponse();
+        TouristicPictureErrorResponse response = new TouristicPictureErrorResponse();
 
-        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-        errorResponse.setMessage(exc.getMessage());
-        errorResponse.setTimestamp(System.currentTimeMillis());
+        response.setStatus(HttpStatus.NOT_FOUND.value());
+        response.setMessage(exc.getMessage());
+        response.setTimestamp(System.currentTimeMillis());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<TouristicPictureErrorResponse> handlePictureAlreadyLiked(PictureAlreadyLikedException exc){
+
+        TouristicPictureErrorResponse response = new TouristicPictureErrorResponse();
+
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setMessage(exc.getMessage());
+        response.setTimestamp(System.currentTimeMillis());
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
 }

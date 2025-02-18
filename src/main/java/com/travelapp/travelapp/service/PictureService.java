@@ -1,8 +1,6 @@
 package com.travelapp.travelapp.service;
 
-import com.travelapp.travelapp.dto.mappers.PictureCommentMapper;
-import com.travelapp.travelapp.dto.mappers.PictureLikeMapper;
-import com.travelapp.travelapp.dto.mappers.TouristicPictureMapper;
+import com.travelapp.travelapp.dto.mappers.*;
 import com.travelapp.travelapp.dto.postedpictures.*;
 import com.travelapp.travelapp.model.locations.*;
 import com.travelapp.travelapp.model.postedpictures.*;
@@ -10,11 +8,13 @@ import com.travelapp.travelapp.model.userrelated.User;
 import com.travelapp.travelapp.repository.PictureRepository;
 import com.travelapp.travelapp.repository.PlaceRepository;
 import com.travelapp.travelapp.repository.UserRepository;
+import com.travelapp.travelapp.restcontroller.exceptionhandling.touristicpictures.FileAlreadyExistsException;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.touristicpictures.PictureAlreadyLikedException;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.touristicpictures.TouristicPictureNotFoundException;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.users.UserNotFoundException;
 import com.travelapp.travelapp.securityexceptionhandling.UserNotMatchingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
@@ -24,8 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.PictureErrorMessages.ALREADY_LIKED_PICTURE;
-import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.PictureErrorMessages.PICTURE_NOT_FOUND;
+import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.PictureErrorMessages.*;
 import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.UserErrorMessages.USER_NOT_FOUND;
 import static com.travelapp.travelapp.securityexceptionhandling.SecurityErrorMessages.USER_NOT_MATCHING;
 
@@ -41,6 +40,8 @@ public class PictureService {
     private TouristicPictureMapper pictureMapper;
     private PictureCommentMapper pictureCommentMapper;
     private PictureLikeMapper pictureLikeMapper;
+    private PicturePlaceMapper picturePlaceMapper;
+    private PostingUserMapper postingUserMapper;
     private FileStorageService fileStorageService;
 
     private PicturePlaceRemovalHelper picturePlaceRemovalHelper;
@@ -53,6 +54,8 @@ public class PictureService {
                           TouristicPictureMapper pictureMapper,
                           PictureCommentMapper pictureCommentMapper,
                           PictureLikeMapper pictureLikeMapper,
+                          PicturePlaceMapper picturePlaceMapper,
+                          PostingUserMapper postingUserMapper,
                           FileStorageService fileStorageService,
                           PicturePlaceRemovalHelper picturePlaceRemovalHelper) {
         this.currentUserVerifier = currentUserVerifier;
@@ -62,15 +65,35 @@ public class PictureService {
         this.pictureMapper = pictureMapper;
         this.pictureCommentMapper = pictureCommentMapper;
         this.pictureLikeMapper = pictureLikeMapper;
+        this.picturePlaceMapper = picturePlaceMapper;
+        this.postingUserMapper = postingUserMapper;
         this.fileStorageService = fileStorageService;
         this.picturePlaceRemovalHelper = picturePlaceRemovalHelper;
+    }
+
+    @Value("${app.files.touristic-pictures}")
+    private String TOURISTIC_PICTURES_LOCATION;
+
+    public TouristicPictureDTOGet getTouristicPictureById(long id){
+        TouristicPicture picture = pictureRepository.findTouristicPictureById(id);
+        byte[] fileBytes = fileStorageService
+                .getFileBytes(picture.getUser().getId(),
+                              TOURISTIC_PICTURES_LOCATION,
+                              picture.getFileName());
+
+        return pictureMapper.toDTO(picture, fileBytes);
     }
 
     /* Works */
     public List<TouristicPictureDTOGet> getTouristicPicturesByUser(long userId){
         List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByUser(userId)
-                .stream().map(picture -> pictureMapper.toDTO(picture))
-                .toList();
+                .stream().map(picture -> {
+                    byte[] fileBytes = fileStorageService
+                            .getFileBytes(picture.getUser().getId(),
+                                    TOURISTIC_PICTURES_LOCATION,
+                                    picture.getFileName());
+                    return pictureMapper.toDTO(picture, fileBytes);
+                }).toList();
 
         return pictures;
     }
@@ -78,8 +101,13 @@ public class PictureService {
     /* Works */
     public List<TouristicPictureDTOGet> getTouristicPicturesByCity(String cityName){
         List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByCity(cityName)
-                .stream().map(picture -> pictureMapper.toDTO(picture))
-                .toList();
+                .stream().map(picture -> {
+                    byte[] fileBytes = fileStorageService
+                            .getFileBytes(picture.getUser().getId(),
+                                          TOURISTIC_PICTURES_LOCATION,
+                                          picture.getFileName());
+                    return pictureMapper.toDTO(picture, fileBytes);
+                }).toList();
 
         return pictures;
     }
@@ -87,8 +115,13 @@ public class PictureService {
     /* Works */
     public List<TouristicPictureDTOGet> getTouristicPicturesByCommune(String communeName){
         List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByCommune(communeName)
-                .stream().map(picture -> pictureMapper.toDTO(picture))
-                .toList();
+                .stream().map(picture -> {
+                    byte[] fileBytes = fileStorageService
+                            .getFileBytes(picture.getUser().getId(),
+                                    TOURISTIC_PICTURES_LOCATION,
+                                    picture.getFileName());
+                    return pictureMapper.toDTO(picture, fileBytes);
+                }).toList();
 
         return pictures;
     }
@@ -96,8 +129,13 @@ public class PictureService {
     /* Works */
     public List<TouristicPictureDTOGet> getTouristicPicturesByVillage(String villageName){
         List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByVillage(villageName)
-                .stream().map(picture -> pictureMapper.toDTO(picture))
-                .toList();
+                .stream().map(picture -> {
+                    byte[] fileBytes = fileStorageService
+                            .getFileBytes(picture.getUser().getId(),
+                                    TOURISTIC_PICTURES_LOCATION,
+                                    picture.getFileName());
+                    return pictureMapper.toDTO(picture, fileBytes);
+                }).toList();
 
         return pictures;
     }
@@ -105,20 +143,24 @@ public class PictureService {
     /* Works */
     public List<TouristicPictureDTOGet> getTouristicPicturesByPlaceName(String placeName){
         List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByPlaceName(placeName)
-                .stream().map(picture -> pictureMapper.toDTO(picture))
-                .toList();
+                .stream().map(picture -> {
+                    byte[] fileBytes = fileStorageService
+                            .getFileBytes(picture.getUser().getId(),
+                                    TOURISTIC_PICTURES_LOCATION,
+                                    picture.getFileName());
+                    return pictureMapper.toDTO(picture, fileBytes);
+                }).toList();
 
         return pictures;
     }
 
-
-    // Need to build proper implementation
+    // Works with one file per request
     @Transactional
-    public void postNewPicture(MultipartFile file, TouristicPictureDTOPost touristicPictureDTO){
+    public void postNewPicture(long userId, TouristicPictureDTOPost touristicPictureDTO, MultipartFile file) {
 
         User user;
         try{
-            user = userRepository.findUserByIdWithTouristicPictures(touristicPictureDTO.userId());
+            user = userRepository.findUserByIdWithTouristicPictures(userId);
         }
         catch (EmptyResultDataAccessException e){
             throw new UserNotFoundException(USER_NOT_FOUND.message());
@@ -139,7 +181,7 @@ public class PictureService {
                           .toList().get(0);
 
         TouristicPicture touristicPicture = new TouristicPicture();
-        touristicPicture.setFileName(touristicPictureDTO.fileName());
+        touristicPicture.setFileName(file.getOriginalFilename());
         touristicPicture.setDescription(touristicPictureDTO.description());
         touristicPicture.setCaptureDateTime(LocalDateTime.now());
         touristicPicture.setUser(user);
@@ -175,8 +217,15 @@ public class PictureService {
         touristicPicture.setCoordinates(gpsCoords);
         gpsCoords.setTouristicPicture(touristicPicture);
 
-        pictureRepository.persistNewPicture(touristicPicture);
+        try{
+            pictureRepository.persistNewPicture(touristicPicture);
+            fileStorageService.storeFile(userId, TOURISTIC_PICTURES_LOCATION, file.getOriginalFilename(), file.getBytes());
+        }
+        catch (Exception e) {
+            throw new FileAlreadyExistsException(PICTURE_ALREADY_EXISTS.message());
+        }
     }
+
 
     /* Works */
     public void deletePicture(long userId, long pictureId){
@@ -197,6 +246,9 @@ public class PictureService {
         touristicPicture.setCollagePosts(null);
 
         pictureRepository.removePicture(touristicPicture);
+        fileStorageService.deleteFile(userId,
+                                      TOURISTIC_PICTURES_LOCATION,
+                                      touristicPicture.getFileName());
     }
 
     /* Works */

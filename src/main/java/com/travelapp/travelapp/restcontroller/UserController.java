@@ -1,7 +1,6 @@
 package com.travelapp.travelapp.restcontroller;
 
 import com.travelapp.travelapp.dto.collagepost.CollageDTOGet;
-import com.travelapp.travelapp.dto.userrelated.ProfilePictureDTOPost;
 import com.travelapp.travelapp.dto.userrelated.UserAndInfoDTOGet;
 import com.travelapp.travelapp.dto.userrelated.UserDTORegister;
 import com.travelapp.travelapp.dto.userrelated.UserInfoDTOUpdate;
@@ -16,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -60,23 +60,23 @@ public class UserController {
     /* Works */
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest){
-        String jwt = userService.loginUserWithJwt(loginRequest, authenticationManager);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new LoginResponseDTO(HttpStatus.OK.getReasonPhrase(), jwt));
+        LoginResponseDTO jwt = userService.loginUserWithJwt(loginRequest, authenticationManager);
+        return ResponseEntity.ok(jwt);
     }
 
     /* Works */
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserDTORegister user){
-        userService.registerUser(user);
+    public ResponseEntity<String> registerUser(@RequestBody UserDTORegister userDTO){
+        userService.registerUser(userDTO);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     /* Works */
     @PutMapping("/profile-pictures/{userId}")
-    public ResponseEntity<String> changeProfilePicture(@PathVariable long userId, @RequestBody ProfilePictureDTOPost profilePicture){
-            userService.updateProfilePicture(userId, profilePicture);
+    public ResponseEntity<String> changeProfilePicture(@PathVariable long userId,
+                                                       @RequestParam MultipartFile file){
+            userService.updateProfilePicture(userId, file);
 
             return new ResponseEntity<>(HttpStatus.OK);
     }

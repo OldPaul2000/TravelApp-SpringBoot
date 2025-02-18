@@ -3,7 +3,6 @@ package com.travelapp.travelapp.service;
 import com.travelapp.travelapp.model.security.JWT;
 import com.travelapp.travelapp.model.userrelated.User;
 import com.travelapp.travelapp.repository.JWTRepository;
-import com.travelapp.travelapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,13 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class JWTService {
 
     private JWTRepository jwtRepository;
-    private UserRepository userRepository;
 
     @Autowired
-    public JWTService(JWTRepository jwtRepository,
-                      UserRepository userRepository) {
+    public JWTService(JWTRepository jwtRepository) {
         this.jwtRepository = jwtRepository;
-        this.userRepository = userRepository;
     }
 
     // Adds new token if there is none(the user is not logged in) or overwrites the existing one.

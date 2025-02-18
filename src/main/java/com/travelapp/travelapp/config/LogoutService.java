@@ -19,18 +19,20 @@ import java.nio.charset.StandardCharsets;
 public class LogoutService implements LogoutHandler {
 
     private JWTService jwtService;
+    private JWTConstants jwtConstants;
 
-    public LogoutService(JWTService jwtService) {
+    public LogoutService(JWTService jwtService, JWTConstants jwtConstants) {
         this.jwtService = jwtService;
+        this.jwtConstants = jwtConstants;
     }
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        String jwt = request.getHeader(JWTConstants.getJwtHeader());
+        String jwt = request.getHeader(jwtConstants.getHEADER());
         long userId = -1;
         if(jwt != null){
             try{
-                String secret = JWTConstants.getJwtSecretKey();
+                String secret = jwtConstants.getSECRET_KEY();
                 SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
                 if(secretKey != null){
                     Claims claims = Jwts.parser().verifyWith(secretKey)

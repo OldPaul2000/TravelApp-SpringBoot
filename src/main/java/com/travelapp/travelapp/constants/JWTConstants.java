@@ -1,25 +1,24 @@
 package com.travelapp.travelapp.constants;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public final class JWTConstants {
+@Component
+public class JWTConstants {
 
-    private static String JWT_SECRET_KEY;
-    private static String JWT_HEADER;
+    @Value("${jwt.secret-key}")
+    private String SECRET_KEY;
 
-    public JWTConstants(@Value("${jwt.JWT_SECRET_KEY}") String SECRET_KEY,
-                        @Value("${jwt.JWT_HEADER}") String HEADER) {
-        JWT_SECRET_KEY = SECRET_KEY;
-        JWT_HEADER = HEADER;
+    @Value("${jwt.header}")
+    private String HEADER;
+
+    public JWTConstants() {}
+
+    public String getSECRET_KEY() {
+        return SECRET_KEY;
     }
 
-    public static String getJwtSecretKey() {
-        return JWT_SECRET_KEY;
-    }
-
-    public static String getJwtHeader() {
-        return JWT_HEADER;
+    public String getHEADER() {
+        return HEADER;
     }
 }

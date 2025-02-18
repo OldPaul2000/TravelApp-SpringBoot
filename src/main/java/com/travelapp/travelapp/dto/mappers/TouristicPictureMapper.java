@@ -22,7 +22,7 @@ public class TouristicPictureMapper {
         this.postingUserMapper = postingUserMapper;
     }
 
-    public TouristicPictureDTOGet toDTO(TouristicPicture picture){
+    public TouristicPictureDTOGet toDTO(TouristicPicture picture, byte[] fileBytes){
         User user = picture.getUser();
         PicturePlace picturePlace = picture.getPicturePlace();
 
@@ -31,14 +31,15 @@ public class TouristicPictureMapper {
 
         return new TouristicPictureDTOGet(
                 picture.getId(),
-                userDTO,
                 picture.getFileName(),
                 picture.getCaptureDateTime(),
                 picture.getDescription(),
-                picturePlaceDTO,
                 picture.getCoordinates(),
                 picture.getPictureLikes().size(),
-                picture.getPictureComments().size()
+                picture.getPictureComments().size(),
+                picturePlaceDTO,
+                userDTO,
+                fileBytes
         );
     }
 }

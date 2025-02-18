@@ -18,6 +18,12 @@ public class PictureController {
         this.pictureService = pictureService;
     }
 
+    @GetMapping("/pictures/{id}")
+    public TouristicPictureDTOGet getPicturesById(@PathVariable("id") long id){
+        TouristicPictureDTOGet touristicPicture = pictureService.getTouristicPictureById(id);
+        return touristicPicture;
+    }
+
     /* Works */
     @GetMapping("/users/{userId}/pictures")
     public List<TouristicPictureDTOGet> getAllPicturesByUser(@PathVariable("userId") long id){
@@ -58,15 +64,15 @@ public class PictureController {
         return touristicPictures;
     }
 
-    // ============= Finish implementation =============
+    /* Works with one file per request */
     @PostMapping("/pictures/{userId}")
-    public ResponseEntity<String> postNewPicture(@RequestParam MultipartFile file,
-                                                 @RequestParam TouristicPictureDTOPost pictureInfo){
-        pictureService.postNewPicture(file, pictureInfo);
+    public ResponseEntity<String> postNewPicture(@PathVariable long userId,
+                                                 @RequestPart TouristicPictureDTOPost pictureInfo,
+                                                 @RequestParam MultipartFile file){
+        pictureService.postNewPicture(userId, pictureInfo, file);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    // ============= Finish implementation =============
 
     /* Works */
     @DeleteMapping("/pictures/{userId}/{pictureId}")

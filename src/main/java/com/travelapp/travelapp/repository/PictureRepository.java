@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface PictureRepository {
 
+
     List<TouristicPicture> findTouristicPicturesByUser(long id);
 
     List<TouristicPicture> findTouristicPicturesByCity(String name);

@@ -7,13 +7,14 @@ import java.time.LocalDateTime;
 
 public record TouristicPictureDTOGet(
         Long id,
-        PostingUserDTOGet user,
         String fileName,
         LocalDateTime captureDateTime,
         String description,
-        PicturePlaceDTOGet picturePlace,
         GpsCoords coords,
         long likesCount,
-        long commentsCount
+        long commentsCount,
+        PicturePlaceDTOGet picturePlace,
+        PostingUserDTOGet user,
+        byte[] fileBytes
 ) {
 }

@@ -2,8 +2,6 @@ package com.travelapp.travelapp.service;
 
 import com.travelapp.travelapp.dto.collagepost.*;
 import com.travelapp.travelapp.dto.mappers.*;
-import com.travelapp.travelapp.dto.postedpictures.PostingUserDTOGet;
-import com.travelapp.travelapp.dto.postedpictures.TouristicPictureDTOGet;
 import com.travelapp.travelapp.model.postedpictures.TouristicPicture;
 import com.travelapp.travelapp.model.userrelated.User;
 import com.travelapp.travelapp.model.usersposts.Collage;
@@ -40,9 +38,10 @@ public class CollageService {
 
     private PostingUserMapper postingUserMapper;
     private TouristicPictureMapper touristicPictureMapper;
-    private CollagePostMapper collageMapper;
+    private CollageMapper collageMapper;
     private CollageLikeMapper collageLikeMapper;
     private CollageCommentMapper collageCommentMapper;
+    private FileStorageService fileStorageService;
 
     @Autowired
     public CollageService(CurrentUserVerifier currentUserVerifier,
@@ -51,9 +50,10 @@ public class CollageService {
                           PictureRepository pictureRepository,
                           PostingUserMapper postingUserMapper,
                           TouristicPictureMapper touristicPictureMapper,
-                          CollagePostMapper collageMapper,
+                          CollageMapper collageMapper,
                           CollageLikeMapper collageLikeMapper,
-                          CollageCommentMapper collageCommentMapper) {
+                          CollageCommentMapper collageCommentMapper,
+                          FileStorageService fileStorageService) {
         this.currentUserVerifier = currentUserVerifier;
         this.collageRepository = collageRepository;
         this.userRepository = userRepository;
@@ -63,6 +63,7 @@ public class CollageService {
         this.collageMapper = collageMapper;
         this.collageLikeMapper = collageLikeMapper;
         this.collageCommentMapper = collageCommentMapper;
+        this.fileStorageService = fileStorageService;
     }
 
     /* Works */
@@ -72,21 +73,7 @@ public class CollageService {
             throw new CollagePostNotFoundException(COLLAGE_POST_NOT_FOUND.message());
         }
 
-        PostingUserDTOGet userDTO = postingUserMapper.toDTO(collage.getUser());
-        List<TouristicPictureDTOGet> collagePictures = collage.getTouristicPictures()
-                .stream()
-                .map(picture -> touristicPictureMapper.toDTO(picture))
-                .toList();
-
-        CollageDTOGet collageUserDTOGet = new CollageDTOGet(
-                collage.getId(),
-                collage.getDescription(),
-                collage.getDateTime(),
-                userDTO,
-                collagePictures
-        );
-
-        return collageUserDTOGet;
+        return collageMapper.toDTO(collage);
     }
 
     /* Works */

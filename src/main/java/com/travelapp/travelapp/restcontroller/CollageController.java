@@ -37,7 +37,7 @@ public class CollageController {
 
     /* Works */
     @GetMapping("/{id}")
-    public CollageDTOGet getCollagePost(@PathVariable long id){
+    public CollageDTOGet getCollages(@PathVariable long id){
         CollageDTOGet collage = collageService.getCollageById(id);
         return collage;
     }
