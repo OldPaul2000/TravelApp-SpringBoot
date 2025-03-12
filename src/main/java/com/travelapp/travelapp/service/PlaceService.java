@@ -29,7 +29,6 @@ public class PlaceService {
         this.placeRepository = placeRepository;
     }
 
-    /* Works */
     public CountryDTOGet getCountryWithCities(String countryName){
         try{
             Country country = placeRepository.findCountryWithCities(countryName);
@@ -54,7 +53,6 @@ public class PlaceService {
         }
     }
 
-    /* Works */
     public CityDTOGet getCityWithCommunes(String cityName){
         try{
             City city = placeRepository.findCityWithCommunes(cityName);
@@ -79,7 +77,6 @@ public class PlaceService {
         }
     }
 
-    /* Works */
     public Commune getCommuneWithVillages(String communeName){
         try{
             return placeRepository.findCommuneWithVillages(communeName);
@@ -89,7 +86,6 @@ public class PlaceService {
         }
     }
 
-    /* Works */
     public Village getVillage(String villageName){
         try{
             return placeRepository.findVillage(villageName);
@@ -99,7 +95,6 @@ public class PlaceService {
         }
     }
 
-    /* Works */
     public void addNewCountry(String countryName){
         try{
             Country country = new Country(countryName);
@@ -110,7 +105,6 @@ public class PlaceService {
         }
     }
 
-    /* Works */
     public void addNewCityForCountry(int countryId, String cityName){
         Country country = placeRepository.findCountryByIdWithCities(countryId);
         try{
@@ -124,7 +118,6 @@ public class PlaceService {
         }
     }
 
-    /* Works */
     public void addNewCommuneForCity(int cityId, String communeName){
         City city = placeRepository.findCityByIdWithCommunes(cityId);
         try{
@@ -138,7 +131,6 @@ public class PlaceService {
         }
     }
 
-    /* Works */
     public void addNewVillageForCommune(int communeId, String villageName){
         Commune commune = placeRepository.findCommuneByIdWithVillages(communeId);
         try{

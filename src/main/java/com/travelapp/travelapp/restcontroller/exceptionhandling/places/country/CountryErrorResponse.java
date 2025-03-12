@@ -1,13 +1,15 @@
 package com.travelapp.travelapp.restcontroller.exceptionhandling.places.country;
 
+import java.time.LocalDateTime;
+
 public class CountryErrorResponse {
 
     private int status;
     private String message;
-    private long timestamp;
+    private LocalDateTime timestamp;
 
     public CountryErrorResponse() {}
-    public CountryErrorResponse(int status, String message, long timestamp) {
+    public CountryErrorResponse(int status, String message, LocalDateTime timestamp) {
         this.status = status;
         this.message = message;
         this.timestamp = timestamp;
@@ -29,11 +31,11 @@ public class CountryErrorResponse {
         this.message = message;
     }
 
-    public long getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 }

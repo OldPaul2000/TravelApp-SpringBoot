@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.time.LocalDateTime;
+
 @ControllerAdvice
 public class UserRestExceptionHandler {
 
@@ -15,7 +17,7 @@ public class UserRestExceptionHandler {
 
         errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
         errorResponse.setMessage(exc.getMessage());
-        errorResponse.setTimestamp(System.currentTimeMillis());
+        errorResponse.setTimestamp(LocalDateTime.now());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
@@ -26,7 +28,7 @@ public class UserRestExceptionHandler {
         UserErrorResponse errorResponse = new UserErrorResponse();
         errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         errorResponse.setMessage(exc.getMessage());
-        errorResponse.setTimestamp(System.currentTimeMillis());
+        errorResponse.setTimestamp(LocalDateTime.now());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
@@ -37,7 +39,7 @@ public class UserRestExceptionHandler {
         UserErrorResponse errorResponse = new UserErrorResponse();
         errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         errorResponse.setMessage(exc.getMessage());
-        errorResponse.setTimestamp(System.currentTimeMillis());
+        errorResponse.setTimestamp(LocalDateTime.now());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }

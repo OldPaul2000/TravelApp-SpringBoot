@@ -2,6 +2,7 @@ package com.travelapp.travelapp.service;
 
 import com.travelapp.travelapp.constants.JWTConstants;
 import com.travelapp.travelapp.constants.Roles;
+import com.travelapp.travelapp.dto.mappers.LoginResponseMapper;
 import com.travelapp.travelapp.dto.userrelated.*;
 import com.travelapp.travelapp.model.login.LoginRequestDTO;
 import com.travelapp.travelapp.model.login.LoginResponseDTO;
@@ -45,8 +46,9 @@ import static com.travelapp.travelapp.securityexceptionhandling.SecurityErrorMes
 @Service
 public class UserService {
 
+    private LoginResponseMapper loginResponseMapper;
     private FileStorageService fileStorageService;
-    private CurrentUserVerifier currentUserVerifier;
+    private UserPrivilegesVerifier userPrivilegesVerifier;
     private JWTService jwtService;
     private JWTConstants jwtConstants;
 
@@ -58,8 +60,9 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(FileStorageService fileStorageService,
-                       CurrentUserVerifier currentUserVerifier,
+    public UserService(LoginResponseMapper loginResponseMapper,
+                       FileStorageService fileStorageService,
+                       UserPrivilegesVerifier userPrivilegesVerifier,
                        JWTService jwtService,
                        JWTConstants jwtConstants,
                        UserRepository userRepository,
@@ -67,8 +70,9 @@ public class UserService {
                        CollageRepository collageRepository,
                        PicturePlaceRemovalHelper picturePlaceRemovalHelper,
                        PasswordEncoder passwordEncoder) {
+        this.loginResponseMapper = loginResponseMapper;
         this.fileStorageService = fileStorageService;
-        this.currentUserVerifier = currentUserVerifier;
+        this.userPrivilegesVerifier = userPrivilegesVerifier;
         this.jwtService = jwtService;
         this.jwtConstants = jwtConstants;
         this.userRepository = userRepository;
@@ -87,17 +91,15 @@ public class UserService {
     @Value("${app.files.touristic-pictures}")
     private String TOURISTIC_PICTURE_LOCATION;
 
-    /* Works */
-    public LoginResponseDTO loginUserWithJwt(LoginRequestDTO loginRequest,
+    public LoginResponseDTO loginUserJwt(LoginRequestDTO loginRequest,
                                              AuthenticationManager authenticationManager){
-        long userId = -1;
-        String jwt = "";
+        String jwt;
+        LoginResponseDTO loginResponseDTO = null;
         Authentication authentication = UsernamePasswordAuthenticationToken.unauthenticated(loginRequest.username(),
                 loginRequest.password());
         Authentication authenticationResponse = authenticationManager.authenticate(authentication);
         if(authenticationResponse != null && authenticationResponse.isAuthenticated()){
             User user = userRepository.findUserByUsername(authenticationResponse.getName());
-            userId = user.getId();
 
             String secret = jwtConstants.getSECRET_KEY();
             SecretKey secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
@@ -112,22 +114,27 @@ public class UserService {
                     .signWith(secretKey).compact();
 
             jwtService.addNewToken(user, jwt);
+
+            loginResponseDTO = loginResponseMapper.toDTO(user, jwt);
         }
-        return new LoginResponseDTO(userId, jwt);
+        return loginResponseDTO;
     }
 
     // Only for app maintenance(only used by OWNER or ADMIN, not used for regular app usage)
-    /* Works */
     public UserAndInfoDTOGet getUserByIdWithInfoAndRoles(long id){
         try{
             User user = userRepository.findUserByIdWithInfoAndRoles(id);
             UserInfo info = user.getUserInfo();
             ProfilePicture picture = info.getProfilePicture();
 
-            ProfilePictureDTOGet profilePictureDTO = new ProfilePictureDTOGet(
-                    picture.getId(),
-                    picture.getFileName()
-            );
+            ProfilePictureDTOGet profilePictureDTO = null;
+            if(picture != null){
+                profilePictureDTO = new ProfilePictureDTOGet(
+                        picture.getId(),
+                        picture.getFileName()
+                );
+            }
+
 
             UserInfoDTOGet userInfoDTO = new UserInfoDTOGet(
                     info.getFirstName(),
@@ -151,7 +158,6 @@ public class UserService {
         }
     }
 
-    /* Works */
     public void registerUser(UserDTORegister userDTORegister){
         User user = new User();
         user.setUsername(userDTORegister.username());
@@ -185,11 +191,10 @@ public class UserService {
         }
     }
 
-    /* Works */
     public void updateProfilePicture(long userId, MultipartFile file){
         try{
             User user = userRepository.findUserByIdWithInfoAndRoles(userId);
-            if(!currentUserVerifier.isCurrentUser(user.getUsername())){
+            if(!userPrivilegesVerifier.isCurrentUser(user.getUsername())){
                 throw new UserNotMatchingException(USER_NOT_MATCHING.message());
             }
             ProfilePicture picture = user.getUserInfo().getProfilePicture();
@@ -221,11 +226,10 @@ public class UserService {
         }
     }
 
-    /* Works */
     public void updateUserInfo(long userId, UserInfoDTOUpdate userInfoDTOUpdate){
         try{
             User user = userRepository.findUserById(userId);
-            if(!currentUserVerifier.isCurrentUser(user.getUsername())){
+            if(!userPrivilegesVerifier.isCurrentUser(user.getUsername())){
                 throw new UserNotMatchingException(USER_NOT_MATCHING.message());
             }
 
@@ -242,10 +246,9 @@ public class UserService {
         }
     }
 
-    /* Works */
     public void deleteUserAccount(long userId, boolean userPicturesDelete){
         User user = userRepository.findUserById(userId);
-        if(!currentUserVerifier.isCurrentUser(user.getUsername())){
+        if(!userPrivilegesVerifier.isCurrentUser(user.getUsername())){
             throw new UserNotMatchingException(USER_NOT_MATCHING.message());
         }
 

@@ -30,8 +30,8 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -59,11 +59,10 @@ public class SecurityConfig {
             @Override
             public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                 CorsConfiguration config = new CorsConfiguration();
-                config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+                config.setAllowedOrigins(List.of("http://127.0.0.1:5501","http://localhost:1234"));
                 config.setAllowedMethods(Collections.singletonList("*"));
                 config.setAllowCredentials(true);
                 config.setAllowedHeaders(Collections.singletonList("*"));
-                config.setExposedHeaders(Arrays.asList("Authorization"));
                 config.setMaxAge(3600L);
                 return config;
             }
@@ -83,14 +82,17 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/api/v1/practice/**").permitAll()
 
+                        .requestMatchers("/api/v1/csrf").hasAnyRole(Roles.ALL_ROLES)
+
                         .requestMatchers("/api/v1/users/login").permitAll() // Works
                         .requestMatchers("/api/v1/users/register").permitAll() // Works
                         .requestMatchers("/api/v1/users/profile-pictures/*").hasAnyRole(Roles.ALL_ROLES) // Works
                         .requestMatchers("/api/v1/users/user-info/*").hasAnyRole(Roles.ALL_ROLES) // Works
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/users/{userId}").hasAnyRole(Roles.ALL_ROLES)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/{userId}").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/v1/places/*").hasAnyRole(Roles.ALL_ROLES) // Works
-                        .requestMatchers(HttpMethod.POST, "/api/v1/places/*").hasAnyRole(Roles.TOUR_GUIDE_ADMIN_OWNER) // Works
+                        .requestMatchers(HttpMethod.GET, "/api/v1/places/*").permitAll() // Works
+                        .requestMatchers(HttpMethod.POST, "/api/v1/places/**").hasAnyRole(Roles.TOUR_GUIDE_ADMIN_OWNER) // Works
 
 
                         // /api/v1/users/{userId}/pictures is located in PictureController not in UserController
@@ -113,7 +115,7 @@ public class SecurityConfig {
 
         http.formLogin(formLogin -> formLogin.disable());
         http.logout(logout -> {
-            logout.logoutSuccessHandler((succes, response, authentication) -> SecurityContextHolder.clearContext())
+            logout.logoutSuccessHandler((success, response, authentication) -> SecurityContextHolder.clearContext())
                     .logoutUrl("/api/v1/users/logout")
                     .addLogoutHandler(new LogoutService(jwtService, jwtConstants));
         });

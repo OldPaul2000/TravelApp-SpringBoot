@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.time.LocalDateTime;
+
 @ControllerAdvice
 public class TouristicPictureRestExceptionHandler {
 
@@ -13,7 +15,7 @@ public class TouristicPictureRestExceptionHandler {
 
         TouristicPictureErrorResponse response = new TouristicPictureErrorResponse();
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setTimestamp(System.currentTimeMillis());
+        response.setTimestamp(LocalDateTime.now());
         response.setMessage(exc.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
@@ -26,7 +28,7 @@ public class TouristicPictureRestExceptionHandler {
 
         response.setStatus(HttpStatus.NOT_FOUND.value());
         response.setMessage(exc.getMessage());
-        response.setTimestamp(System.currentTimeMillis());
+        response.setTimestamp(LocalDateTime.now());
 
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
@@ -38,7 +40,7 @@ public class TouristicPictureRestExceptionHandler {
 
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setMessage(exc.getMessage());
-        response.setTimestamp(System.currentTimeMillis());
+        response.setTimestamp(LocalDateTime.now());
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }

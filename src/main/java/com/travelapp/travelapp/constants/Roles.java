@@ -15,7 +15,7 @@ public class Roles {
 
     public static final String[] USER_ADMIN = {USER, ADMIN};
     public static final String[] USER_OWNER = {USER, OWNER};
-    public static final String[] ADMIN_OWNER = {OWNER, ADMIN};
+    public static final String[] ADMIN_OWNER = {ADMIN, OWNER};
     public static final String[] USER_ADMIN_OWNER = {USER, ADMIN, OWNER};
     public static final String[] TOUR_GUIDE_ADMIN = {TOUR_GUIDE, ADMIN};
     public static final String[] TOUR_GUIDE_ADMIN_OWNER = {TOUR_GUIDE, ADMIN, OWNER};

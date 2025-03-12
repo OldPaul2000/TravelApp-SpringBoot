@@ -1,14 +1,16 @@
 package com.travelapp.travelapp.restcontroller.exceptionhandling.collageposts;
 
+import java.time.LocalDateTime;
+
 public class CollagePostErrorResponse {
 
     private int status;
     private String message;
-    private long timestamp;
+    private LocalDateTime timestamp;
 
     public CollagePostErrorResponse() {}
 
-    public CollagePostErrorResponse(int status, String message, long timestamp) {
+    public CollagePostErrorResponse(int status, String message, LocalDateTime timestamp) {
         this.status = status;
         this.message = message;
         this.timestamp = timestamp;
@@ -30,11 +32,11 @@ public class CollagePostErrorResponse {
         this.message = message;
     }
 
-    public long getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 }

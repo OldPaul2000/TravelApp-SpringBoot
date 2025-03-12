@@ -37,8 +37,6 @@ public class LogoutService implements LogoutHandler {
                 if(secretKey != null){
                     Claims claims = Jwts.parser().verifyWith(secretKey)
                             .build().parseSignedClaims(jwt).getPayload();
-                    String username = String.valueOf(claims.get("username"));
-                    String authorities = String.valueOf(claims.get("authorities"));
                     userId = Long.parseLong(String.valueOf(claims.get("userId")));
 
                     jwtService.invalidateToken(userId, jwt);

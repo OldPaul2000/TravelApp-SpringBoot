@@ -12,6 +12,7 @@ import com.travelapp.travelapp.restcontroller.exceptionhandling.touristicpicture
 import com.travelapp.travelapp.restcontroller.exceptionhandling.touristicpictures.PictureAlreadyLikedException;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.touristicpictures.TouristicPictureNotFoundException;
 import com.travelapp.travelapp.restcontroller.exceptionhandling.users.UserNotFoundException;
+import com.travelapp.travelapp.securityexceptionhandling.NotEnoughPrivilegesException;
 import com.travelapp.travelapp.securityexceptionhandling.UserNotMatchingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,12 +27,13 @@ import java.util.List;
 
 import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.PictureErrorMessages.*;
 import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerrormessage.UserErrorMessages.USER_NOT_FOUND;
+import static com.travelapp.travelapp.securityexceptionhandling.SecurityErrorMessages.NOT_ENOUGH_PRIVILEGES;
 import static com.travelapp.travelapp.securityexceptionhandling.SecurityErrorMessages.USER_NOT_MATCHING;
 
 @Service
 public class PictureService {
 
-    private CurrentUserVerifier currentUserVerifier;
+    private UserPrivilegesVerifier userPrivilegesVerifier;
 
     private PictureRepository pictureRepository;
     private UserRepository userRepository;
@@ -47,7 +49,7 @@ public class PictureService {
     private PicturePlaceRemovalHelper picturePlaceRemovalHelper;
 
     @Autowired
-    public PictureService(CurrentUserVerifier currentUserVerifier,
+    public PictureService(UserPrivilegesVerifier userPrivilegesVerifier,
                           PictureRepository pictureRepository,
                           UserRepository userRepository,
                           PlaceRepository placeRepository,
@@ -58,7 +60,7 @@ public class PictureService {
                           PostingUserMapper postingUserMapper,
                           FileStorageService fileStorageService,
                           PicturePlaceRemovalHelper picturePlaceRemovalHelper) {
-        this.currentUserVerifier = currentUserVerifier;
+        this.userPrivilegesVerifier = userPrivilegesVerifier;
         this.pictureRepository = pictureRepository;
         this.userRepository = userRepository;
         this.placeRepository = placeRepository;
@@ -80,81 +82,44 @@ public class PictureService {
                 .getFileBytes(picture.getUser().getId(),
                               TOURISTIC_PICTURES_LOCATION,
                               picture.getFileName());
-
         return pictureMapper.toDTO(picture, fileBytes);
     }
 
-    /* Works */
     public List<TouristicPictureDTOGet> getTouristicPicturesByUser(long userId){
-        List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByUser(userId)
-                .stream().map(picture -> {
-                    byte[] fileBytes = fileStorageService
-                            .getFileBytes(picture.getUser().getId(),
-                                    TOURISTIC_PICTURES_LOCATION,
-                                    picture.getFileName());
-                    return pictureMapper.toDTO(picture, fileBytes);
-                }).toList();
-
-        return pictures;
+        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByUser(userId);
+        return mapPicturesToDTO(pictures);
     }
 
-    /* Works */
     public List<TouristicPictureDTOGet> getTouristicPicturesByCity(String cityName){
-        List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByCity(cityName)
-                .stream().map(picture -> {
-                    byte[] fileBytes = fileStorageService
-                            .getFileBytes(picture.getUser().getId(),
-                                          TOURISTIC_PICTURES_LOCATION,
-                                          picture.getFileName());
-                    return pictureMapper.toDTO(picture, fileBytes);
-                }).toList();
-
-        return pictures;
+        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByCity(cityName);
+        return mapPicturesToDTO(pictures);
     }
 
-    /* Works */
     public List<TouristicPictureDTOGet> getTouristicPicturesByCommune(String communeName){
-        List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByCommune(communeName)
-                .stream().map(picture -> {
-                    byte[] fileBytes = fileStorageService
-                            .getFileBytes(picture.getUser().getId(),
-                                    TOURISTIC_PICTURES_LOCATION,
-                                    picture.getFileName());
-                    return pictureMapper.toDTO(picture, fileBytes);
-                }).toList();
-
-        return pictures;
+        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByCommune(communeName);
+        return mapPicturesToDTO(pictures);
     }
 
-    /* Works */
     public List<TouristicPictureDTOGet> getTouristicPicturesByVillage(String villageName){
-        List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByVillage(villageName)
-                .stream().map(picture -> {
-                    byte[] fileBytes = fileStorageService
-                            .getFileBytes(picture.getUser().getId(),
-                                    TOURISTIC_PICTURES_LOCATION,
-                                    picture.getFileName());
-                    return pictureMapper.toDTO(picture, fileBytes);
-                }).toList();
-
-        return pictures;
+        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByVillage(villageName);
+        return mapPicturesToDTO(pictures);
     }
 
-    /* Works */
     public List<TouristicPictureDTOGet> getTouristicPicturesByPlaceName(String placeName){
-        List<TouristicPictureDTOGet> pictures = pictureRepository.findTouristicPicturesByPlaceName(placeName)
-                .stream().map(picture -> {
-                    byte[] fileBytes = fileStorageService
-                            .getFileBytes(picture.getUser().getId(),
-                                    TOURISTIC_PICTURES_LOCATION,
-                                    picture.getFileName());
-                    return pictureMapper.toDTO(picture, fileBytes);
-                }).toList();
-
-        return pictures;
+        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByPlaceName(placeName);
+        return mapPicturesToDTO(pictures);
     }
 
-    // Works with one file per request
+    private List<TouristicPictureDTOGet> mapPicturesToDTO(List<TouristicPicture> pictures){
+        return pictures.stream().map(picture -> {
+            byte[] fileBytes = fileStorageService
+                    .getFileBytes(picture.getUser().getId(),
+                            TOURISTIC_PICTURES_LOCATION,
+                            picture.getFileName());
+            return pictureMapper.toDTO(picture, fileBytes);
+        }).toList();
+    }
+
     @Transactional
     public void postNewPicture(long userId, TouristicPictureDTOPost touristicPictureDTO, MultipartFile file) {
 
@@ -165,7 +130,7 @@ public class PictureService {
         catch (EmptyResultDataAccessException e){
             throw new UserNotFoundException(USER_NOT_FOUND.message());
         }
-        if(!currentUserVerifier.isCurrentUser(user.getUsername())){
+        if(!userPrivilegesVerifier.isCurrentUser(user.getUsername())){
             throw new UserNotMatchingException(USER_NOT_MATCHING.message());
         }
 
@@ -226,13 +191,12 @@ public class PictureService {
         }
     }
 
-
-    /* Works */
     public void deletePicture(long userId, long pictureId){
         TouristicPicture touristicPicture = pictureRepository.findPictureByIdAndUserId(userId, pictureId);
 
-        if(!currentUserVerifier.isCurrentUser(touristicPicture.getUser().getUsername())){
-            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+        if(!userPrivilegesVerifier.isCurrentUser(touristicPicture.getUser().getUsername()) &&
+           !userPrivilegesVerifier.hasEnoughPrivileges()) {
+            throw new NotEnoughPrivilegesException(NOT_ENOUGH_PRIVILEGES.message());
         }
 
         touristicPicture.getUser().getTouristicPictures().remove(touristicPicture);
@@ -251,38 +215,34 @@ public class PictureService {
                                       touristicPicture.getFileName());
     }
 
-    /* Works */
     public void postPictureComment(long userId, long pictureId, PictureCommentDTOPost userComment){
 
         User user = userRepository.findUserById(userId);
         if(user == null){
             throw new UserNotFoundException(USER_NOT_FOUND.message());
         }
-        if(!currentUserVerifier.isCurrentUser(user.getUsername())){
+        if(!userPrivilegesVerifier.isCurrentUser(user.getUsername())){
             throw new UserNotMatchingException(USER_NOT_MATCHING.message());
         }
 
-        try{
-            TouristicPicture touristicPicture = pictureRepository.findTouristicPictureById(pictureId);
-
-            PictureComment comment = new PictureComment(userComment.comment());
-            comment.setDateTime(LocalDateTime.now());
-            comment.setTouristicPicture(touristicPicture);
-            comment.setUser(user);
-            comment.setEdited(false);
-
-            pictureRepository.persistNewPictureComment(comment);
-        }
-        catch (EmptyResultDataAccessException e){
+        TouristicPicture touristicPicture = pictureRepository.findTouristicPictureById(pictureId);
+        if(touristicPicture == null){
             throw new TouristicPictureNotFoundException(PICTURE_NOT_FOUND.message());
         }
+
+        PictureComment comment = new PictureComment(userComment.comment());
+        comment.setDateTime(LocalDateTime.now());
+        comment.setTouristicPicture(touristicPicture);
+        comment.setUser(user);
+        comment.setEdited(false);
+
+        pictureRepository.persistNewPictureComment(comment);
     }
 
-    /* Works */
     public void editPictureComment(long userId, long commentId, PictureCommentDTOPost editedComment){
         PictureComment comment = pictureRepository.findPictureComment(userId, commentId);
 
-        if(!currentUserVerifier.isCurrentUser(comment.getUser().getUsername())){
+        if(!userPrivilegesVerifier.isCurrentUser(comment.getUser().getUsername())){
             throw new UserNotMatchingException(USER_NOT_MATCHING.message());
         }
         comment.setComment(editedComment.comment());
@@ -291,24 +251,22 @@ public class PictureService {
         pictureRepository.mergePictureComment(comment);
     }
 
-    /* Works */
     public List<PictureCommentDTOGet> getPictureComments(long pictureId){
         List<PictureComment> pictureComments = pictureRepository.findPictureComments(pictureId);
         return pictureComments.stream()
                 .map(comment -> pictureCommentMapper.toDTO(comment)).toList();
     }
 
-    /* Works */
     public Long getPictureCommentsCount(long pictureId){
         return pictureRepository.findPictureCommentsCount(pictureId);
     }
 
-    /* Works */
     public void deletePictureComment(long userId, long commentId){
         PictureComment comment = pictureRepository.findPictureComment(userId, commentId);
 
-        if(!currentUserVerifier.isCurrentUser(comment.getUser().getUsername())){
-            throw new UserNotMatchingException(USER_NOT_MATCHING.message());
+        if(!userPrivilegesVerifier.isCurrentUser(comment.getUser().getUsername()) &&
+                !userPrivilegesVerifier.hasEnoughPrivileges()) {
+            throw new NotEnoughPrivilegesException(NOT_ENOUGH_PRIVILEGES.message());
         }
 
         comment.setUser(null);
@@ -317,13 +275,12 @@ public class PictureService {
         pictureRepository.removePictureComment(comment);
     }
 
-    /* Works */
     public void likePicture(long userId, long pictureId){
         User user = userRepository.findUserById(userId);
         if(user == null){
             throw new UserNotFoundException(USER_NOT_FOUND.message());
         }
-        if(!currentUserVerifier.isCurrentUser(user.getUsername())){
+        if(!userPrivilegesVerifier.isCurrentUser(user.getUsername())){
             throw new UserNotMatchingException(USER_NOT_MATCHING.message());
         }
 
@@ -344,7 +301,6 @@ public class PictureService {
         }
     }
 
-    /* Works */
     public List<PictureLikeDTOGet> getPictureLikes(long pictureId){
         return pictureRepository.findPictureLikes(pictureId)
                 .stream()
@@ -352,15 +308,13 @@ public class PictureService {
                 .toList();
     }
 
-    /* Works */
     public Long getPictureLikesCount(long pictureId){
         return pictureRepository.findPictureLikesCount(pictureId);
     }
 
-    /* Works */
     public void dislikePicture(long userId, long pictureId){
         PictureLike pictureLike = pictureRepository.findPictureLike(userId, pictureId);
-        if(!currentUserVerifier.isCurrentUser(pictureLike.getUser().getUsername())){
+        if(!userPrivilegesVerifier.isCurrentUser(pictureLike.getUser().getUsername())){
             throw new UserNotMatchingException(USER_NOT_MATCHING.message());
         }
         pictureLike.setUser(null);

@@ -10,7 +10,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-// Invoked just in the HTTP basic scenario. Not invoked when accessing api through the UI.
+// Invoked just in the HTTP basic scenario.
 public class CustomBasicAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
@@ -24,7 +24,6 @@ public class CustomBasicAuthenticationEntryPoint implements AuthenticationEntryP
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json;charset=UTF-8");
 
-        // Construct the JSON response
         String jsonResponse =
                 String.format("{\"timestamp\": \"%s\", \"status\": %d, \"error\": \"%s\", \"message\": \"%s\", \"path\": \"%s\"}",
                         currentTimeStamp, HttpStatus.UNAUTHORIZED.value(), HttpStatus.UNAUTHORIZED.getReasonPhrase(),

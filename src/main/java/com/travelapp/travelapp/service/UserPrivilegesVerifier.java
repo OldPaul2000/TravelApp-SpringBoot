@@ -14,25 +14,28 @@ import java.util.List;
 // correspond with app's policy
 
 @Service
-public class CurrentUserVerifier {
-
+public class UserPrivilegesVerifier {
 
     public boolean isCurrentUser(String username){
-        return SecurityContextHolder.getContext().getAuthentication().getName().equals(username);
+        boolean isCurrentUser = SecurityContextHolder.getContext().getAuthentication().getName().equalsIgnoreCase(username);
+        System.out.println("Is current user: " + isCurrentUser);
+        return isCurrentUser;
     }
 
     // If the user has higher privileges(ADMIN, OWNER) he can remove other user's
     // photos, collages, comments or other posts if those posts are not appropriate
     // for others
     private boolean hasPrivileges;
-    private List<String> highPrivilegeRoles = new ArrayList<>(List.of(Roles.ADMIN_OWNER));
+    private final List<String> HIGH_PRIVILEGE_ROLES = new ArrayList<>(List.of(Roles.ADMIN_OWNER));
     public boolean hasEnoughPrivileges(){
+        hasPrivileges = false;
         SecurityContextHolder.getContext().getAuthentication().getAuthorities().forEach(role -> {
-           if(highPrivilegeRoles.contains(role.toString().substring(5))){
+           if(HIGH_PRIVILEGE_ROLES.contains(role.toString().substring(5))){
+               System.out.println(role);
                hasPrivileges = true;
            }
         });
-
+        System.out.println("Enough privileges: " + hasPrivileges);
         return hasPrivileges;
     }
 

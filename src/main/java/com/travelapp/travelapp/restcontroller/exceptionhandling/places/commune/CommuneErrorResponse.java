@@ -1,14 +1,16 @@
 package com.travelapp.travelapp.restcontroller.exceptionhandling.places.commune;
 
+import java.time.LocalDateTime;
+
 public class CommuneErrorResponse {
 
     private int status;
     private String message;
-    private long timestamp;
+    private LocalDateTime timestamp;
 
     public CommuneErrorResponse() {}
 
-    public CommuneErrorResponse(int status, String message, long timestamp) {
+    public CommuneErrorResponse(int status, String message, LocalDateTime timestamp) {
         this.status = status;
         this.message = message;
         this.timestamp = timestamp;
@@ -30,11 +32,11 @@ public class CommuneErrorResponse {
         this.message = message;
     }
 
-    public long getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 }
