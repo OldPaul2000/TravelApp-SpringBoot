@@ -5,7 +5,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 // Prevents current logged in user from making
@@ -22,13 +21,16 @@ public class CurrentUserVerifier {
         return SecurityContextHolder.getContext().getAuthentication().getName().equals(username);
     }
 
+    // If the user has higher privileges(ADMIN, OWNER) he can remove other user's
+    // photos, collages, comments or other posts if those posts are not appropriate
+    // for others
     private boolean hasPrivileges;
-    public boolean hasEnoughPrivileges(String... currentUserRoles){
-        List<String> roles = new ArrayList<>(List.of(currentUserRoles));
-        Arrays.stream(Roles.ADMIN_OWNER).forEach(role -> {
-            if(roles.contains(role)){
-                hasPrivileges = true;
-            }
+    private List<String> highPrivilegeRoles = new ArrayList<>(List.of(Roles.ADMIN_OWNER));
+    public boolean hasEnoughPrivileges(){
+        SecurityContextHolder.getContext().getAuthentication().getAuthorities().forEach(role -> {
+           if(highPrivilegeRoles.contains(role.toString().substring(5))){
+               hasPrivileges = true;
+           }
         });
 
         return hasPrivileges;

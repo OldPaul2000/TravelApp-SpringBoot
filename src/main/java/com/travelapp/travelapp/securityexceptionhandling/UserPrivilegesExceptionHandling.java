@@ -19,7 +19,6 @@ public class UserNotMatchingExceptionHandling {
         response.setMessage(exc.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-
     }
 
 }
