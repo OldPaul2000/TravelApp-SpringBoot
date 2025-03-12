@@ -22,6 +22,7 @@ public class PicturePlaceRemovalHelper {
         Commune commune = picturePlace.getCommune();
         Village village = picturePlace.getVillage();
         PlaceName placeName = picturePlace.getPlaceName();
+        PlaceType placeType = picturePlace.getPlaceType();
 
         country.getPicturePlaces().remove(picturePlace);
         picturePlace.setCountry(null);
@@ -33,6 +34,8 @@ public class PicturePlaceRemovalHelper {
         picturePlace.setVillage(null);
         placeName.setPicturePlace(null);
         picturePlace.setPlaceName(null);
+        placeType.setPicturePlace(null);
+        picturePlace.setPlaceType(null);
         picturePlace.getTouristicPicture().setPicturePlace(null);
         picturePlace.setTouristicPicture(null);
 

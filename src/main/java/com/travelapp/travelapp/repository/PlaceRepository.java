@@ -2,6 +2,8 @@ package com.travelapp.travelapp.repository;
 
 import com.travelapp.travelapp.model.locations.*;
 
+import java.util.List;
+
 public interface PlaceRepository {
 
     Country findCountryWithCities(String name);
@@ -26,7 +28,9 @@ public interface PlaceRepository {
 
     void mergeCommune(Commune commune);
 
+    void persistPlaceType(PlaceType placeType);
 
+    List<PlaceType> findAllPlaceTypes();
 
     PlaceName findPlaceNameByName(String name);
 

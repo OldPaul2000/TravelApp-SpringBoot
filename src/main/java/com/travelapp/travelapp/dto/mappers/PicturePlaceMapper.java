@@ -33,6 +33,10 @@ public class PicturePlaceMapper {
                 new PlaceNameDTOGet(
                         picturePlace.getPlaceName().getId(),
                         picturePlace.getPlaceName().getName()
+                ),
+                new PlaceTypeDTOGet(
+                        picturePlace.getPlaceType().getId(),
+                        picturePlace.getPlaceType().getPlaceType()
                 )
         );
 

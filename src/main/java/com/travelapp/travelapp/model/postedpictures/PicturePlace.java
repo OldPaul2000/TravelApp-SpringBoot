@@ -38,6 +38,10 @@ public class PicturePlace {
     @JoinColumn(name = "place_name_id")
     private PlaceName placeName;
 
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "place_type_id")
+    private PlaceType placeType;
+
     public PicturePlace() {}
 
     public Long getId() {
@@ -96,6 +100,14 @@ public class PicturePlace {
         this.placeName = placeName;
     }
 
+    public PlaceType getPlaceType() {
+        return placeType;
+    }
+
+    public void setPlaceType(PlaceType placeType) {
+        this.placeType = placeType;
+    }
+
     @Override
     public String toString() {
         return "PicturePlace{" +
@@ -105,6 +117,7 @@ public class PicturePlace {
                 ", commune=" + commune +
                 ", village=" + village +
                 ", placeName=" + placeName +
+                ", placeType=" + placeType +
                 '}';
     }
 }

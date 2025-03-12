@@ -6,6 +6,8 @@ import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public class PlaceRepositoryImpl implements PlaceRepository {
 
@@ -103,6 +105,17 @@ public class PlaceRepositoryImpl implements PlaceRepository {
         entityManager.merge(commune);
     }
 
+    @Override
+    @Transactional
+    public void persistPlaceType(PlaceType placeType){
+        entityManager.persist(placeType);
+    }
+
+    @Override
+    public List<PlaceType> findAllPlaceTypes(){
+        TypedQuery<PlaceType> query = entityManager.createQuery("FROM PlaceType", PlaceType.class);
+        return query.getResultList();
+    }
 
 
 

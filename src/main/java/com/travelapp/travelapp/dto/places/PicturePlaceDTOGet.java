@@ -6,6 +6,7 @@ public record PicturePlaceDTOGet(
         CityDTOGet city,
         CommuneDTOGet commune,
         VillageDTOGet village,
-        PlaceNameDTOGet placeName
+        PlaceNameDTOGet placeName,
+        PlaceTypeDTOGet placeType
 ) {
 }
