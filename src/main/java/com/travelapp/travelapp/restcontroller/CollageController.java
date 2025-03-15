@@ -66,8 +66,10 @@ public class CollageController {
     }
 
     @GetMapping("/comments/{collageId}")
-    public List<CollageCommentDTOGet> getCollageComments(@PathVariable long collageId){
-        return collageService.getCollageComments(collageId);
+    public List<CollageCommentDTOGet> getCollageComments(@PathVariable long collageId,
+                                                         @RequestParam int pageStart,
+                                                         @RequestParam int offset){
+        return collageService.getCollageComments(collageId, pageStart, offset);
     }
 
     @GetMapping("/comments/count/{collageId}")
@@ -92,8 +94,10 @@ public class CollageController {
     }
 
     @GetMapping("/likes/{collageId}")
-    public List<CollageLikeDTOGet> getCollageLikes(@PathVariable long collageId){
-        return collageService.getCollageLikes(collageId);
+    public List<CollageLikeDTOGet> getCollageLikes(@PathVariable long collageId,
+                                                   @RequestParam int pageStart,
+                                                   @RequestParam int offset){
+        return collageService.getCollageLikes(collageId, pageStart, offset);
     }
 
     @GetMapping("/likes/count/{collageId}")

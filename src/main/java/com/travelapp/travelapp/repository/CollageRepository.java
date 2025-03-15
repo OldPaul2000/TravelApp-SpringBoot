@@ -10,7 +10,7 @@ public interface CollageRepository {
 
     Collage findCollageById(long id);
 
-    List<Collage> findCollagesByUserId(long userId);
+    List<Collage> findCollagesByUserId(long userId, int startPage, int offset);
 
     void persistNewCollage(Collage collage);
 
@@ -24,7 +24,7 @@ public interface CollageRepository {
     void removeCollageComment(CollageComment collageComment);
     CollageComment findCollageComment(long userId, long commentId);
 
-    List<CollageComment> findCollageComments(long collageId);
+    List<CollageComment> findCollageComments(long collageId, int pageStart, int offset);
 
     long findCollageCommentsCount(long collageId);
 
@@ -35,7 +35,7 @@ public interface CollageRepository {
     void removeCollageLike(CollageLike collageLike);
     CollageLike findCollageLike(long userId, long collageId);
 
-    List<CollageLike> findCollageLikes(long collageId);
+    List<CollageLike> findCollageLikes(long collageId, int pageStart, int offset);
 
     long findCollageLikesCount(long collageId);
 

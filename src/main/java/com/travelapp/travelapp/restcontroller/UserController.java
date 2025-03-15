@@ -40,8 +40,10 @@ public class UserController {
     }
 
     @GetMapping("/collages/{userId}")
-    public List<CollageDTOGet> getCollagesFromUser(@PathVariable long userId){
-        List<CollageDTOGet> collages = collageService.getCollagesFromUser(userId);
+    public List<CollageDTOGet> getCollagesFromUser(@PathVariable long userId,
+                                                   @RequestParam int startPage,
+                                                   @RequestParam int offset){
+        List<CollageDTOGet> collages = collageService.getCollagesFromUser(userId, startPage, offset);
         return collages;
     }
 
@@ -61,7 +63,6 @@ public class UserController {
     @PutMapping("/profile-pictures/{userId}")
     public ResponseEntity<String> changeProfilePicture(@PathVariable long userId,
                                                        @RequestParam MultipartFile file){
-        System.out.println(file.getOriginalFilename());
             userService.updateProfilePicture(userId, file);
 
             return new ResponseEntity<>(HttpStatus.OK);

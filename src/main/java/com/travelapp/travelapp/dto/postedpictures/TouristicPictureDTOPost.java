@@ -7,6 +7,7 @@ public record TouristicPictureDTOPost(
         String commune,
         String village,
         String placeName,
+        String placeType,
         double latitude,
         double longitude
 ) {

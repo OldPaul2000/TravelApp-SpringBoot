@@ -38,7 +38,7 @@ public class PicturePlace {
     @JoinColumn(name = "place_name_id")
     private PlaceName placeName;
 
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "place_type_id")
     private PlaceType placeType;
 

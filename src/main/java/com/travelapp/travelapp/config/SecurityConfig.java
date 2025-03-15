@@ -84,33 +84,34 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/v1/csrf").hasAnyRole(Roles.ALL_ROLES)
 
-                        .requestMatchers("/api/v1/users/login").permitAll() // Works
-                        .requestMatchers("/api/v1/users/register").permitAll() // Works
-                        .requestMatchers("/api/v1/users/profile-pictures/*").hasAnyRole(Roles.ALL_ROLES) // Works
-                        .requestMatchers("/api/v1/users/user-info/*").hasAnyRole(Roles.ALL_ROLES) // Works
+                        .requestMatchers("/api/v1/users/login").permitAll()
+                        .requestMatchers("/api/v1/users/register").permitAll()
+                        .requestMatchers("/api/v1/users/profile-pictures/*").hasAnyRole(Roles.ALL_ROLES)
+                        .requestMatchers("/api/v1/users/user-info/*").hasAnyRole(Roles.ALL_ROLES)
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/users/{userId}").hasAnyRole(Roles.ALL_ROLES)
                         .requestMatchers(HttpMethod.GET, "/api/v1/users/{userId}").permitAll()
 
-                        .requestMatchers(HttpMethod.GET, "/api/v1/places/*").permitAll() // Works
-                        .requestMatchers(HttpMethod.POST, "/api/v1/places/**").hasAnyRole(Roles.TOUR_GUIDE_ADMIN_OWNER) // Works
+                        .requestMatchers(HttpMethod.GET, "/api/v1/places/*").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/places/**").hasAnyRole(Roles.TOUR_GUIDE_ADMIN_OWNER)
 
 
                         // /api/v1/users/{userId}/pictures is located in PictureController not in UserController
-                        .requestMatchers("/api/v1/users/{userId}/pictures").permitAll() // Works
-                        .requestMatchers("/api/v1/cities/pictures").permitAll() // Works
-                        .requestMatchers("/api/v1/communes/pictures").permitAll() // Works
-                        .requestMatchers("/api/v1/villages/pictures").permitAll() // Works
-                        .requestMatchers("/api/v1/place-names/pictures").permitAll() // Works
-                        .requestMatchers(HttpMethod.GET, "/api/v1/pictures/**").permitAll() // Works
-                        .requestMatchers(HttpMethod.POST, "/api/v1/pictures/**").hasAnyRole(Roles.ALL_ROLES) // Works
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/{userId}/pictures").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/{userId}/place-types/pictures").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/cities/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/communes/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/villages/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/place-names/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/pictures/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/pictures/**").hasAnyRole(Roles.ALL_ROLES)
                         .requestMatchers(HttpMethod.PUT, "/api/v1/pictures/**").hasAnyRole(Roles.ALL_ROLES)
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/pictures/**").hasAnyRole(Roles.ALL_ROLES) // Works
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/pictures/**").hasAnyRole(Roles.ALL_ROLES)
 
                         // /api/v1/users/collages/* is located in UserController not in CollageController
                         // to avoid repeating '/collage' in every rest path since it's the only
                         // endpoint which contains '/users' in it
-                        .requestMatchers(HttpMethod.GET, "/api/v1/users/collages/*").hasAnyRole(Roles.ALL_ROLES) // Works
-                        .requestMatchers("/api/v1/collages/**").hasAnyRole(Roles.ALL_ROLES) // Works
+                        .requestMatchers(HttpMethod.GET, "/api/v1/users/collages/**").hasAnyRole(Roles.ALL_ROLES)
+                        .requestMatchers("/api/v1/collages/**").hasAnyRole(Roles.ALL_ROLES)
                 );
 
         http.formLogin(formLogin -> formLogin.disable());

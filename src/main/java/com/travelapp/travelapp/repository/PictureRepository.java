@@ -10,15 +10,23 @@ import java.util.List;
 public interface PictureRepository {
 
 
-    List<TouristicPicture> findTouristicPicturesByUser(long id);
+    List<TouristicPicture> findTouristicPicturesByUser(long id, int pageStart, int offset);
 
-    List<TouristicPicture> findTouristicPicturesByCity(String name);
+    List<TouristicPicture> findTouristicPicturesByUserAndPlaceType(long userId, String placeType, int pageStart, int offset);
 
-    List<TouristicPicture> findTouristicPicturesByCommune(String name);
+    List<TouristicPicture> findTouristicPicturesByCity(String name, int pageStart, int offset);
 
-    List<TouristicPicture> findTouristicPicturesByVillage(String name);
+    List<TouristicPicture> findTouristicPicturesByCityAndPlaceType(String city, String placeType, int pageStart, int offset);
 
-    List<TouristicPicture> findTouristicPicturesByPlaceName(String name);
+    List<TouristicPicture> findTouristicPicturesByCommune(String name, int pageStart, int offset);
+
+    List<TouristicPicture> findTouristicPicturesByCommuneAndPlaceType(String commune, String placeType, int pageStart, int offset);
+
+    List<TouristicPicture> findTouristicPicturesByVillage(String name, int pageStart, int offset);
+
+    List<TouristicPicture> findTouristicPicturesByVillageAndPlaceType(String village, String placeType, int pageStart, int offset);
+
+    List<TouristicPicture> findTouristicPicturesByPlaceName(String name, int pageStart, int offset);
 
     void persistNewPicture(TouristicPicture touristicPicture);
 
@@ -31,7 +39,7 @@ public interface PictureRepository {
 
     void mergePictureComment(PictureComment pictureComment);
 
-    List<PictureComment> findPictureComments(long id);
+    List<PictureComment> findPictureComments(long id, int pageStart, int offset);
 
     Long findPictureCommentsCount(long pictureId);
 
@@ -40,7 +48,7 @@ public interface PictureRepository {
 
     void persistNewPictureLike(PictureLike pictureLike);
 
-    List<PictureLike> findPictureLikes(long pictureId);
+    List<PictureLike> findPictureLikes(long pictureId, int pageStart, int offset);
 
     Long findPictureLikesCount(long pictureId);
 

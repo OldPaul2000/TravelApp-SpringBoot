@@ -24,10 +24,14 @@ public class CollageRepositoryImpl implements CollageRepository {
     }
 
     @Override
-    public List<Collage> findCollagesByUserId(long id){
+    public List<Collage> findCollagesByUserId(long id, int startPage, int offset){
         TypedQuery<Collage> query = entityManager.createQuery("SELECT c FROM Collage c " +
                 "WHERE c.user.id = :id", Collage.class);
         query.setParameter("id", id);
+        startPage--;
+        startPage = Math.max(0, startPage);
+        query.setFirstResult(startPage);
+        query.setMaxResults(offset);
 
         return query.getResultList();
     }
@@ -83,10 +87,14 @@ public class CollageRepositoryImpl implements CollageRepository {
     }
 
     @Override
-    public List<CollageComment> findCollageComments(long collageId){
+    public List<CollageComment> findCollageComments(long collageId, int pageStart, int offset){
         TypedQuery<CollageComment> query = entityManager.createQuery("SELECT cc FROM CollageComment cc " +
                 "WHERE cc.collage.id = :id", CollageComment.class);
         query.setParameter("id", collageId);
+        pageStart--;
+        pageStart = Math.max(pageStart, 0);
+        query.setFirstResult(pageStart);
+        query.setMaxResults(offset);
 
         return query.getResultList();
     }
@@ -129,7 +137,7 @@ public class CollageRepositoryImpl implements CollageRepository {
     }
 
     @Override
-    public List<CollageLike> findCollageLikes(long collageId){
+    public List<CollageLike> findCollageLikes(long collageId, int pageStart, int offset){
         TypedQuery<CollageLike> query = entityManager.createQuery("SELECT cl FROM CollageLike cl " +
                                                                    "WHERE cl.collage.id = :id", CollageLike.class);
         query.setParameter("id", collageId);

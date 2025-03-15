@@ -25,36 +25,86 @@ public class PictureController {
     }
 
     @GetMapping("/users/{userId}/pictures")
-    public List<TouristicPictureDTOGet> getAllPicturesByUser(@PathVariable("userId") long id){
-        List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByUser(id);
+    public List<TouristicPictureDTOGet> getAllPicturesByUser(@PathVariable("userId") long id,
+                                                             @RequestParam int pageStart,
+                                                             @RequestParam int offset){
+        List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByUser(id, pageStart, offset);
+
+        return touristicPictures;
+    }
+
+    @GetMapping("/users/{userId}/place-types/pictures")
+    public List<TouristicPictureDTOGet> getAllPicturesByUserAndPlaceType(@PathVariable("userId") long id,
+                                                             @RequestParam String placeType,
+                                                             @RequestParam int pageStart,
+                                                             @RequestParam int offset){
+        List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByUserAndPlaceType(id, placeType, pageStart, offset);
 
         return touristicPictures;
     }
 
     @GetMapping("/cities/pictures")
-    public List<TouristicPictureDTOGet> getAllPicturesByCity(@RequestParam String city){
-        List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByCity(city);
+    public List<TouristicPictureDTOGet> getAllPicturesByCity(@RequestParam String city,
+                                                             @RequestParam int pageStart,
+                                                             @RequestParam int offset){
+        List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByCity(city, pageStart, offset);
+
+        return touristicPictures;
+    }
+
+    @GetMapping("/cities/place-types/pictures")
+    public List<TouristicPictureDTOGet> getAllPicturesByCityAndPlaceType(@RequestParam String city,
+                                                             @RequestParam String placeType,
+                                                             @RequestParam int pageStart,
+                                                             @RequestParam int offset){
+        List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByCityAndPlaceType(city, placeType, pageStart, offset);
 
         return touristicPictures;
     }
 
     @GetMapping("/communes/pictures")
-    public List<TouristicPictureDTOGet> getAllPicturesByCommune(@RequestParam String commune){
-        List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByCommune(commune);
+    public List<TouristicPictureDTOGet> getAllPicturesByCommune(@RequestParam String commune,
+                                                                @RequestParam int pageStart,
+                                                                @RequestParam int offset){
+        List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByCommune(commune, pageStart, offset);
+
+        return touristicPictures;
+    }
+
+    @GetMapping("/communes/place-types/pictures")
+    public List<TouristicPictureDTOGet> getAllPicturesByCommuneAndPlaceType(@RequestParam String commune,
+                                                                @RequestParam String placeType,
+                                                                @RequestParam int pageStart,
+                                                                @RequestParam int offset){
+        List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByCommuneAndPlaceType(commune, placeType, pageStart, offset);
 
         return touristicPictures;
     }
 
     @GetMapping("/villages/pictures")
-    public List<TouristicPictureDTOGet> getAllPicturesByVillage(@RequestParam String village){
-        List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByVillage(village);
+    public List<TouristicPictureDTOGet> getAllPicturesByVillage(@RequestParam String village,
+                                                                @RequestParam int pageStart,
+                                                                @RequestParam int offset){
+        List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByVillage(village, pageStart, offset);
+
+        return touristicPictures;
+    }
+
+    @GetMapping("/villages/place-types/pictures")
+    public List<TouristicPictureDTOGet> getAllPicturesByVillageAndPlaceType(@RequestParam String village,
+                                                                @RequestParam String placeType,
+                                                                @RequestParam int pageStart,
+                                                                @RequestParam int offset){
+        List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByVillageAndPlaceType(village, placeType, pageStart, offset);
 
         return touristicPictures;
     }
 
     @GetMapping("/place-names/pictures")
-    public List<TouristicPictureDTOGet> getAllPicturesByPlaceName(@RequestParam String placeName){
-        List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByPlaceName(placeName);
+    public List<TouristicPictureDTOGet> getAllPicturesByPlaceName(@RequestParam String placeName,
+                                                                  @RequestParam int pageStart,
+                                                                  @RequestParam int offset){
+        List<TouristicPictureDTOGet> touristicPictures = pictureService.getTouristicPicturesByPlaceName(placeName, pageStart, offset);
 
         return touristicPictures;
     }
@@ -93,8 +143,10 @@ public class PictureController {
     }
 
     @GetMapping("/pictures/comments/{pictureId}")
-    public List<PictureCommentDTOGet> getPictureComments(@PathVariable long pictureId){
-        List<PictureCommentDTOGet> pictureComments = pictureService.getPictureComments(pictureId);
+    public List<PictureCommentDTOGet> getPictureComments(@PathVariable long pictureId,
+                                                         @RequestParam int pageStart,
+                                                         @RequestParam int offset){
+        List<PictureCommentDTOGet> pictureComments = pictureService.getPictureComments(pictureId, pageStart, offset);
 
         return pictureComments;
     }
@@ -123,8 +175,10 @@ public class PictureController {
     }
 
     @GetMapping("/pictures/likes/{pictureId}")
-    public List<PictureLikeDTOGet> getPictureLikes(@PathVariable long pictureId){
-        List<PictureLikeDTOGet> likes = pictureService.getPictureLikes(pictureId);
+    public List<PictureLikeDTOGet> getPictureLikes(@PathVariable long pictureId,
+                                                   @RequestParam int pageStart,
+                                                   @RequestParam int offset){
+        List<PictureLikeDTOGet> likes = pictureService.getPictureLikes(pictureId, pageStart, offset);
 
         return likes;
     }

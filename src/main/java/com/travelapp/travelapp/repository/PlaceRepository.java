@@ -28,13 +28,13 @@ public interface PlaceRepository {
 
     void mergeCommune(Commune commune);
 
-    void persistPlaceType(PlaceType placeType);
-
-    List<PlaceType> findAllPlaceTypes();
-
     PlaceName findPlaceNameByName(String name);
 
     void persistNewPlaceName(PlaceName placeName);
 
+    void persistPlaceType(PlaceType placeType);
 
+    List<PlaceType> findAllPlaceTypes();
+
+    PlaceType findPlaceTypeByName(String placeType);
 }

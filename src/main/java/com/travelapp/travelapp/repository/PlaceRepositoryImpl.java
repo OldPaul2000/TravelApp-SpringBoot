@@ -106,20 +106,6 @@ public class PlaceRepositoryImpl implements PlaceRepository {
     }
 
     @Override
-    @Transactional
-    public void persistPlaceType(PlaceType placeType){
-        entityManager.persist(placeType);
-    }
-
-    @Override
-    public List<PlaceType> findAllPlaceTypes(){
-        TypedQuery<PlaceType> query = entityManager.createQuery("FROM PlaceType", PlaceType.class);
-        return query.getResultList();
-    }
-
-
-
-    @Override
     public PlaceName findPlaceNameByName(String name){
         TypedQuery<PlaceName> query = entityManager.createQuery("SELECT pn FROM PlaceName pn " +
                                                                          "WHERE pn.name = :name", PlaceName.class);
@@ -131,6 +117,26 @@ public class PlaceRepositoryImpl implements PlaceRepository {
     @Transactional
     public void persistNewPlaceName(PlaceName placeName){
         entityManager.persist(placeName);
+    }
+
+    @Override
+    @Transactional
+    public void persistPlaceType(PlaceType placeType){
+        entityManager.persist(placeType);
+    }
+
+    @Override
+    public List<PlaceType> findAllPlaceTypes(){
+        TypedQuery<PlaceType> query = entityManager.createQuery("FROM PlaceType", PlaceType.class);
+        return query.getResultList();
+    }
+
+    @Override
+    public PlaceType findPlaceTypeByName(String placeType){
+        TypedQuery<PlaceType> query = entityManager.createQuery("SELECT pt FROM PlaceType pt " +
+                                                                "WHERE pt.placeType =: data",PlaceType.class);
+        query.setParameter("data", placeType);
+        return query.getSingleResult();
     }
 
 }

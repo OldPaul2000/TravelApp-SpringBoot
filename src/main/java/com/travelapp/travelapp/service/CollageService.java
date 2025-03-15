@@ -75,8 +75,8 @@ public class CollageService {
         return collageMapper.toDTO(collage);
     }
 
-    public List<CollageDTOGet> getCollagesFromUser(long userId){
-        return collageRepository.findCollagesByUserId(userId)
+    public List<CollageDTOGet> getCollagesFromUser(long userId, int startPage, int offset){
+        return collageRepository.findCollagesByUserId(userId, startPage, offset)
                 .stream()
                 .map(collage -> collageMapper.toDTO(collage))
                 .toList();
@@ -159,8 +159,8 @@ public class CollageService {
         collageRepository.mergeCollageComment(comment);
     }
 
-    public List<CollageCommentDTOGet> getCollageComments(long collageId){
-        List<CollageComment> collageComments = collageRepository.findCollageComments(collageId);
+    public List<CollageCommentDTOGet> getCollageComments(long collageId, int pageStart, int offset){
+        List<CollageComment> collageComments = collageRepository.findCollageComments(collageId, pageStart, offset);
         return collageComments
                 .stream()
                 .map(comment -> collageCommentMapper.toDTO(comment))
@@ -209,8 +209,8 @@ public class CollageService {
         }
     }
 
-    public List<CollageLikeDTOGet> getCollageLikes(long collageId){
-        return collageRepository.findCollageLikes(collageId)
+    public List<CollageLikeDTOGet> getCollageLikes(long collageId, int pageStart, int offset){
+        return collageRepository.findCollageLikes(collageId, pageStart, offset)
                 .stream()
                 .map(like -> collageLikeMapper.toDTO(like))
                 .toList();

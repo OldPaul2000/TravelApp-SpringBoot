@@ -34,7 +34,7 @@ public class PicturePlaceRemovalHelper {
         picturePlace.setVillage(null);
         placeName.setPicturePlace(null);
         picturePlace.setPlaceName(null);
-        placeType.setPicturePlace(null);
+        placeType.removePicturePlace(picturePlace);
         picturePlace.setPlaceType(null);
         picturePlace.getTouristicPicture().setPicturePlace(null);
         picturePlace.setTouristicPicture(null);

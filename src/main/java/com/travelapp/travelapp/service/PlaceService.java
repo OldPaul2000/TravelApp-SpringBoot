@@ -1,8 +1,10 @@
 package com.travelapp.travelapp.service;
 
+import com.travelapp.travelapp.dto.mappers.PlaceTypeMapper;
 import com.travelapp.travelapp.dto.places.CityDTOGet;
 import com.travelapp.travelapp.dto.places.CommuneDTOGet;
 import com.travelapp.travelapp.dto.places.CountryDTOGet;
+import com.travelapp.travelapp.dto.places.PlaceTypeDTOGet;
 import com.travelapp.travelapp.model.locations.City;
 import com.travelapp.travelapp.model.locations.Commune;
 import com.travelapp.travelapp.model.locations.Country;
@@ -25,8 +27,11 @@ import static com.travelapp.travelapp.restcontroller.exceptionhandling.customerr
 public class PlaceService {
 
     private PlaceRepository placeRepository;
-    public PlaceService(PlaceRepository placeRepository) {
+    private PlaceTypeMapper placeTypeMapper;
+    public PlaceService(PlaceRepository placeRepository,
+                        PlaceTypeMapper placeTypeMapper) {
         this.placeRepository = placeRepository;
+        this.placeTypeMapper = placeTypeMapper;
     }
 
     public CountryDTOGet getCountryWithCities(String countryName){
@@ -93,6 +98,13 @@ public class PlaceService {
         catch (EmptyResultDataAccessException e){
             throw new VillageNotFoundException(VILLAGE_NOT_FOUND.message());
         }
+    }
+
+    public List<PlaceTypeDTOGet> getAllPlaceTypes(){
+        return placeRepository.findAllPlaceTypes()
+                .stream().map(placeType -> {
+                    return placeTypeMapper.toDTO(placeType);
+                }).toList();
     }
 
     public void addNewCountry(String countryName){

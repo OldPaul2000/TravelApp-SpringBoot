@@ -85,28 +85,48 @@ public class PictureService {
         return pictureMapper.toDTO(picture, fileBytes);
     }
 
-    public List<TouristicPictureDTOGet> getTouristicPicturesByUser(long userId){
-        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByUser(userId);
+    public List<TouristicPictureDTOGet> getTouristicPicturesByUser(long userId, int pageStart, int offset){
+        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByUser(userId, pageStart, offset);
         return mapPicturesToDTO(pictures);
     }
 
-    public List<TouristicPictureDTOGet> getTouristicPicturesByCity(String cityName){
-        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByCity(cityName);
+    public List<TouristicPictureDTOGet> getTouristicPicturesByUserAndPlaceType(long userId, String placeType, int pageStart, int offset){
+        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByUserAndPlaceType(userId, placeType, pageStart, offset);
         return mapPicturesToDTO(pictures);
     }
 
-    public List<TouristicPictureDTOGet> getTouristicPicturesByCommune(String communeName){
-        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByCommune(communeName);
+    public List<TouristicPictureDTOGet> getTouristicPicturesByCity(String cityName, int pageStart, int offset){
+        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByCity(cityName, pageStart, offset);
         return mapPicturesToDTO(pictures);
     }
 
-    public List<TouristicPictureDTOGet> getTouristicPicturesByVillage(String villageName){
-        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByVillage(villageName);
+    public List<TouristicPictureDTOGet> getTouristicPicturesByCityAndPlaceType(String cityName, String placeType, int pageStart, int offset){
+        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByCityAndPlaceType(cityName, placeType, pageStart, offset);
         return mapPicturesToDTO(pictures);
     }
 
-    public List<TouristicPictureDTOGet> getTouristicPicturesByPlaceName(String placeName){
-        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByPlaceName(placeName);
+    public List<TouristicPictureDTOGet> getTouristicPicturesByCommune(String communeName, int pageStart, int offset){
+        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByCommune(communeName, pageStart, offset);
+        return mapPicturesToDTO(pictures);
+    }
+
+    public List<TouristicPictureDTOGet> getTouristicPicturesByCommuneAndPlaceType(String communeName, String placeType, int pageStart, int offset){
+        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByCommuneAndPlaceType(communeName, placeType, pageStart, offset);
+        return mapPicturesToDTO(pictures);
+    }
+
+    public List<TouristicPictureDTOGet> getTouristicPicturesByVillage(String villageName, int pageStart, int offset){
+        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByVillage(villageName, pageStart, offset);
+        return mapPicturesToDTO(pictures);
+    }
+
+    public List<TouristicPictureDTOGet> getTouristicPicturesByVillageAndPlaceType(String villageName, String placeType, int pageStart, int offset){
+        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByVillageAndPlaceType(villageName, placeType, pageStart, offset);
+        return mapPicturesToDTO(pictures);
+    }
+
+    public List<TouristicPictureDTOGet> getTouristicPicturesByPlaceName(String placeName, int pageStart, int offset){
+        List<TouristicPicture> pictures = pictureRepository.findTouristicPicturesByPlaceName(placeName, pageStart, offset);
         return mapPicturesToDTO(pictures);
     }
 
@@ -169,8 +189,17 @@ public class PictureService {
             placeName.setPicturePlace(picturePlace);
         }
 
-        picturePlace.setPlaceName(placeName);
-        placeName.setPicturePlace(picturePlace);
+        PlaceType placeType = null;
+        try{
+            placeType = placeRepository.findPlaceTypeByName(touristicPictureDTO.placeType());
+        }
+        catch (EmptyResultDataAccessException e){
+            placeType = new PlaceType(touristicPictureDTO.placeType());
+        }
+        finally {
+            picturePlace.setPlaceType(placeType);
+            placeType.addPicturePlace(picturePlace);
+        }
 
         GpsCoords gpsCoords = new GpsCoords();
         gpsCoords.setLatitude(touristicPictureDTO.latitude());
@@ -251,8 +280,8 @@ public class PictureService {
         pictureRepository.mergePictureComment(comment);
     }
 
-    public List<PictureCommentDTOGet> getPictureComments(long pictureId){
-        List<PictureComment> pictureComments = pictureRepository.findPictureComments(pictureId);
+    public List<PictureCommentDTOGet> getPictureComments(long pictureId, int pageStart, int offset){
+        List<PictureComment> pictureComments = pictureRepository.findPictureComments(pictureId, pageStart, offset);
         return pictureComments.stream()
                 .map(comment -> pictureCommentMapper.toDTO(comment)).toList();
     }
@@ -301,8 +330,8 @@ public class PictureService {
         }
     }
 
-    public List<PictureLikeDTOGet> getPictureLikes(long pictureId){
-        return pictureRepository.findPictureLikes(pictureId)
+    public List<PictureLikeDTOGet> getPictureLikes(long pictureId, int pageStart, int offset){
+        return pictureRepository.findPictureLikes(pictureId, pageStart, offset)
                 .stream()
                 .map(like -> pictureLikeMapper.toDTO(like))
                 .toList();

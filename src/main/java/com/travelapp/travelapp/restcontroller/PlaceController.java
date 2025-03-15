@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/places")
 public class PlaceController {
@@ -40,6 +42,11 @@ public class PlaceController {
     public ResponseEntity<Village> getVillage(@RequestParam String village){
         Village villageDTO = placeService.getVillage(village);
         return ResponseEntity.ok(villageDTO);
+    }
+
+    @GetMapping("/place-types")
+    public List<PlaceTypeDTOGet> getAllPlaceTypes(){
+        return placeService.getAllPlaceTypes();
     }
 
     @PostMapping("/countries")
